@@ -1,22 +1,23 @@
-import express, { Express, Request, Response } from 'express'
+import express, { Express } from 'express'
 import dotenv from 'dotenv'
-import { firebaseConfig } from '../firebase-config'
-import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
+import { getFirestore } from 'firebase/firestore'
+import { userRouter } from './routes/users'
+import { dailyChallengeRouter } from './routes/dailyChallenge'
 
-// Initialize Firebase
-const firebaseApp = initializeApp(firebaseConfig)
-// const analytics = getAnalytics(firebaseApp)
+console.log('test')
+
+
 
 // Initialize server
 dotenv.config()
 
 const app: Express = express()
-const port = process.env.PORT || 7777
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Express + TypeScript Server')
-})
+app.use('/user', userRouter)
+app.use('/dailyChallenge', dailyChallengeRouter)
+
+const port = process.env.PORT || 7777
 
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`)
