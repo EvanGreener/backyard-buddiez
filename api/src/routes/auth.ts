@@ -10,17 +10,22 @@ import {
 } from 'firebase/auth'
 
 import { firebaseConfig } from '../../firebase-config'
-import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
+
+var admin = require('firebase-admin')
+var serviceAccount = require('../../backyard-buddiez-firebase-adminsdk-o4axt-f7dec846e5.json')
 // Initialize Firebase
+const firebaseApp = admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+})
+
 // Initialize Cloud Firestore and get a reference to the service
-const firebaseApp = initializeApp(firebaseConfig)
 const db = getFirestore(firebaseApp)
 
 const provider = new GoogleAuthProvider()
 const auth = getAuth()
 
-export let userRouter = express.Router()
+export let authRouter = express.Router()
 
 const errHandler: ErrorRequestHandler = (error, req, res, next) => {
     // Handle Errors here.
@@ -28,9 +33,9 @@ const errHandler: ErrorRequestHandler = (error, req, res, next) => {
     const errorMessage = error.message
     res.status(500).send({ errorCode, errorMessage })
 }
-userRouter.use(errHandler)
+authRouter.use(errHandler)
 
-userRouter.post('/sign-in-google', async function (req, res, next) {
+authRouter.post('/sign-in-google', async function (req, res, next) {
     await signInWithRedirect(auth, provider)
     const result = await getRedirectResult(auth)
     try {
@@ -39,7 +44,7 @@ userRouter.post('/sign-in-google', async function (req, res, next) {
 
             if (credential) {
                 const token = credential.accessToken
-                res.send({ accessToken: token })
+                res.send({ googleAccessToken: token })
             }
             res.send({ error: 'Invalid user credentials?' })
         }
@@ -48,27 +53,46 @@ userRouter.post('/sign-in-google', async function (req, res, next) {
         next(error)
     }
 })
-userRouter.post('/sign-up', async function (req, res, next) {
+authRouter.post('/sign-up', async function (req, res, next) {
+    console.log(req.body)
     const { email, password } = req.body
     try {
-        await createUserWithEmailAndPassword(auth, email, password)
-        res.send('Sign up successful')
+        const credential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        )
+        res.send({ idToken: credential.user.getIdToken() })
     } catch (error: any) {
         next(error)
     }
 })
 
-userRouter.post('/sign-in', async function (req, res, next) {
+authRouter.post('/sign-in', async function (req, res, next) {
     const { email, password } = req.body
     try {
-        await signInWithEmailAndPassword(auth, email, password)
-        res.send('Sign in successful')
+        const credential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        )
+
+        res.send({ idToken: credential.user.getIdToken() })
     } catch (error: any) {
         next(error)
     }
 })
 
-userRouter.post('/sign-out', function (req, res, next) {
+authRouter.post('/sign-out', function (req, res, next) {
+    try {
+        signOut(auth)
+        res.send('Sign out successful')
+    } catch (error) {
+        next(error)
+    }
+})
+
+authRouter.post('/authenticate', function (req, res, next) {
     try {
         signOut(auth)
         res.send('Sign out successful')

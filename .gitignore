@@ -1,1 +1,5 @@
 express-example/
+node_modules/
+firebase-config.ts
+.env
+backyard-buddiez-firebase-adminsdk-o4axt-f7dec846e5.json
