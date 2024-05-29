@@ -11,6 +11,8 @@ A bird IDing app/game for everyone!
     -   Identify bird **x**
     -   ...
 -   Earn points/coins for completing daily activities
+-   ? Live chat
+-   ? AI chat bot
 
 ## Pages
 
@@ -24,3 +26,5 @@ A bird IDing app/game for everyone!
     -   Life species checklist page
     -   Leaderboard page
     -   Random daily message (like mc or pokerogue)
+    -   ? Live chat
+    -   ?
