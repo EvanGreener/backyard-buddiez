@@ -8,13 +8,16 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
 } from 'firebase/auth'
-
+import dotenv from 'dotenv'
 import { firebaseConfig } from '../../firebase-config'
 import { getFirestore } from 'firebase/firestore'
 
+// Initialize server
+dotenv.config()
+
+// Initialize Firebase admin sdk
 var admin = require('firebase-admin')
-var serviceAccount = require('../../backyard-buddiez-firebase-adminsdk-o4axt-f7dec846e5.json')
-// Initialize Firebase
+var serviceAccount = require(process.env.FIREBASE_SERVICE_ACCOUNT!)
 const firebaseApp = admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
 })
