@@ -11,7 +11,7 @@ export default function LoginSignInLayout({
     children: React.ReactNode
 }>) {
     return (
-        <div className="space-y-10">
+        <div className="space-y-10 pt-12">
             <div className="text-center text-2xl">Backyard Buddiez</div>
             <div className="grow">
                 <div className="flex grow items-center justify-center">
