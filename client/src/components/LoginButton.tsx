@@ -1,21 +1,14 @@
 import Link from 'next/link'
-
+import Image from 'next/image'
+import Button from './Button'
 export interface LoginButtonType {
     href: string
-    provider: string
-    imagePath: string
 }
 
-export default function LoginButton({
-    href,
-    provider,
-    imagePath,
-}: LoginButtonType) {
+export default function LoginButton({ href }: LoginButtonType) {
     return (
-        <div>
-            <Link className="bg-sky-300 m-2 p-2 rounded " href={href}>
-                Login {provider}
-            </Link>
-        </div>
+        <Button>
+            <Link href={href}>Login </Link>
+        </Button>
     )
 }
