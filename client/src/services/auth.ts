@@ -1,3 +1,5 @@
+'use server'
+
 import { initializeApp } from 'firebase/app'
 import { firebaseConfig } from '@/config/firebase-config'
 import {
@@ -11,6 +13,7 @@ import {
 } from 'firebase/auth'
 import next from 'next'
 import { getFirestore } from 'firebase/firestore'
+import { redirect } from 'next/navigation'
 
 const firebaseApp = initializeApp(firebaseConfig)
 const db = getFirestore(firebaseApp)
@@ -26,10 +29,11 @@ export async function signInGoogle() {
 
             if (credential) {
                 const token = credential.accessToken
+                redirect('/home')
             }
         }
     } catch (error: any) {
-        printErrorMessages(error)
+        return getErrorMessage(error)
     }
 }
 
@@ -41,7 +45,7 @@ export async function signUpEmail(email: string, password: string) {
             password
         )
     } catch (error) {
-        printErrorMessages(error)
+        return getErrorMessage(error)
     }
 }
 
@@ -53,19 +57,19 @@ export async function signInEmail(email: string, password: string) {
             password
         )
     } catch (error: any) {
-        printErrorMessages(error)
+        return getErrorMessage(error)
     }
 }
 
-export function logout() {
+export async function logout() {
     try {
-        signOut(auth)
+        await signOut(auth)
     } catch (error) {
-        printErrorMessages(error)
+        return getErrorMessage(error)
     }
 }
 
-function printErrorMessages(error: any) {
+function getErrorMessage(error: any) {
     // Handle Errors here.
     const errorCode = error.code
     const errorMessage = error.message
@@ -74,6 +78,5 @@ function printErrorMessages(error: any) {
     // The AuthCredential type that was used.
     const credential = GoogleAuthProvider.credentialFromError(error)
 
-    console.log(errorCode)
-    console.log(errorMessage)
+    return `${errorCode}: ${errorMessage}`
 }

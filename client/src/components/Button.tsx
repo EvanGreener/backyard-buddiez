@@ -1,7 +1,12 @@
-export default function Button({
-    children,
-}: Readonly<{
+interface ButtonType {
     children: React.ReactNode
-}>) {
-    return <div className="bg-sky-300 p-2 rounded ">{children}</div>
+    type: 'submit' | 'reset' | 'button' | undefined
+}
+
+export default function Button({ children, type }: ButtonType) {
+    return (
+        <button type={type} className="bg-sky-300 p-2 rounded ">
+            {children}
+        </button>
+    )
 }
