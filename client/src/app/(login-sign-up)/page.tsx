@@ -3,14 +3,28 @@
 import LoginButton from '@/components/LoginButton'
 import LoginEmailPassForm from '@/components/LoginEmailPassForm'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Button from '@/components/Button'
-import { signInGoogle } from '@/services/auth'
-import { useFormState } from 'react-dom'
+import { signInGoogle } from '@/lib/auth'
+import { useFormState, useFormStatus } from 'react-dom'
+import { homeRoute } from '@/lib/routes'
+import { MouseEventHandler } from 'react'
+import { firebaseConfig } from '@/config/firebase-config'
+import { initializeApp } from 'firebase/app'
 
 export default function Login() {
-    const [errorMessage, dispatch] = useFormState(signInGoogle, undefined)
+    initializeApp(firebaseConfig)
+
+    const [message, dispatch] = useFormState(signInGoogle, undefined)
+
+    const { pending } = useFormStatus()
+    const googleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
+        if (pending) {
+            event.preventDefault()
+        }
+    }
+
     return (
         <form
             action={dispatch}
@@ -36,7 +50,7 @@ export default function Login() {
                     alt="provider logo"
                 />
             </Button>
-            <Button type="submit">
+            <Button type="submit" onClickHandler={googleClick}>
                 <span>Login with Google</span>
                 <Image
                     className="inline ml-2"
@@ -46,7 +60,7 @@ export default function Login() {
                     alt="provider logo"
                 />
             </Button>
-            <div>{errorMessage && <p>{errorMessage}</p>}</div>
+            <div>{message && <p>{message}</p>}</div>
         </form>
     )
 }

@@ -7,7 +7,7 @@ export interface LoginButtonType {
 
 export default function LoginButton({ href }: LoginButtonType) {
     return (
-        <Button>
+        <Button type="button">
             <Link href={href}>Login </Link>
         </Button>
     )

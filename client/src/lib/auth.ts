@@ -1,7 +1,7 @@
 'use server'
 
 import { initializeApp } from 'firebase/app'
-import { firebaseConfig } from '@/config/firebase-config'
+import { firebaseApp, firebaseConfig } from '@/config/firebase-config'
 import {
     signInWithRedirect,
     getRedirectResult,
@@ -12,25 +12,47 @@ import {
     signOut,
 } from 'firebase/auth'
 import next from 'next'
-import { getFirestore } from 'firebase/firestore'
+import {
+    Timestamp,
+    doc,
+    getDoc,
+    getFirestore,
+    setDoc,
+} from 'firebase/firestore'
 import { redirect } from 'next/navigation'
+import { User } from '@/types/db-types'
+import { homeRoute } from './routes'
 
-const firebaseApp = initializeApp(firebaseConfig)
 const db = getFirestore(firebaseApp)
-const provider = new GoogleAuthProvider()
-const auth = getAuth()
 
 export async function signInGoogle() {
-    await signInWithRedirect(auth, provider)
-    const result = await getRedirectResult(auth)
+    const provider = new GoogleAuthProvider()
+    const auth = getAuth(firebaseApp)
     try {
+        await signInWithRedirect(auth, provider)
+        const result = await getRedirectResult(auth)
         if (result) {
-            const credential = GoogleAuthProvider.credentialFromResult(result)
+            // const credential = GoogleAuthProvider.credentialFromResult(result)
 
-            if (credential) {
-                const token = credential.accessToken
-                redirect('/home')
+            const currentUser = result.user
+
+            // Check if user exists in db
+            const usersRef = doc(db, 'users')
+            const docRef = doc(usersRef, currentUser.uid)
+            const docSnap = await getDoc(docRef)
+
+            if (!docSnap.exists()) {
+                // Create new user in db
+                const newUser: User = {
+                    displayName: 'ChangeYourDisplayNname123',
+                    points: 0,
+                    createdAt: Timestamp.fromDate(new Date()),
+                }
+
+                await setDoc(doc(usersRef, currentUser.uid), newUser)
             }
+
+            redirect(homeRoute)
         }
     } catch (error: any) {
         return getErrorMessage(error)
@@ -38,6 +60,8 @@ export async function signInGoogle() {
 }
 
 export async function signUpEmail(email: string, password: string) {
+    const auth = getAuth(firebaseApp)
+
     try {
         const credential = await createUserWithEmailAndPassword(
             auth,
@@ -50,6 +74,8 @@ export async function signUpEmail(email: string, password: string) {
 }
 
 export async function signInEmail(email: string, password: string) {
+    const auth = getAuth(firebaseApp)
+
     try {
         const credential = await signInWithEmailAndPassword(
             auth,
@@ -62,6 +88,8 @@ export async function signInEmail(email: string, password: string) {
 }
 
 export async function logout() {
+    const auth = getAuth(firebaseApp)
+
     try {
         await signOut(auth)
     } catch (error) {
@@ -78,5 +106,5 @@ function getErrorMessage(error: any) {
     // The AuthCredential type that was used.
     const credential = GoogleAuthProvider.credentialFromError(error)
 
-    return `${errorCode}: ${errorMessage}`
+    return `${errorMessage}`
 }

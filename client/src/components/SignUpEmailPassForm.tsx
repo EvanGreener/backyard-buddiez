@@ -9,7 +9,7 @@ export default function SignUpEmailPassForm() {
             <InputText type="text" placeholder="Last Name" />
             <InputText type="email" placeholder="Email" />
             <InputText type="password" placeholder="password" />
-            <Button>
+            <Button type='button'>
                 <Link href={'/home'}>Sign Up!</Link>
             </Button>
         </div>
