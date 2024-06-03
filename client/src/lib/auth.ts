@@ -12,6 +12,7 @@ import {
 import next from 'next'
 import {
     Timestamp,
+    collection,
     doc,
     getDoc,
     getFirestore,
@@ -21,24 +22,33 @@ import { redirect } from 'next/navigation'
 import { User } from '@/types/db-types'
 import { homeRoute } from './routes'
 import { Dispatch, SetStateAction } from 'react'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
+const auth = getAuth(firebaseApp)
 const db = getFirestore(firebaseApp)
 
-export async function signInGoogle(
-    setErrorMsg: Dispatch<SetStateAction<string>>
-) {
+export function signInGoogle(setErrorMsg: Dispatch<SetStateAction<string>>) {
     const provider = new GoogleAuthProvider()
-    const auth = getAuth(firebaseApp)
+    provider.addScope('https://www.googleapis.com/auth/datastore')
+    provider.addScope('https://www.googleapis.com/auth/cloud-platform')
     try {
-        await signInWithRedirect(auth, provider)
+        signInWithRedirect(auth, provider)
+    } catch (error: any) {
+        setErrorMsg(getErrorMessage(error))
+    }
+}
+
+export async function googleRedirectResult(
+    setErrorMsg: Dispatch<SetStateAction<string>>,
+    router: AppRouterInstance
+) {
+    try {
         const result = await getRedirectResult(auth)
         if (result) {
-            // const credential = GoogleAuthProvider.credentialFromResult(result)
-
             const currentUser = result.user
 
             // Check if user exists in db
-            const usersRef = doc(db, 'users')
+            const usersRef = collection(db, 'users')
             const docRef = doc(usersRef, currentUser.uid)
             const docSnap = await getDoc(docRef)
 
@@ -53,7 +63,7 @@ export async function signInGoogle(
                 await setDoc(doc(usersRef, currentUser.uid), newUser)
             }
 
-            redirect(homeRoute)
+            router.push(homeRoute)
         }
     } catch (error: any) {
         setErrorMsg(getErrorMessage(error))
@@ -61,8 +71,6 @@ export async function signInGoogle(
 }
 
 export async function signUpEmail(email: string, password: string) {
-    const auth = getAuth(firebaseApp)
-
     try {
         const credential = await createUserWithEmailAndPassword(
             auth,
@@ -75,8 +83,6 @@ export async function signUpEmail(email: string, password: string) {
 }
 
 export async function signInEmail(email: string, password: string) {
-    const auth = getAuth(firebaseApp)
-
     try {
         const credential = await signInWithEmailAndPassword(
             auth,
@@ -89,8 +95,6 @@ export async function signInEmail(email: string, password: string) {
 }
 
 export async function logout() {
-    const auth = getAuth(firebaseApp)
-
     try {
         await signOut(auth)
     } catch (error) {
@@ -100,12 +104,6 @@ export async function logout() {
 
 function getErrorMessage(error: any) {
     // Handle Errors here.
-    const errorCode = error.code
-    const errorMessage = error.message
-    // The email of the user's account used.
-    const email = error.customData.email
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error)
 
-    return `${errorMessage}`
+    return `${error}`
 }

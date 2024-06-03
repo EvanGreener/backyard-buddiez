@@ -6,15 +6,27 @@ import Link from 'next/link'
 import { redirect, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Button from '@/components/Button'
-import { signInGoogle } from '@/lib/auth'
+import { googleRedirectResult, signInGoogle } from '@/lib/auth'
 import { useFormState, useFormStatus } from 'react-dom'
 import { homeRoute } from '@/lib/routes'
 import { MouseEventHandler, useState } from 'react'
-import { firebaseConfig } from '@/config/firebase-config'
+import { firebaseApp, firebaseConfig } from '@/config/firebase-config'
 import { initializeApp } from 'firebase/app'
+import { getAuth, getRedirectResult } from 'firebase/auth'
+import {
+    doc,
+    getDoc,
+    Timestamp,
+    setDoc,
+    getFirestore,
+} from 'firebase/firestore'
+import { User } from '@/types/db-types'
 
 export default function Login() {
     const [errorMsg, setErrorMsg] = useState('')
+    const router = useRouter()
+
+    googleRedirectResult(setErrorMsg, router)
 
     return (
         <div className="container flex flex-col items-center justify-end space-y-6 ">
@@ -41,7 +53,7 @@ export default function Login() {
             <Button
                 type="submit"
                 onClickHandler={async () => {
-                    await signInGoogle(setErrorMsg)
+                    signInGoogle(setErrorMsg)
                 }}
             >
                 <span>Login with Google</span>
@@ -53,7 +65,9 @@ export default function Login() {
                     alt="provider logo"
                 />
             </Button>
-            <div className="text-red-600">{errorMsg && <p>{errorMsg}</p>}</div>
+            <div className="text-red-600 p-6">
+                {errorMsg && <p>{errorMsg}</p>}
+            </div>
         </div>
     )
 }
