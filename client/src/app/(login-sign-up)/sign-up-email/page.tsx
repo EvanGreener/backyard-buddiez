@@ -8,13 +8,14 @@ export default function SignUpEmail() {
     const router = useRouter()
     const currentUser = useContext(AuthContext)
 
-    useEffect(() => {
-        // If you're alredy signed in, go to home page
-        if (currentUser) {
-            router.push(HOME_ROUTE)
-        }
+    // useEffect(() => {
 
-        // Will redirect if sign in through google was successful
-    }, [])
+    //     // If you're alredy signed in, go to home page
+    //     if (currentUser) {
+    //         router.push(HOME_ROUTE)
+    //     }
+
+    //     // Will redirect if sign in through google was successful
+    // }, [])
     return <SignUpEmailPassForm />
 }
