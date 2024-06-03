@@ -1,5 +1,3 @@
-'use server'
-
 import { initializeApp } from 'firebase/app'
 import { firebaseApp, firebaseConfig } from '@/config/firebase-config'
 import {
@@ -22,10 +20,13 @@ import {
 import { redirect } from 'next/navigation'
 import { User } from '@/types/db-types'
 import { homeRoute } from './routes'
+import { Dispatch, SetStateAction } from 'react'
 
 const db = getFirestore(firebaseApp)
 
-export async function signInGoogle() {
+export async function signInGoogle(
+    setErrorMsg: Dispatch<SetStateAction<string>>
+) {
     const provider = new GoogleAuthProvider()
     const auth = getAuth(firebaseApp)
     try {
@@ -55,7 +56,7 @@ export async function signInGoogle() {
             redirect(homeRoute)
         }
     } catch (error: any) {
-        return getErrorMessage(error)
+        setErrorMsg(getErrorMessage(error))
     }
 }
 
