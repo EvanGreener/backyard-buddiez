@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import './globals.css'
 import Image from 'next/image'
+import AuthContextProvider from '@/components/AuthContextProvider'
 
 export const metadata: Metadata = {
     title: 'Backyard Buddiez - Login',
@@ -13,7 +14,9 @@ export default function LoginSignInLayout({
     return (
         <html lang="en">
             <body>
-                <main>{children}</main>
+                <main>
+                    <AuthContextProvider>{children}</AuthContextProvider>
+                </main>
             </body>
         </html>
     )

@@ -1,6 +1,10 @@
 import type { NextRequest } from 'next/server'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { homeRoute, loginEmailRoute, signUpEmailRoute } from '@/lib/routes'
+import {
+    HOME_ROUTE,
+    LOGIN_EMAIL_ROUTE,
+    SIGN_UP_EMAIL_ROUTE,
+} from '@/lib/routes'
 import { firebaseApp } from '@/config/firebase-config'
 
 export function middleware(request: NextRequest) {
@@ -14,8 +18,8 @@ export function middleware(request: NextRequest) {
             !currentUser &&
             !(
                 request.nextUrl.pathname.startsWith('/') ||
-                request.nextUrl.pathname.startsWith(loginEmailRoute) ||
-                request.nextUrl.pathname.startsWith(signUpEmailRoute)
+                request.nextUrl.pathname.startsWith(LOGIN_EMAIL_ROUTE) ||
+                request.nextUrl.pathname.startsWith(SIGN_UP_EMAIL_ROUTE)
             )
         ) {
             return Response.redirect(new URL('/', request.url))
@@ -23,12 +27,12 @@ export function middleware(request: NextRequest) {
             return redirectToHomePage(request)
         } else if (
             currentUser &&
-            request.nextUrl.pathname.startsWith(loginEmailRoute)
+            request.nextUrl.pathname.startsWith(LOGIN_EMAIL_ROUTE)
         ) {
             return redirectToHomePage(request)
         } else if (
             currentUser &&
-            request.nextUrl.pathname.startsWith(signUpEmailRoute)
+            request.nextUrl.pathname.startsWith(SIGN_UP_EMAIL_ROUTE)
         ) {
             return redirectToHomePage(request)
         }
@@ -36,7 +40,7 @@ export function middleware(request: NextRequest) {
 }
 
 function redirectToHomePage(request: NextRequest) {
-    return Response.redirect(new URL(homeRoute, request.url))
+    return Response.redirect(new URL(HOME_ROUTE, request.url))
 }
 
 export const config = {

@@ -8,8 +8,8 @@ import Image from 'next/image'
 import Button from '@/components/Button'
 import { googleRedirectResult, signInGoogle } from '@/lib/auth'
 import { useFormState, useFormStatus } from 'react-dom'
-import { homeRoute } from '@/lib/routes'
-import { MouseEventHandler, useState } from 'react'
+import { HOME_ROUTE } from '@/lib/routes'
+import { MouseEventHandler, useContext, useEffect, useState } from 'react'
 import { firebaseApp, firebaseConfig } from '@/config/firebase-config'
 import { initializeApp } from 'firebase/app'
 import { getAuth, getRedirectResult } from 'firebase/auth'
@@ -21,12 +21,21 @@ import {
     getFirestore,
 } from 'firebase/firestore'
 import { User } from '@/types/db-types'
+import { AuthContext } from '@/contexts/AuthContext'
 
 export default function Login() {
-    const [errorMsg, setErrorMsg] = useState('')
     const router = useRouter()
+    const currentUser = useContext(AuthContext)
 
-    googleRedirectResult(setErrorMsg, router)
+    useEffect(() => {
+        // If you're alredy signed in, go to home page
+        if (currentUser) {
+            router.push(HOME_ROUTE)
+        }
+
+        // Will redirect if sign in through google was successful
+        googleRedirectResult(router)
+    }, [])
 
     return (
         <div className="container flex flex-col items-center justify-end space-y-6 ">
@@ -52,8 +61,9 @@ export default function Login() {
             </Button>
             <Button
                 type="submit"
-                onClickHandler={async () => {
-                    signInGoogle(setErrorMsg)
+                onClickHandler={async (event) => {
+                    event.preventDefault()
+                    signInGoogle()
                 }}
             >
                 <span>Login with Google</span>
@@ -65,9 +75,6 @@ export default function Login() {
                     alt="provider logo"
                 />
             </Button>
-            <div className="text-red-600 p-6">
-                {errorMsg && <p>{errorMsg}</p>}
-            </div>
         </div>
     )
 }

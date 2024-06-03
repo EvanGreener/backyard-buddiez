@@ -20,7 +20,7 @@ import {
 } from 'firebase/firestore'
 import { redirect } from 'next/navigation'
 import { User } from '@/types/db-types'
-import { homeRoute } from './routes'
+import { HOME_ROUTE } from './routes'
 import { Dispatch, SetStateAction } from 'react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { NextRequest } from 'next/server'
@@ -28,21 +28,18 @@ import { NextRequest } from 'next/server'
 const auth = getAuth(firebaseApp)
 const db = getFirestore(firebaseApp)
 
-export function signInGoogle(setErrorMsg: Dispatch<SetStateAction<string>>) {
+export function signInGoogle() {
     const provider = new GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/datastore')
     provider.addScope('https://www.googleapis.com/auth/cloud-platform')
     try {
         signInWithRedirect(auth, provider)
     } catch (error: any) {
-        setErrorMsg(getErrorMessage(error))
+        console.log(getErrorMessage(error))
     }
 }
 
-export async function googleRedirectResult(
-    setErrorMsg: Dispatch<SetStateAction<string>>,
-    router: AppRouterInstance
-) {
+export async function googleRedirectResult(router: AppRouterInstance) {
     try {
         const result = await getRedirectResult(auth)
         if (result) {
@@ -64,11 +61,10 @@ export async function googleRedirectResult(
                 await setDoc(doc(usersRef, currentUser.uid), newUser)
             }
 
-            router.push(homeRoute)
+            router.push(HOME_ROUTE)
         }
-        return result
     } catch (error: any) {
-        setErrorMsg(getErrorMessage(error))
+        console.log(getErrorMessage(error))
     }
 }
 
