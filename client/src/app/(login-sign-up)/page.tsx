@@ -25,15 +25,9 @@ import { AuthContext } from '@/contexts/AuthContext'
 
 export default function RootLogin() {
     const router = useRouter()
-    const currentUser = useContext(AuthContext)
 
     useEffect(() => {
-        // // If you're alredy signed in, go to home page
-        // if (currentUser) {
-        //     router.push(HOME_ROUTE)
-        // }
-
-        // Will redirect if sign in through google was successful
+        // Will redirect again if sign in through google was successful
         googleRedirectResult(router)
     }, [])
 
