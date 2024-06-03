@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
     const auth = getAuth(firebaseApp)
 
     auth.onAuthStateChanged((currentUser) => {
-        console.log(currentUser)
+        console.log(`currentUser: ${currentUser}`)
 
         // If user isnt on one of the login or sign up pages, redirect them to the root
         if (

@@ -23,6 +23,7 @@ import { User } from '@/types/db-types'
 import { homeRoute } from './routes'
 import { Dispatch, SetStateAction } from 'react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { NextRequest } from 'next/server'
 
 const auth = getAuth(firebaseApp)
 const db = getFirestore(firebaseApp)
@@ -65,6 +66,7 @@ export async function googleRedirectResult(
 
             router.push(homeRoute)
         }
+        return result
     } catch (error: any) {
         setErrorMsg(getErrorMessage(error))
     }
