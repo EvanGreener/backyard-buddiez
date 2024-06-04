@@ -55,7 +55,7 @@ export default function RootLogin() {
             </Button>
             <Button
                 type="submit"
-                onClickHandler={async (event) => {
+                onClickHandler={(event) => {
                     event.preventDefault()
                     signInGoogle()
                 }}

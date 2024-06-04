@@ -4,7 +4,7 @@ import Image from 'next/image'
 import AuthContextProvider from '@/components/AuthContextProvider'
 
 export const metadata: Metadata = {
-    title: 'Backyard Buddiez - Login',
+    title: 'Backyard Buddiez',
 }
 export default function LoginSignInLayout({
     children,
