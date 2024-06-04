@@ -25,9 +25,10 @@ export default function AuthContextProvider({
     useEffect(() => {
         console.log('in useEffect')
         const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+            console.log('onAuthStateChanged called')
             if (user) {
                 setCurrentUser(user)
-
+                console.log('user signed in')
                 console.log(pathname)
                 console.log(ROOT_LOGIN)
                 console.log(pathname == ROOT_LOGIN)
