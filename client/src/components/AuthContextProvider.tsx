@@ -46,7 +46,7 @@ export default function AuthContextProvider({
             } else {
                 console.log('user NOT signed in')
                 console.log(user)
-                setCurrentUser(user)
+                setCurrentUser(null)
                 // Middleware logic
                 if (pathname == HOME_ROUTE) {
                     router.push(ROOT_LOGIN)
