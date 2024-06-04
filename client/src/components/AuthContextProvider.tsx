@@ -27,11 +27,12 @@ export default function AuthContextProvider({
         const unsubscribeAuth = auth.onAuthStateChanged((user) => {
             console.log('onAuthStateChanged called')
             if (user) {
-                setCurrentUser(user)
                 console.log('user signed in')
                 console.log(pathname)
                 console.log(ROOT_LOGIN)
                 console.log(pathname == ROOT_LOGIN)
+
+                setCurrentUser(user)
 
                 // Middleware logic
                 if (
@@ -43,6 +44,8 @@ export default function AuthContextProvider({
                 }
                 // Middleware logic
             } else {
+                console.log('user NOT signed in')
+                console.log(user)
                 setCurrentUser(user)
                 // Middleware logic
                 if (pathname == HOME_ROUTE) {
