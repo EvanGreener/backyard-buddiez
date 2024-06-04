@@ -29,7 +29,7 @@ export default function RootLogin() {
     useEffect(() => {
         // Will redirect again if sign in through google was successful
         googleRedirectResult(router)
-    }, [])
+    }, [router])
 
     return (
         <div className="container flex flex-col items-center justify-end space-y-6 ">

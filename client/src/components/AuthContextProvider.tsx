@@ -46,7 +46,7 @@ export default function AuthContextProvider({
         })
 
         return () => unsubscribeAuth()
-    }, [])
+    }, [router, auth, pathname])
 
     return (
         <AuthContext.Provider value={currentUser}>
