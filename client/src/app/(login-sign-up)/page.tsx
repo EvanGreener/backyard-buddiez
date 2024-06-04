@@ -1,30 +1,11 @@
 'use client'
 
-import LoginButton from '@/components/LoginButton'
-import LoginEmailPassForm from '@/components/LoginEmailPassForm'
 import Link from 'next/link'
-import { redirect, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Button from '@/components/Button'
-import { googleRedirectResult, signInGoogle } from '@/lib/auth'
-import { useFormState, useFormStatus } from 'react-dom'
-import { HOME_ROUTE } from '@/lib/routes'
-import { MouseEventHandler, useContext, useEffect, useState } from 'react'
-import { firebaseApp, firebaseConfig } from '@/config/firebase-config'
-import { initializeApp } from 'firebase/app'
-import { getAuth, getRedirectResult } from 'firebase/auth'
-import {
-    doc,
-    getDoc,
-    Timestamp,
-    setDoc,
-    getFirestore,
-} from 'firebase/firestore'
-import { User } from '@/types/db-types'
-import { AuthContext } from '@/contexts/AuthContext'
+import { signInGoogle } from '@/lib/auth'
 
 export default function RootLogin() {
-
     return (
         <div className="container flex flex-col items-center justify-end space-y-6 ">
             <Button type="button">

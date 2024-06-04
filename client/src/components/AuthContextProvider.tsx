@@ -8,7 +8,7 @@ import {
     ROOT_LOGIN,
     SIGN_UP_EMAIL_ROUTE,
 } from '@/lib/routes'
-import { User, getAuth } from 'firebase/auth'
+import { User, getAuth, onAuthStateChanged } from 'firebase/auth'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 
@@ -24,13 +24,12 @@ export default function AuthContextProvider({
 
     useEffect(() => {
         console.log('in useEffect')
-        const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+        const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
             console.log('onAuthStateChanged called')
             if (user) {
                 console.log('user signed in')
                 console.log(pathname)
                 console.log(ROOT_LOGIN)
-                console.log(pathname == ROOT_LOGIN)
 
                 setCurrentUser(user)
 
@@ -45,7 +44,6 @@ export default function AuthContextProvider({
                 // Middleware logic
             } else {
                 console.log('user NOT signed in')
-                console.log(user)
                 setCurrentUser(null)
                 // Middleware logic
                 if (pathname == HOME_ROUTE) {
@@ -56,7 +54,7 @@ export default function AuthContextProvider({
         })
 
         return () => unsubscribeAuth()
-    }, [router])
+    }, [auth, pathname])
 
     return (
         <AuthContext.Provider value={currentUser}>

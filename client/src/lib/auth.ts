@@ -8,6 +8,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
+    signInWithPopup,
 } from 'firebase/auth'
 import next from 'next'
 import {
@@ -33,7 +34,7 @@ export function signInGoogle() {
     provider.addScope('https://www.googleapis.com/auth/datastore')
     provider.addScope('https://www.googleapis.com/auth/cloud-platform')
     try {
-        signInWithRedirect(auth, provider)
+        signInWithPopup(auth, provider)
     } catch (error: any) {
         console.log(getErrorMessage(error))
     }
