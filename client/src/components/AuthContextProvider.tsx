@@ -23,8 +23,10 @@ export default function AuthContextProvider({
     const router = useRouter()
 
     useEffect(() => {
+        console.log('in useEffect')
         const unsubscribeAuth = auth.onAuthStateChanged((user) => {
             if (user) {
+                console.log('signed in')
                 setCurrentUser(user)
                 // Middleware logic
                 if (
@@ -36,6 +38,7 @@ export default function AuthContextProvider({
                 }
                 // Middleware logic
             } else {
+                console.log('not signed in')
                 setCurrentUser(user)
                 // Middleware logic
                 if (pathname == HOME_ROUTE) {
