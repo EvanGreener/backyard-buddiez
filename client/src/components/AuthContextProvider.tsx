@@ -23,13 +23,15 @@ export default function AuthContextProvider({
     const router = useRouter()
 
     useEffect(() => {
+        console.log('in useEffect')
         const unsubscribeAuth = auth.onAuthStateChanged((user) => {
             if (user) {
+                setCurrentUser(user)
+
                 console.log(pathname)
                 console.log(ROOT_LOGIN)
                 console.log(pathname == ROOT_LOGIN)
 
-                setCurrentUser(user)
                 // Middleware logic
                 if (
                     pathname == LOGIN_EMAIL_ROUTE ||
