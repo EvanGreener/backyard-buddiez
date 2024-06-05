@@ -2,6 +2,7 @@
 
 import { firebaseApp } from '@/config/firebase-config'
 import { AuthContext } from '@/contexts/AuthContext'
+import { addUserToDB } from '@/lib/auth'
 import {
     HOME_ROUTE,
     LOGIN_EMAIL_ROUTE,
@@ -23,15 +24,13 @@ export default function AuthContextProvider({
     const router = useRouter()
 
     useEffect(() => {
-        console.log('in useEffect')
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-            console.log('onAuthStateChanged called')
             if (user) {
-                console.log('user signed in')
-                console.log(pathname)
-                console.log(ROOT_LOGIN)
+                console.log('Signed in')
 
                 setCurrentUser(user)
+
+                addUserToDB(user)
 
                 // Middleware logic
                 if (
@@ -41,15 +40,13 @@ export default function AuthContextProvider({
                 ) {
                     router.push(HOME_ROUTE)
                 }
-                // Middleware logic
             } else {
-                console.log('user NOT signed in')
                 setCurrentUser(null)
+
                 // Middleware logic
                 if (pathname == HOME_ROUTE) {
                     router.push(ROOT_LOGIN)
                 }
-                // Middleware logic
             }
         })
 

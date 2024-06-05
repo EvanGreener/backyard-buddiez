@@ -9,6 +9,7 @@ import {
     signInWithEmailAndPassword,
     signOut,
     signInWithPopup,
+    User,
 } from 'firebase/auth'
 import next from 'next'
 import {
@@ -20,7 +21,7 @@ import {
     setDoc,
 } from 'firebase/firestore'
 import { redirect } from 'next/navigation'
-import { User } from '@/types/db-types'
+import { UserApp } from '@/types/db-types'
 import { HOME_ROUTE } from './routes'
 import { Dispatch, SetStateAction } from 'react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
@@ -46,22 +47,6 @@ export async function googleRedirectResult(router: AppRouterInstance) {
         if (result) {
             const currentUser = result.user
 
-            // Check if user exists in db
-            const usersRef = collection(db, 'users')
-            const docRef = doc(usersRef, currentUser.uid)
-            const docSnap = await getDoc(docRef)
-
-            if (!docSnap.exists()) {
-                // Create new user in db
-                const newUser: User = {
-                    displayName: 'ChangeYourDisplayNname123',
-                    points: 0,
-                    createdAt: Timestamp.fromDate(new Date()),
-                }
-
-                await setDoc(doc(usersRef, currentUser.uid), newUser)
-            }
-
             router.push(HOME_ROUTE)
         }
     } catch (error: any) {
@@ -71,11 +56,7 @@ export async function googleRedirectResult(router: AppRouterInstance) {
 
 export async function signUpEmail(email: string, password: string) {
     try {
-        const credential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-        )
+        await createUserWithEmailAndPassword(auth, email, password)
     } catch (error) {
         return getErrorMessage(error)
     }
@@ -83,11 +64,7 @@ export async function signUpEmail(email: string, password: string) {
 
 export async function signInEmail(email: string, password: string) {
     try {
-        const credential = await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        )
+        await signInWithEmailAndPassword(auth, email, password)
     } catch (error: any) {
         return getErrorMessage(error)
     }
@@ -105,4 +82,23 @@ function getErrorMessage(error: any) {
     // Handle Errors here.
 
     return `${error}`
+}
+
+export async function addUserToDB(currentUser: User) {
+    // Check if user exists in db
+    const usersRef = collection(db, 'users')
+    const docRef = doc(usersRef, currentUser.uid)
+    const docSnap = await getDoc(docRef)
+
+    if (!docSnap.exists()) {
+        // Create new user in db
+        const newUser: UserApp = {
+            displayName: 'ChangeYourDisplayNname123',
+            points: 0,
+            createdAt: Timestamp.fromDate(new Date()),
+            profileCreated: false
+        }
+
+        await setDoc(doc(usersRef, currentUser.uid), newUser)
+    }
 }

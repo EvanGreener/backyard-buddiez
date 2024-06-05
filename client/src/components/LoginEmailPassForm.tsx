@@ -1,13 +1,42 @@
+'use client'
+
+import { signInEmail } from '@/lib/auth'
+import { useState } from 'react'
+import { useFormStatus } from 'react-dom'
+import Button from './Button'
 import InputText from './InputText'
-import LoginButton from './LoginButton'
 
 export default function LoginEmailPassForm() {
-    return (
-        <div className="flex flex-col items-center space-y-6 pb-6  w-full">
-            <InputText type="email" placeholder="Email" />
-            <InputText type="password" placeholder="password" />
+    const { pending } = useFormStatus()
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-            <LoginButton href={'/home'} />
-        </div>
+    const submit = (formData: FormData) => {
+        const email = formData.get('email')?.toString()
+        const password = formData.get('password')?.toString()
+
+        if (email && password) {
+            signInEmail(email, password)
+        } else {
+            setErrorMessage('Email and password required')
+        }
+    }
+
+    return (
+        <form
+            action={submit}
+            className="flex flex-col items-center space-y-6 pb-6  w-full"
+        >
+            <InputText name="email" type="email" placeholder="Email" required />
+            <InputText
+                name="password"
+                type="password"
+                placeholder="password"
+                required
+            />
+            <Button type="submit" disabled={pending}>
+                Login
+            </Button>
+            {errorMessage && <p> {errorMessage} </p>}
+        </form>
     )
 }
