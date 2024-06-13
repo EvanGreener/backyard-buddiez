@@ -1,4 +1,4 @@
-import { firebaseApp } from '@/config/firebase-config'
+import { firebaseApp } from '@/config/config'
 import { BBUser } from '@/types/db-types'
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth'
 import React, { Dispatch, ReactNode, SetStateAction } from 'react'

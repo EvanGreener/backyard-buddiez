@@ -1,6 +1,6 @@
 'use client'
 
-import { firebaseApp } from '@/config/firebase-config'
+import { firebaseApp } from '@/config/config'
 import { AuthContext } from '@/contexts/AuthContext'
 import { addUserIfNotExists, getUserData } from '@/lib/firestore-services'
 import {
@@ -50,9 +50,12 @@ export default function AuthContextProvider({
                     pathname == ROOT_LOGIN
                 ) {
                     router.push(HOME_ROUTE)
-                } else if (!currentUserData?.profileCreated) {
+                } else if (currentUserData && !currentUserData.profileCreated) {
                     router.push(CREATE_PROFILE_ROUTE)
-                } else if (pathname == CREATE_PROFILE_ROUTE) {
+                } else if (
+                    currentUserData &&
+                    pathname == CREATE_PROFILE_ROUTE
+                ) {
                     router.push(HOME_ROUTE)
                 }
             } else {

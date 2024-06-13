@@ -1,4 +1,4 @@
-import { firebaseApp } from '@/config/firebase-config'
+import { firebaseApp } from '@/config/config'
 import {
     getRedirectResult,
     GoogleAuthProvider,
