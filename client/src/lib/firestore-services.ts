@@ -2,7 +2,14 @@ import { db } from './auth'
 
 import { BBUser } from '@/types/db-types'
 import { User } from 'firebase/auth'
-import { collection, doc, getDoc, Timestamp, setDoc } from 'firebase/firestore'
+import {
+    collection,
+    doc,
+    getDoc,
+    Timestamp,
+    setDoc,
+    updateDoc,
+} from 'firebase/firestore'
 
 export async function addUserIfNotExists(currentUser: User) {
     // Check if user exists in db
@@ -39,4 +46,21 @@ export async function getUserData(currentUser: User) {
         return userDataBB
     }
     return null
+}
+
+export async function createProfile(
+    currentUser: User | null,
+    displayName: string
+) {
+    if (!currentUser) {
+        return
+    }
+
+    const usersRef = collection(db, 'users')
+    const docRef = doc(usersRef, currentUser.uid)
+
+    await updateDoc(docRef, {
+        displayName: displayName,
+        profileCreated: true,
+    })
 }

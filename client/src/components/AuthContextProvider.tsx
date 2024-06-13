@@ -51,6 +51,8 @@ export default function AuthContextProvider({
                     router.push(HOME_ROUTE)
                 } else if (!currentUserData?.profileCreated) {
                     router.push(CREATE_PROFILE_ROUTE)
+                } else if (pathname == CREATE_PROFILE_ROUTE) {
+                    router.push(HOME_ROUTE)
                 }
             } else {
                 setCurrentUserFB(null)
@@ -63,7 +65,7 @@ export default function AuthContextProvider({
         })
 
         return () => unsubscribeAuth()
-    }, [auth, pathname])
+    }, [auth, pathname, currentUserData])
 
     return (
         <AuthContext.Provider value={currentUserFB}>
