@@ -14,9 +14,7 @@ export default function LoginSignInLayout({
     return (
         <html lang="en">
             <body>
-                <main>
-                    <AuthContextProvider>{children}</AuthContextProvider>
-                </main>
+                <AuthContextProvider>{children}</AuthContextProvider>
             </body>
         </html>
     )

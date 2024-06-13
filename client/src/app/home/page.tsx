@@ -1,17 +1,17 @@
 'use client'
 
 import { AuthContext } from '@/contexts/AuthContext'
-import { googleRedirectResult } from '@/lib/auth'
 import { HOME_ROUTE } from '@/lib/routes'
 import { useRouter } from 'next/navigation'
 import { useContext, useEffect } from 'react'
 
 export default function Home() {
+    const { currentUserData, setCurrentUserData } = useContext(AuthContext)
     return (
-        <div>
-            <div>Random message of the day</div>
-            <div>Dashbaord</div>
-            <div>Tabs</div>
+        <div className="grow">
+            <div>Welcome back {currentUserData?.displayName}! </div>
+            <div>Points {currentUserData?.points}</div>
+            <div>Challenge checklist</div>
         </div>
     )
 }
