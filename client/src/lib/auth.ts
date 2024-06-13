@@ -1,7 +1,5 @@
-import { initializeApp } from 'firebase/app'
-import { firebaseApp, firebaseConfig } from '@/config/firebase-config'
+import { firebaseApp } from '@/config/firebase-config'
 import {
-    signInWithRedirect,
     getRedirectResult,
     GoogleAuthProvider,
     getAuth,
@@ -9,26 +7,13 @@ import {
     signInWithEmailAndPassword,
     signOut,
     signInWithPopup,
-    User,
 } from 'firebase/auth'
-import next from 'next'
-import {
-    Timestamp,
-    collection,
-    doc,
-    getDoc,
-    getFirestore,
-    setDoc,
-} from 'firebase/firestore'
-import { redirect } from 'next/navigation'
-import { UserApp } from '@/types/db-types'
+import { getFirestore } from 'firebase/firestore'
 import { HOME_ROUTE } from './routes'
-import { Dispatch, SetStateAction } from 'react'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import { NextRequest } from 'next/server'
 
 const auth = getAuth(firebaseApp)
-const db = getFirestore(firebaseApp)
+export const db = getFirestore(firebaseApp)
 
 export function signInGoogle() {
     const provider = new GoogleAuthProvider()
@@ -82,23 +67,4 @@ function getErrorMessage(error: any) {
     // Handle Errors here.
 
     return `${error}`
-}
-
-export async function addUserToDB(currentUser: User) {
-    // Check if user exists in db
-    const usersRef = collection(db, 'users')
-    const docRef = doc(usersRef, currentUser.uid)
-    const docSnap = await getDoc(docRef)
-
-    if (!docSnap.exists()) {
-        // Create new user in db
-        const newUser: UserApp = {
-            displayName: 'ChangeYourDisplayNname123',
-            points: 0,
-            createdAt: Timestamp.fromDate(new Date()),
-            profileCreated: false
-        }
-
-        await setDoc(doc(usersRef, currentUser.uid), newUser)
-    }
 }

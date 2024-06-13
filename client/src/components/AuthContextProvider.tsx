@@ -2,14 +2,17 @@
 
 import { firebaseApp } from '@/config/firebase-config'
 import { AuthContext } from '@/contexts/AuthContext'
-import { addUserToDB } from '@/lib/auth'
+import { addUserIfNotExists, getUserData } from '@/lib/firestore-services'
 import {
     HOME_ROUTE,
     LOGIN_EMAIL_ROUTE,
+    CREATE_PROFILE_ROUTE,
     ROOT_LOGIN,
     SIGN_UP_EMAIL_ROUTE,
 } from '@/lib/routes'
+import { BBUser } from '@/types/db-types'
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth'
+import { collection, doc, getDoc } from 'firebase/firestore'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 
@@ -19,7 +22,8 @@ export default function AuthContextProvider({
     children: ReactNode
 }) {
     const auth = getAuth(firebaseApp)
-    const [currentUser, setCurrentUser] = useState<User | null>(null)
+    const [currentUserFB, setCurrentUserFB] = useState<User | null>(null)
+    const [currentUserData, setCurrentUserData] = useState<BBUser | null>(null)
     const pathname = usePathname()
     const router = useRouter()
 
@@ -27,10 +31,16 @@ export default function AuthContextProvider({
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log('Signed in')
-
-                setCurrentUser(user)
-
-                addUserToDB(user)
+                // User related stuff
+                addUserIfNotExists(user)
+                setCurrentUserFB(user)
+                if (!currentUserData) {
+                    getUserData(user).then((userData) => {
+                        if (userData) {
+                            setCurrentUserData(userData)
+                        }
+                    })
+                }
 
                 // Middleware logic
                 if (
@@ -39,10 +49,12 @@ export default function AuthContextProvider({
                     pathname == ROOT_LOGIN
                 ) {
                     router.push(HOME_ROUTE)
+                } else if (!currentUserData?.profileCreated) {
+                    router.push(CREATE_PROFILE_ROUTE)
                 }
             } else {
-                setCurrentUser(null)
-
+                setCurrentUserFB(null)
+                setCurrentUserData(null)
                 // Middleware logic
                 if (pathname == HOME_ROUTE) {
                     router.push(ROOT_LOGIN)
@@ -54,7 +66,7 @@ export default function AuthContextProvider({
     }, [auth, pathname])
 
     return (
-        <AuthContext.Provider value={currentUser}>
+        <AuthContext.Provider value={currentUserFB}>
             {children}
         </AuthContext.Provider>
     )

@@ -24,7 +24,7 @@ export default function LoginEmailPassForm() {
     return (
         <form
             action={submit}
-            className="flex flex-col items-center space-y-6 pb-6  w-full"
+            className="flex flex-col items-center space-y-6 pb-6 w-full"
         >
             <InputText name="email" type="email" placeholder="Email" required />
             <InputText

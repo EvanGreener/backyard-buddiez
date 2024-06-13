@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore'
 
-export interface UserApp {
+export interface BBUser {
     displayName: string
     points: number
     createdAt: Timestamp

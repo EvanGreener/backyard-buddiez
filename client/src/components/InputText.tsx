@@ -1,14 +1,16 @@
 interface TextBoxType {
-    type: string
+    type?: string
     placeholder: string
-    required: boolean
+    required?: boolean
     name: string
+    id?: string
 }
 export default function InputText({
     type,
     placeholder,
     required,
     name,
+    id,
 }: TextBoxType) {
     return (
         <input
@@ -17,6 +19,7 @@ export default function InputText({
             type={type}
             placeholder={placeholder}
             required={required}
+            id={id}
         />
     )
 }
