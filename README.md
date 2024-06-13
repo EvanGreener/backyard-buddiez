@@ -16,7 +16,6 @@ A bird IDing app/game for everyone!
 
 ## Pages
 
--   Landing page
 -   Login
 -   Dashboard
     -   Show points/coins

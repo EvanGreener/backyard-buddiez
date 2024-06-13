@@ -6,21 +6,24 @@ import InputLabel from '@/components/InputLabel'
 import InputText from '@/components/InputText'
 import { AuthContext } from '@/contexts/AuthContext'
 import { createProfile } from '@/lib/firestore-services'
-import { HOME_ROUTE } from '@/lib/routes'
-import { useRouter } from 'next/navigation'
 import { useContext, useState } from 'react'
+import { useFormStatus } from 'react-dom'
 
 export default function CreateProfilePage() {
-    const currentUser = useContext(AuthContext)
+    const { currentUserAuth, setCurrentUserData } = useContext(AuthContext)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
-    const router = useRouter()
+    const { pending } = useFormStatus()
 
     const submit = (formData: FormData) => {
         const displayName = formData.get('displayName')?.toString()
 
-        if (displayName) {
-            createProfile(currentUser, displayName).then(() => {
-                router.push(HOME_ROUTE)
+        if (displayName && setCurrentUserData) {
+            createProfile(
+                currentUserAuth,
+                displayName,
+                setCurrentUserData
+            ).then(() => {
+                console.log('created profile')
             })
         } else {
             setErrorMessage('Display name required')
@@ -43,7 +46,9 @@ export default function CreateProfilePage() {
                 <input type="file" disabled />
             </div>
 
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={pending}>
+                Submit
+            </Button>
             {errorMessage && <p> {errorMessage} </p>}
         </Form>
     )

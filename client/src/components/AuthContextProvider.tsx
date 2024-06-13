@@ -22,7 +22,7 @@ export default function AuthContextProvider({
     children: ReactNode
 }) {
     const auth = getAuth(firebaseApp)
-    const [currentUserFB, setCurrentUserFB] = useState<User | null>(null)
+    const [currentUserAuth, setCurrentUserAuth] = useState<User | null>(null)
     const [currentUserData, setCurrentUserData] = useState<BBUser | null>(null)
     const pathname = usePathname()
     const router = useRouter()
@@ -33,7 +33,7 @@ export default function AuthContextProvider({
                 console.log('Signed in')
                 // User related stuff
                 addUserIfNotExists(user)
-                setCurrentUserFB(user)
+                setCurrentUserAuth(user)
                 if (!currentUserData) {
                     getUserData(user).then((userData) => {
                         if (userData) {
@@ -41,6 +41,7 @@ export default function AuthContextProvider({
                         }
                     })
                 }
+                console.log(currentUserData)
 
                 // Middleware logic
                 if (
@@ -55,7 +56,7 @@ export default function AuthContextProvider({
                     router.push(HOME_ROUTE)
                 }
             } else {
-                setCurrentUserFB(null)
+                setCurrentUserAuth(null)
                 setCurrentUserData(null)
                 // Middleware logic
                 if (pathname == HOME_ROUTE) {
@@ -68,7 +69,13 @@ export default function AuthContextProvider({
     }, [auth, pathname, currentUserData])
 
     return (
-        <AuthContext.Provider value={currentUserFB}>
+        <AuthContext.Provider
+            value={{
+                currentUserAuth,
+                currentUserData,
+                setCurrentUserData,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     )
