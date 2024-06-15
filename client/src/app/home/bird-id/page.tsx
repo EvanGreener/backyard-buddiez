@@ -62,12 +62,13 @@ export default function BirdID() {
                     onInput={handleOnInput}
                 />
             </div>
-            <div className="grow w-full">
+            <div className="grow ">
                 {!isFetching && searchResults.length > 0 && (
-                    <div className="border-2 border-green-400 h-full flex flex-col space-y-2">
+                    <div className="border-2 border-green-400 h-full flex flex-col space-y-2 overflow-hidden">
                         {searchResults.map((sr) => {
                             return (
                                 <button
+                                    key={sr.id}
                                     className="p-2 flex space-x-2 hover:bg-black/50"
                                     onClick={() => {
                                         setSelectedBird(sr)
@@ -92,7 +93,7 @@ export default function BirdID() {
                 )}
             </div>
             {selectedBird && (
-                <div className="flex space-x-2 w-full">
+                <div className="flex space-x-2 ">
                     <Image
                         src={selectedBird.imgURI}
                         height={90}
