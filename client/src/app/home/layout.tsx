@@ -24,7 +24,7 @@ export default function HomeLayout({
     return (
         <IconContext.Provider value={{ size: '1.5rem' }}>
             <div className="h-full flex flex-col items-center ">
-                <div className="grow py-4">{children}</div>
+                <div className="py-4">{children}</div>
                 <div className="bg-green-400 p-4 w-full flex place-content-around">
                     <Link href={HOME_ROUTE}>
                         <FaHome color={chooseColor(pathname, HOME_ROUTE)} />

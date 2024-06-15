@@ -64,7 +64,7 @@ export default function BirdID() {
             </div>
             <div className="grow ">
                 {!isFetching && searchResults.length > 0 && (
-                    <div className="border-2 border-green-400 h-full flex flex-col space-y-2 overflow-hidden">
+                    <div className="border-2 border-green-400 max-h-auto flex flex-col space-y-2 h-[28rem] overflow-scroll">
                         {searchResults.map((sr) => {
                             return (
                                 <button
@@ -82,6 +82,7 @@ export default function BirdID() {
                                         sizes=""
                                         alt="img-uri"
                                         placeholder="empty"
+                                        style={{ borderRadius: '25%' }}
                                     />
                                     <span className="align-middle">
                                         {sr.name}
