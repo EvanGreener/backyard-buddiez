@@ -90,12 +90,11 @@ export default function BirdID() {
             </div>
             {selectedBird && (
                 <div className="flex space-x-2 ">
-                    <Image
+                    <img
                         src={selectedBird.imgURI}
                         height={90}
                         width={90}
                         alt="img-uri"
-                        placeholder="empty"
                     />
                     <span className="align-middle">{selectedBird.name}</span>
                 </div>
