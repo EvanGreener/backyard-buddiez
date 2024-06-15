@@ -74,9 +74,7 @@ export default function BirdID() {
                                         src={sr.imgURI}
                                         height={90}
                                         width={90}
-                                        sizes=""
                                         alt="img-uri"
-                                        placeholder="empty"
                                         style={{ borderRadius: '25%' }}
                                     />
                                     <span className="align-middle">
@@ -91,11 +89,11 @@ export default function BirdID() {
             {selectedBird && (
                 <div className="flex space-x-2 ">
                     <Image
-                        unoptimized
                         src={selectedBird.imgURI}
                         height={90}
                         width={90}
                         alt="img-uri"
+                        style={{ borderRadius: '25%' }}
                     />
                     <span className="align-middle">{selectedBird.name}</span>
                 </div>
