@@ -37,7 +37,7 @@ export default function BirdID() {
                     return {
                         id: bird.id.value,
                         name: bird.birdName.value,
-                        imgURI: bird.birdImg.value,
+                        imgURI: bird.birdImg.value.replace('http', 'https'),
                     }
                 }
             )
@@ -90,7 +90,8 @@ export default function BirdID() {
             </div>
             {selectedBird && (
                 <div className="flex space-x-2 ">
-                    <img
+                    <Image
+                        unoptimized
                         src={selectedBird.imgURI}
                         height={90}
                         width={90}

@@ -3,7 +3,7 @@ const nextConfig = {
     images: {
         remotePatterns: [
             {
-                protocol: 'http',
+                protocol: 'https',
                 hostname: 'commons.wikimedia.org',
                 port: '',
                 pathname: '/wiki/**',
