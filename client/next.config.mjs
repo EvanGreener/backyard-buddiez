@@ -6,7 +6,6 @@ const nextConfig = {
                 protocol: 'http',
                 hostname: 'commons.wikimedia.org',
                 port: '',
-                pathname: '/wiki/Special:FilePath/**',
             },
         ],
     },
