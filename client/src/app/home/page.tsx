@@ -10,7 +10,11 @@ export default function Home() {
     return (
         <div>
             <div className="text-xl">
-                Welcome back {currentUserData?.displayName}!{' '}
+                Welcome back
+                <span className="text-emerald-400">
+                    {' '}
+                    {currentUserData?.displayName}
+                </span>
             </div>
             <div>Points {currentUserData?.points}</div>
             <div>Challenge checklist</div>

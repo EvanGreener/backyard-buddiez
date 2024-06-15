@@ -1,4 +1,4 @@
-import { ChangeEventHandler } from 'react'
+import { ChangeEventHandler, FormEventHandler } from 'react'
 
 interface TextBoxType {
     type?: string
@@ -6,7 +6,7 @@ interface TextBoxType {
     required?: boolean
     name: string
     id?: string
-    onChange?: ChangeEventHandler<HTMLInputElement>
+    onInput?: FormEventHandler<HTMLInputElement>
 }
 export default function InputText({
     type,
@@ -14,7 +14,7 @@ export default function InputText({
     required,
     name,
     id,
-    onChange,
+    onInput,
 }: TextBoxType) {
     return (
         <input
@@ -24,7 +24,7 @@ export default function InputText({
             placeholder={placeholder}
             required={required}
             id={id}
-            onChange={onChange}
+            onInput={onInput}
         />
     )
 }
