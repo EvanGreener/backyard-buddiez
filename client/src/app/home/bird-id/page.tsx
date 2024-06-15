@@ -6,13 +6,8 @@ import InputLabel from '@/components/InputLabel'
 import InputText from '@/components/InputText'
 import searchBirds from '@/lib/actions'
 import { SearchResult } from '@/types/action-types'
-import Image from 'next/image'
-import {
-    ChangeEventHandler,
-    FormEventHandler,
-    useEffect,
-    useState,
-} from 'react'
+import Image, { ImageLoader, ImageLoaderProps } from 'next/image'
+import { FormEventHandler, useEffect, useState } from 'react'
 
 export default function BirdID() {
     const [birdInput, setBirdInput] = useState<string>('')
@@ -50,6 +45,12 @@ export default function BirdID() {
             setIsFetching(false)
         })
     }, [birdInput])
+    const contentfulImageLoader: ImageLoader = ({
+        src,
+        width,
+    }: ImageLoaderProps) => {
+        return `${src}?w=${width}`
+    }
 
     return (
         <div className="flex flex-col items-center space-y-6 h-full">
@@ -83,6 +84,7 @@ export default function BirdID() {
                                         alt="img-uri"
                                         placeholder="empty"
                                         style={{ borderRadius: '25%' }}
+                                        loader={contentfulImageLoader}
                                     />
                                     <span className="align-middle">
                                         {sr.name}
