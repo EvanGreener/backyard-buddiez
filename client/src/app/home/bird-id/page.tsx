@@ -45,12 +45,6 @@ export default function BirdID() {
             setIsFetching(false)
         })
     }, [birdInput])
-    const contentfulImageLoader: ImageLoader = ({
-        src,
-        width,
-    }: ImageLoaderProps) => {
-        return `${src}?w=${width}`
-    }
 
     return (
         <div className="flex flex-col items-center space-y-6 h-full">
@@ -84,7 +78,6 @@ export default function BirdID() {
                                         alt="img-uri"
                                         placeholder="empty"
                                         style={{ borderRadius: '25%' }}
-                                        loader={contentfulImageLoader}
                                     />
                                     <span className="align-middle">
                                         {sr.name}
