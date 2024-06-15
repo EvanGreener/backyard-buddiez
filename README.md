@@ -27,3 +27,7 @@ A bird IDing app/game for everyone!
     -   Random daily message (like mc or pokerogue)
     -   ? Live chat
     -   ?
+
+# Attributions
+
+-   the icon "ninja" is provided by [loading.io](https://loading.io/icon/)

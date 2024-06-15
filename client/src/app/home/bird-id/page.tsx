@@ -23,7 +23,10 @@ export default function BirdID() {
         clearTimeout(setInputTimeout)
         if (input.length >= 3) {
             console.log(input)
-            setInputTimeout = setTimeout(() => setBirdInput(input.toLowerCase()), 500)
+            setInputTimeout = setTimeout(
+                () => setBirdInput(input.toLowerCase()),
+                500
+            )
         }
     }
     const addBirdToBirdpedia = () => {}
@@ -58,6 +61,14 @@ export default function BirdID() {
                 />
             </div>
             <div className="grow ">
+                {isFetching && (
+                    <Image
+                        src={'/loading.gif'}
+                        height={90}
+                        width={90}
+                        alt="loading ..."
+                    />
+                )}
                 {!isFetching && searchResults.length > 0 && (
                     <div className="border-2 border-green-400 max-h-auto flex flex-col space-y-2 h-[28rem] overflow-y-scroll">
                         {searchResults.map((sr) => {
@@ -76,6 +87,8 @@ export default function BirdID() {
                                         width={90}
                                         alt="img-uri"
                                         style={{ borderRadius: '25%' }}
+                                        placeholder="blur"
+                                        blurDataURL="/loading.gif"
                                     />
                                     <span className="align-middle">
                                         {sr.name}
