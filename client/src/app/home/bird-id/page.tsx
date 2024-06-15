@@ -23,7 +23,7 @@ export default function BirdID() {
         clearTimeout(setInputTimeout)
         if (input.length >= 3) {
             console.log(input)
-            setInputTimeout = setTimeout(() => setBirdInput(input), 500)
+            setInputTimeout = setTimeout(() => setBirdInput(input.toLowerCase()), 500)
         }
     }
     const addBirdToBirdpedia = () => {}
