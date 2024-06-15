@@ -97,6 +97,7 @@ export default function BirdID() {
                         sizes=""
                         alt="img-uri"
                         placeholder="empty"
+                        unoptimized
                     />
                     <span className="align-middle">{selectedBird.name}</span>
                 </div>
