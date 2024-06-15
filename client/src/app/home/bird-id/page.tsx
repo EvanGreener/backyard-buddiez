@@ -92,10 +92,8 @@ export default function BirdID() {
                 <div className="flex space-x-2 ">
                     <Image
                         src={selectedBird.imgURI}
-                        overrideSrc={selectedBird.imgURI}
                         height={90}
                         width={90}
-                        sizes=""
                         alt="img-uri"
                         placeholder="empty"
                     />
