@@ -64,7 +64,7 @@ export default function BirdID() {
             </div>
             <div className="grow ">
                 {!isFetching && searchResults.length > 0 && (
-                    <div className="border-2 border-green-400 max-h-auto flex flex-col space-y-2 h-[28rem] overflow-scroll">
+                    <div className="border-2 border-green-400 max-h-auto flex flex-col space-y-2 h-[28rem] overflow-y-scroll">
                         {searchResults.map((sr) => {
                             return (
                                 <button
