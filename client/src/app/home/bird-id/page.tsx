@@ -11,22 +11,15 @@ import { FormEventHandler, useEffect, useState } from 'react'
 
 export default function BirdID() {
     const [birdInput, setBirdInput] = useState<string>('')
-    const [inputValid, setInputValid] = useState<boolean>(false)
     const [searchResults, setSearchResults] = useState<SearchResult[]>([])
     const [isFetching, setIsFetching] = useState<boolean>(false)
     const [selectedBird, setSelectedBird] = useState<SearchResult>()
 
-    let setInputTimeout = setTimeout(() => setBirdInput(birdInput), 500)
-
     const handleOnInput: FormEventHandler<HTMLInputElement> = (event) => {
         const input = event.currentTarget.value
-        clearTimeout(setInputTimeout)
         if (input.length >= 3) {
             console.log(input)
-            setInputTimeout = setTimeout(
-                () => setBirdInput(input.toLowerCase()),
-                500
-            )
+            setBirdInput(input.toLowerCase())
         }
     }
     const addBirdToBirdpedia = () => {}
@@ -51,11 +44,11 @@ export default function BirdID() {
 
     return (
         <div className="flex flex-col items-center space-y-6 h-full">
-            <div className="space-x-2">
-                <InputLabel inputId="bird" text="Bird to id: " />
+            <div className="">
+                <InputLabel inputId="bird" text="Search bird: " />
                 <InputText
                     id="bird"
-                    placeholder={'ex: bluejay'}
+                    placeholder={'ex: blue jay'}
                     name={'bird'}
                     onInput={handleOnInput}
                 />
@@ -67,10 +60,11 @@ export default function BirdID() {
                         height={90}
                         width={90}
                         alt="loading ..."
+                        quality={50}
                     />
                 )}
                 {!isFetching && searchResults.length > 0 && (
-                    <div className="border-2 border-green-400 max-h-auto flex flex-col space-y-2 h-[28rem] overflow-y-scroll">
+                    <div className="border-2 border-green-400  flex flex-col space-y-2 h-[28rem] overflow-y-scroll">
                         {searchResults.map((sr) => {
                             return (
                                 <button
@@ -89,6 +83,8 @@ export default function BirdID() {
                                         style={{ borderRadius: '25%' }}
                                         placeholder="blur"
                                         blurDataURL="/loading.gif"
+                                        quality={50}
+                                        priority
                                     />
                                     <span className="align-middle">
                                         {sr.name}
