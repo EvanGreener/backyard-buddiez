@@ -6,22 +6,30 @@ import { useState } from 'react'
 import Form from '@/components/Form'
 import Button from '@/components/Button'
 import InputText from '@/components/InputText'
-import SignUpEmailPassForm from '@/components/SignUpEmailPassForm'
+import { useRouter } from 'next/navigation'
+import { CREATE_PROFILE_ROUTE } from '@/lib/routes'
 
 export default function SignUpEmail() {
     const { pending } = useFormStatus()
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
-
+    const router = useRouter()
     const submit = (formData: FormData) => {
         const email = formData.get('email')?.toString()
         const password = formData.get('password')?.toString()
         const password2 = formData.get('password2')?.toString()
 
         if (email && password) {
-            if (password == password2) {
-                signUpEmail(email, password)
-            } else {
+            if (password != password2) {
                 setErrorMessage("Passwords don't match")
+                return
+            }
+
+            if (password.length >= 6) {
+                signUpEmail(email, password).then(() => {
+                    router.push(CREATE_PROFILE_ROUTE)
+                })
+            } else {
+                setErrorMessage('Password is too short')
             }
         } else {
             setErrorMessage('Email and password required')

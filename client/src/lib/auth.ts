@@ -15,25 +15,12 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 const auth = getAuth(firebaseApp)
 export const db = getFirestore(firebaseApp)
 
-export function signInGoogle() {
+export async function signInGoogle() {
     const provider = new GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/datastore')
     provider.addScope('https://www.googleapis.com/auth/cloud-platform')
     try {
-        signInWithPopup(auth, provider)
-    } catch (error: any) {
-        console.log(getErrorMessage(error))
-    }
-}
-
-export async function googleRedirectResult(router: AppRouterInstance) {
-    try {
-        const result = await getRedirectResult(auth)
-        if (result) {
-            const currentUser = result.user
-
-            router.push(HOME_ROUTE)
-        }
+        await signInWithPopup(auth, provider)
     } catch (error: any) {
         console.log(getErrorMessage(error))
     }

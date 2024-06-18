@@ -31,25 +31,30 @@ export default function CreateProfilePage() {
     }
 
     return (
-        <Form action={submit}>
-            <div className="space-x-2">
-                <InputLabel inputId={'displayName'} text={'Display name:'} />
-                <InputText
-                    id="displayName"
-                    placeholder={"ex: 'CombativeGuppy42'"}
-                    name={'displayName'}
-                    required
-                />
-            </div>
-            <div className="flex flex-col items-center space-y-2">
+        <div className="p-4">
+            <Form action={submit}>
+                <div className="space-x-2">
+                    <InputLabel
+                        inputId={'displayName'}
+                        text={'Display name:'}
+                    />
+                    <InputText
+                        id="displayName"
+                        placeholder={"ex: 'CombativeGuppy42'"}
+                        name={'displayName'}
+                        required
+                    />
+                </div>
+                {/* <div className="flex flex-col items-center space-y-2">
                 <p className="">Profile pic {'(WIP)'} </p>
                 <input type="file" disabled />
-            </div>
+            </div> */}
 
-            <Button type="submit" disabled={pending}>
-                Submit
-            </Button>
-            {errorMessage && <p> {errorMessage} </p>}
-        </Form>
+                <Button type="submit" disabled={pending}>
+                    Submit
+                </Button>
+                {errorMessage && <p> {errorMessage} </p>}
+            </Form>
+        </div>
     )
 }

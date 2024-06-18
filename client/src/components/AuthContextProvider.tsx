@@ -28,11 +28,23 @@ export default function AuthContextProvider({
     const router = useRouter()
 
     useEffect(() => {
+        console.log('AuthContextProvider useffect')
+
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+            console.log('onAuthStateChanged')
+
             if (user) {
                 console.log('Signed in')
                 // User related stuff
-                addUserIfNotExists(user)
+                addUserIfNotExists(user, router, setCurrentUserData).then(
+                    (addedUser) => {
+                        if (addedUser) {
+                            console.log('reloading window')
+                            window.location.reload()
+                        }
+                    }
+                )
+
                 setCurrentUserAuth(user)
                 if (!currentUserData) {
                     getUserData(user).then((userData) => {
@@ -41,28 +53,25 @@ export default function AuthContextProvider({
                         }
                     })
                 }
-                console.log(currentUserData)
 
                 // Middleware logic
                 if (
-                    pathname == LOGIN_EMAIL_ROUTE ||
-                    pathname == SIGN_UP_EMAIL_ROUTE ||
-                    pathname == ROOT_LOGIN
+                    (pathname == LOGIN_EMAIL_ROUTE ||
+                        pathname == SIGN_UP_EMAIL_ROUTE ||
+                        pathname == ROOT_LOGIN) &&
+                    !currentUserData?.profileCreated
                 ) {
                     router.push(HOME_ROUTE)
-                } else if (currentUserData && !currentUserData.profileCreated) {
+                } else if (!currentUserData?.profileCreated) {
                     router.push(CREATE_PROFILE_ROUTE)
-                } else if (
-                    currentUserData &&
-                    pathname == CREATE_PROFILE_ROUTE
-                ) {
+                } else if (pathname == CREATE_PROFILE_ROUTE) {
                     router.push(HOME_ROUTE)
                 }
             } else {
                 setCurrentUserAuth(null)
                 setCurrentUserData(null)
                 // Middleware logic
-                if (pathname == HOME_ROUTE) {
+                if (pathname.includes(HOME_ROUTE)) {
                     router.push(ROOT_LOGIN)
                 }
             }

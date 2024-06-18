@@ -1,7 +1,6 @@
 import { Timestamp } from 'firebase/firestore'
 
 export interface BirdpediaEntry {
-    userId: string
     speciesId: string
     timesSeen: number
     lastSeen: Timestamp
@@ -12,4 +11,5 @@ export interface BBUser {
     points: number
     createdAt: Timestamp
     profileCreated: boolean
+    birdpediaId: string
 }
