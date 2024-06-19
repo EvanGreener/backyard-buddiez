@@ -2,8 +2,7 @@ import { Timestamp } from 'firebase/firestore'
 
 export interface BirdpediaEntry {
     speciesId: string
-    timesSeen: number
-    lastSeen: Timestamp
+    timeSeen: Timestamp
 }
 
 export interface BBUser {

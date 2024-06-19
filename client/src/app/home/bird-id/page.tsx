@@ -4,16 +4,20 @@ import Button from '@/components/Button'
 import Form from '@/components/Form'
 import InputLabel from '@/components/InputLabel'
 import InputText from '@/components/InputText'
+import { AuthContext } from '@/contexts/AuthContext'
 import searchBirds from '@/lib/actions'
+import { addSighting } from '@/lib/firestore-services'
 import { SearchResult } from '@/types/action-types'
 import Image, { ImageLoader, ImageLoaderProps } from 'next/image'
-import { FormEventHandler, useEffect, useState } from 'react'
+import { FormEventHandler, useContext, useEffect, useState } from 'react'
 
 export default function BirdID() {
     const [birdInput, setBirdInput] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchResult[]>([])
     const [isFetching, setIsFetching] = useState<boolean>(false)
     const [selectedBird, setSelectedBird] = useState<SearchResult>()
+
+    const { currentUserData } = useContext(AuthContext)
 
     const handleOnInput: FormEventHandler<HTMLInputElement> = (event) => {
         const input = event.currentTarget.value
@@ -22,7 +26,13 @@ export default function BirdID() {
             setBirdInput(input.toLowerCase())
         }
     }
-    const addBirdToBirdpedia = () => {}
+    const addBirdToBirdpedia = () => {
+        if (selectedBird) {
+            addSighting(selectedBird, currentUserData).then(() => {
+                setSelectedBird(undefined)
+            })
+        }
+    }
 
     useEffect(() => {
         console.log('useeffect')

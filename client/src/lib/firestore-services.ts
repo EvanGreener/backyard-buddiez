@@ -1,7 +1,7 @@
 import { SearchResult } from '@/types/action-types'
 import { db } from './auth'
 
-import { BBUser } from '@/types/db-types'
+import { BBUser, BirdpediaEntry } from '@/types/db-types'
 import { User } from 'firebase/auth'
 import {
     collection,
@@ -11,6 +11,7 @@ import {
     setDoc,
     updateDoc,
     addDoc,
+    arrayUnion,
 } from 'firebase/firestore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { Dispatch, SetStateAction } from 'react'
@@ -106,7 +107,21 @@ export async function createProfile(
     setCurrentUserData(userData)
 }
 
-export async function addSighting(selectedBird: SearchResult) {
-    if (selectedBird) {
+export async function addSighting(
+    selectedBird: SearchResult,
+    currentUserData: BBUser | null
+) {
+    if (!currentUserData) {
+        return
     }
+
+    const birdpediasRef = doc(db, 'birdpedias', currentUserData.birdpediaId)
+
+    const newEntry: BirdpediaEntry = {
+        speciesId: selectedBird.id,
+        timeSeen: Timestamp.fromDate(new Date()),
+    }
+    await updateDoc(birdpediasRef, {
+        entries: arrayUnion(newEntry),
+    })
 }

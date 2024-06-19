@@ -8,8 +8,9 @@ import { useRouter } from 'next/navigation'
 export default function Settings() {
     const router = useRouter()
     return (
-        <div className="flex flex-col items-center spacing-y-2">
+        <div className="h-full flex flex-col items-center space-y-2">
             <p className="text-xl">Settings</p>
+            {/* <div className="grow"></div> */}
             <Button
                 type={'button'}
                 onClickHandler={() => {
