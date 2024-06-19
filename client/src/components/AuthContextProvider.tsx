@@ -12,9 +12,9 @@ import {
 } from '@/lib/routes'
 import { BBUser } from '@/types/db-types'
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth'
-import { collection, doc, getDoc } from 'firebase/firestore'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
+import LoadingGIF from './Loading'
 
 export default function AuthContextProvider({
     children,
@@ -24,11 +24,13 @@ export default function AuthContextProvider({
     const auth = getAuth(firebaseApp)
     const [currentUserAuth, setCurrentUserAuth] = useState<User | null>(null)
     const [currentUserData, setCurrentUserData] = useState<BBUser | null>(null)
+    const [fetchingUser, setFetchingUser] = useState<boolean>(true)
     const pathname = usePathname()
     const router = useRouter()
 
     useEffect(() => {
         console.log('AuthContextProvider useffect')
+        setFetchingUser(true)
 
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
             console.log('onAuthStateChanged')
@@ -77,6 +79,7 @@ export default function AuthContextProvider({
             }
         })
 
+        setFetchingUser(false)
         return () => unsubscribeAuth()
     }, [auth, pathname, currentUserData])
 
@@ -88,7 +91,8 @@ export default function AuthContextProvider({
                 setCurrentUserData,
             }}
         >
-            {children}
+            {fetchingUser && <LoadingGIF />}
+            {!fetchingUser && children}
         </AuthContext.Provider>
     )
 }

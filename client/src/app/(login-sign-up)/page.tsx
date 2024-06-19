@@ -7,6 +7,7 @@ import { signInGoogle } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
 import {
     CREATE_PROFILE_ROUTE,
+    HOME_ROUTE,
     LOGIN_EMAIL_ROUTE,
     SIGN_UP_EMAIL_ROUTE,
 } from '@/lib/routes'
@@ -50,7 +51,7 @@ export default function RootLogin() {
                 onClickHandler={(event) => {
                     event.preventDefault()
                     signInGoogle().then(() => {
-                        router.push(CREATE_PROFILE_ROUTE)
+                        router.push(HOME_ROUTE)
                     })
                 }}
             >

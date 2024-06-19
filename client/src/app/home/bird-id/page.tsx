@@ -22,9 +22,7 @@ export default function BirdID() {
             setBirdInput(input.toLowerCase())
         }
     }
-    const addBirdToBirdpedia = () => {
-        
-    }
+    const addBirdToBirdpedia = () => {}
 
     useEffect(() => {
         console.log('useeffect')

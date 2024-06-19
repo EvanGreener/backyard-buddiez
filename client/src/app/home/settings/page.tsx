@@ -1,6 +1,6 @@
 'use client'
 
-import Button from '@/components/Button'
+import Button, { ButtonClass } from '@/components/Button'
 import { logout } from '@/lib/auth'
 import { ROOT_LOGIN } from '@/lib/routes'
 import { useRouter } from 'next/navigation'
@@ -17,9 +17,10 @@ export default function Settings() {
                         router.push(ROOT_LOGIN)
                     })
                 }}
+                buttonClass={ButtonClass.CAUTION}
             >
                 Sign out
-            </Button>{' '}
+            </Button>
         </div>
     )
 }
