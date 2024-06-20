@@ -40,10 +40,14 @@ export default function Birdpedia() {
                     setBirdInfos(birdInfos)
 
                     setentriesShown(
-                        birdInfos.slice(
-                            page * birdsPerPage,
-                            page * birdsPerPage + birdsPerPage
-                        )
+                        birdInfos
+                            .slice(
+                                page * birdsPerPage,
+                                page * birdsPerPage + birdsPerPage
+                            )
+                            .sort((a, b) => {
+                                return a.name.localeCompare(b.name)
+                            })
                     )
                 })
             }
@@ -81,15 +85,14 @@ export default function Birdpedia() {
                             {entriesShown ? (
                                 entriesShown.map((entry) => {
                                     return (
-                                        <div>
-                                            <Image
-                                                src={entry.imgURI}
-                                                width={64}
-                                                height={64}
-                                                alt={'Image URI unavailible'}
-                                                style={{ borderRadius: '25%' }}
-                                            />
-                                        </div>
+                                        <Image
+                                            src={entry.imgURI}
+                                            width={64}
+                                            height={64}
+                                            alt={'Image URI unavailible'}
+                                            style={{ borderRadius: '25%' }}
+                                            key={entry.id}
+                                        />
                                     )
                                 })
                             ) : (
