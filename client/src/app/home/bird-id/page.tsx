@@ -1,20 +1,20 @@
 'use client'
 
 import Button from '@/components/Button'
-import Form from '@/components/Form'
 import InputLabel from '@/components/InputLabel'
 import InputText from '@/components/InputText'
 import { AuthContext } from '@/contexts/AuthContext'
 import searchBirds from '@/lib/actions'
 import { addSighting } from '@/lib/firestore-services'
 import { SearchResult } from '@/types/action-types'
-import Image, { ImageLoader, ImageLoaderProps } from 'next/image'
+import Image from 'next/image'
 import { FormEventHandler, useContext, useEffect, useState } from 'react'
 
 export default function BirdID() {
     const [birdInput, setBirdInput] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchResult[]>([])
-    const [isFetching, setIsFetching] = useState<boolean>(false)
+    const [isFetchingBirdData, setIsFetchingData] = useState<boolean>(false)
+    const [isAddingBird, setIsAddingBird] = useState<boolean>(false)
     const [selectedBird, setSelectedBird] = useState<SearchResult>()
 
     const { currentUserData } = useContext(AuthContext)
@@ -28,15 +28,17 @@ export default function BirdID() {
     }
     const addBirdToBirdpedia = () => {
         if (selectedBird) {
+            setIsAddingBird(true)
             addSighting(selectedBird, currentUserData).then(() => {
                 setSelectedBird(undefined)
+                setIsAddingBird(false)
             })
         }
     }
 
     useEffect(() => {
         console.log('useeffect')
-        setIsFetching(true)
+        setIsFetchingData(true)
         searchBirds(birdInput).then((resultsJson) => {
             const birds: SearchResult[] = resultsJson.results.bindings.map(
                 (bird: any): SearchResult => {
@@ -48,7 +50,7 @@ export default function BirdID() {
                 }
             )
             setSearchResults(birds)
-            setIsFetching(false)
+            setIsFetchingData(false)
         })
     }, [birdInput])
 
@@ -64,16 +66,17 @@ export default function BirdID() {
                 />
             </div>
             <div className="grow ">
-                {isFetching && (
+                {isFetchingBirdData && (
                     <Image
                         src={'/loading.gif'}
                         height={90}
                         width={90}
                         alt="loading ..."
                         quality={50}
+                        unoptimized
                     />
                 )}
-                {!isFetching && searchResults.length > 0 && (
+                {!isFetchingBirdData && searchResults.length > 0 && (
                     <div className="border-2 border-green-400  flex flex-col space-y-2 h-[28rem] overflow-y-scroll">
                         {searchResults.map((sr) => {
                             return (
@@ -112,18 +115,32 @@ export default function BirdID() {
                         height={90}
                         width={90}
                         alt="img-uri"
+                        placeholder="blur"
+                        blurDataURL="/loading.gif"
                         style={{ borderRadius: '25%' }}
                     />
                     <span className="align-middle">{selectedBird.name}</span>
                 </div>
             )}
-            <Button
-                type="button"
-                onClickHandler={addBirdToBirdpedia}
-                disabled={!selectedBird}
-            >
-                Add bird to Birdpedia
-            </Button>
+            {selectedBird && (
+                <Button
+                    type="button"
+                    onClickHandler={addBirdToBirdpedia}
+                    disabled={!selectedBird}
+                >
+                    {isAddingBird && (
+                        <Image
+                            src={'/loading.gif'}
+                            height={48}
+                            width={48}
+                            alt="loading ..."
+                            quality={50}
+                            unoptimized
+                        />
+                    )}
+                    {!isAddingBird && <span> Add bird to Birdpedia</span>}
+                </Button>
+            )}
         </div>
     )
 }

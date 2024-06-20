@@ -2,7 +2,11 @@
 
 import { firebaseApp } from '@/config/config'
 import { AuthContext } from '@/contexts/AuthContext'
-import { addUserIfNotExists, getUserData } from '@/lib/firestore-services'
+import {
+    addUserIfNotExists,
+    getUserData,
+    updateUsers as updateUser,
+} from '@/lib/firestore-services'
 import {
     HOME_ROUTE,
     LOGIN_EMAIL_ROUTE,
@@ -38,14 +42,8 @@ export default function AuthContextProvider({
             if (user) {
                 console.log('Signed in')
                 // User related stuff
-                addUserIfNotExists(user, router, setCurrentUserData).then(
-                    (addedUser) => {
-                        if (addedUser) {
-                            console.log('reloading window')
-                            window.location.reload()
-                        }
-                    }
-                )
+                addUserIfNotExists(user)
+                updateUser(user, router)
 
                 setCurrentUserAuth(user)
                 if (!currentUserData) {
@@ -55,19 +53,20 @@ export default function AuthContextProvider({
                         }
                     })
                 }
-
-                // Middleware logic
-                if (
-                    (pathname == LOGIN_EMAIL_ROUTE ||
-                        pathname == SIGN_UP_EMAIL_ROUTE ||
-                        pathname == ROOT_LOGIN) &&
-                    !currentUserData?.profileCreated
-                ) {
-                    router.push(HOME_ROUTE)
-                } else if (!currentUserData?.profileCreated) {
-                    router.push(CREATE_PROFILE_ROUTE)
-                } else if (pathname == CREATE_PROFILE_ROUTE) {
-                    router.push(HOME_ROUTE)
+                if (currentUserData) {
+                    // Middleware logic
+                    if (
+                        (pathname == LOGIN_EMAIL_ROUTE ||
+                            pathname == SIGN_UP_EMAIL_ROUTE ||
+                            pathname == ROOT_LOGIN) &&
+                        currentUserData.profileCreated
+                    ) {
+                        router.push(HOME_ROUTE)
+                    } else if (!currentUserData.profileCreated) {
+                        router.push(CREATE_PROFILE_ROUTE)
+                    } else if (pathname == CREATE_PROFILE_ROUTE) {
+                        router.push(HOME_ROUTE)
+                    }
                 }
             } else {
                 setCurrentUserAuth(null)

@@ -18,8 +18,6 @@ import { Dispatch, SetStateAction } from 'react'
 
 export async function addUserIfNotExists(
     currentUser: User,
-    router: AppRouterInstance,
-    setCurrentUserData: Dispatch<SetStateAction<BBUser | null>>
 ) {
     // Check if user exists in db
     const usersRef = collection(db, 'users')
@@ -112,9 +110,10 @@ export async function addSighting(
     currentUserData: BBUser | null
 ) {
     if (!currentUserData) {
+        console.log('User not signed ins')
         return
     }
-
+    console.log(currentUserData.birdpediaId)
     const birdpediasRef = doc(db, 'birdpedias', currentUserData.birdpediaId)
 
     const newEntry: BirdpediaEntry = {
