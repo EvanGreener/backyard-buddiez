@@ -81,18 +81,28 @@ export default function Birdpedia() {
                         />
                     </Button>
                     <div className="grow">
-                        <div className="overflow-y-scroll h-[28rem] border-2 border-green-400 grid grid-cols-3 gap-12 p-4 my-4">
+                        <div className="overflow-y-scroll h-[28rem] border-2 border-green-400 grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4">
                             {entriesShown ? (
                                 entriesShown.map((entry) => {
+                                    const { name, imgURI } = entry
                                     return (
-                                        <Image
-                                            src={entry.imgURI}
-                                            width={64}
-                                            height={64}
-                                            alt={'Image URI unavailible'}
-                                            style={{ borderRadius: '25%' }}
-                                            key={entry.id}
-                                        />
+                                        <div>
+                                            <Image
+                                                src={imgURI}
+                                                width={64}
+                                                height={64}
+                                                placeholder="blur"
+                                                blurDataURL="/loading.gif"
+                                                alt={'Image URI unavailible'}
+                                                style={{ borderRadius: '25%' }}
+                                                key={entry.id}
+                                            />
+                                            <p className="text-xs">
+                                                {name.length < 10
+                                                    ? name
+                                                    : name.slice(0, 10) + '...'}
+                                            </p>
+                                        </div>
                                     )
                                 })
                             ) : (

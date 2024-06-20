@@ -51,7 +51,7 @@ export default function BirdID() {
                 setTimeout(() => setaddedBirdSuccess(false), 5000)
             })
         }
-    }, [birdInput])
+    }, [birdInput, isAddingBird])
 
     return (
         <div className="flex flex-col items-center space-y-6 h-full">
