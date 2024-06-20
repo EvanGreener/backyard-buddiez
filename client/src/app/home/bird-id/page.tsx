@@ -15,6 +15,7 @@ export default function BirdID() {
     const [searchResults, setSearchResults] = useState<SearchResult[]>([])
     const [isFetchingBirdData, setIsFetchingData] = useState<boolean>(false)
     const [isAddingBird, setIsAddingBird] = useState<boolean>(false)
+    const [addedBirdSuccess, setaddedBirdSuccess] = useState<boolean>(false)
     const [selectedBird, setSelectedBird] = useState<SearchResult>()
 
     const { currentUserData } = useContext(AuthContext)
@@ -32,26 +33,30 @@ export default function BirdID() {
             addSighting(selectedBird, currentUserData).then(() => {
                 setSelectedBird(undefined)
                 setIsAddingBird(false)
+                setaddedBirdSuccess(true)
+                setTimeout(() => setaddedBirdSuccess(false), 5000)
             })
         }
     }
 
     useEffect(() => {
         console.log('useeffect')
-        setIsFetchingData(true)
-        searchBirds(birdInput).then((resultsJson) => {
-            const birds: SearchResult[] = resultsJson.results.bindings.map(
-                (bird: any): SearchResult => {
-                    return {
-                        id: bird.id.value,
-                        name: bird.birdName.value,
-                        imgURI: bird.birdImg.value.replace('http', 'https'),
+        if (birdInput.length >= 3) {
+            setIsFetchingData(true)
+            searchBirds(birdInput).then((resultsJson) => {
+                const birds: SearchResult[] = resultsJson.results.bindings.map(
+                    (bird: any): SearchResult => {
+                        return {
+                            id: bird.id.value,
+                            name: bird.birdName.value,
+                            imgURI: bird.birdImg.value.replace('http', 'https'),
+                        }
                     }
-                }
-            )
-            setSearchResults(birds)
-            setIsFetchingData(false)
-        })
+                )
+                setSearchResults(birds)
+                setIsFetchingData(false)
+            })
+        }
     }, [birdInput])
 
     return (
@@ -140,6 +145,12 @@ export default function BirdID() {
                     )}
                     {!isAddingBird && <span> Add bird to Birdpedia</span>}
                 </Button>
+            )}
+            {addedBirdSuccess && (
+                <div className="bg-cyan-300 animate-bounce p-4 rounded ">
+                    Succesfully added/logged bird sighting!
+                    <br /> Check your Birdpedia!
+                </div>
             )}
         </div>
     )
