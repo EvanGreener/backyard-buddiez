@@ -12,13 +12,16 @@ import {
     updateDoc,
     addDoc,
     arrayUnion,
+    DocumentReference,
+    limit,
+    orderBy,
+    query,
+    where,
 } from 'firebase/firestore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { Dispatch, SetStateAction } from 'react'
 
-export async function addUserIfNotExists(
-    currentUser: User,
-) {
+export async function addUserIfNotExists(currentUser: User) {
     // Check if user exists in db
     const usersRef = collection(db, 'users')
     const docRef = doc(usersRef, currentUser.uid)
@@ -91,6 +94,8 @@ export async function createProfile(
     setCurrentUserData: Dispatch<SetStateAction<BBUser | null>>
 ) {
     if (!currentUser) {
+        console.log('User not signed in')
+
         return
     }
 
@@ -110,7 +115,7 @@ export async function addSighting(
     currentUserData: BBUser | null
 ) {
     if (!currentUserData) {
-        console.log('User not signed ins')
+        console.log('User not signed in')
         return
     }
     console.log(currentUserData.birdpediaId)
@@ -124,3 +129,26 @@ export async function addSighting(
         entries: arrayUnion(newEntry),
     })
 }
+
+export async function getAllBirdpediaEntries(currentUserData: BBUser | null) {
+    if (!currentUserData) {
+        console.log('User not signed in')
+        return
+    }
+
+    const birdpedia = (
+        await getDoc(doc(db, 'birdpedias', currentUserData.birdpediaId))
+    ).data()
+
+    if (birdpedia) {
+        const allEntries: BirdpediaEntry[] = birdpedia.entries.map(
+            (entry: BirdpediaEntry) => {
+                return entry
+            }
+        )
+
+        return allEntries
+    }
+}
+
+

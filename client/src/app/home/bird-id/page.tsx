@@ -30,12 +30,6 @@ export default function BirdID() {
     const addBirdToBirdpedia = () => {
         if (selectedBird) {
             setIsAddingBird(true)
-            addSighting(selectedBird, currentUserData).then(() => {
-                setSelectedBird(undefined)
-                setIsAddingBird(false)
-                setaddedBirdSuccess(true)
-                setTimeout(() => setaddedBirdSuccess(false), 5000)
-            })
         }
     }
 
@@ -43,18 +37,18 @@ export default function BirdID() {
         console.log('useeffect')
         if (birdInput.length >= 3) {
             setIsFetchingData(true)
-            searchBirds(birdInput).then((resultsJson) => {
-                const birds: SearchResult[] = resultsJson.results.bindings.map(
-                    (bird: any): SearchResult => {
-                        return {
-                            id: bird.id.value,
-                            name: bird.birdName.value,
-                            imgURI: bird.birdImg.value.replace('http', 'https'),
-                        }
-                    }
-                )
+            searchBirds(birdInput).then((birds) => {
                 setSearchResults(birds)
                 setIsFetchingData(false)
+            })
+        }
+
+        if (isAddingBird && selectedBird) {
+            addSighting(selectedBird, currentUserData).then(() => {
+                setSelectedBird(undefined)
+                setIsAddingBird(false)
+                setaddedBirdSuccess(true)
+                setTimeout(() => setaddedBirdSuccess(false), 5000)
             })
         }
     }, [birdInput])
@@ -82,7 +76,7 @@ export default function BirdID() {
                     />
                 )}
                 {!isFetchingBirdData && searchResults.length > 0 && (
-                    <div className="border-2 border-green-400  flex flex-col space-y-2 h-[28rem] overflow-y-scroll">
+                    <div className="border-2 border-green-400 flex flex-col space-y-2 h-[28rem] overflow-y-scroll">
                         {searchResults.map((sr) => {
                             return (
                                 <button
@@ -97,16 +91,21 @@ export default function BirdID() {
                                         src={sr.imgURI}
                                         height={90}
                                         width={90}
-                                        alt="img-uri"
+                                        alt="Image URI unavailible"
                                         style={{ borderRadius: '25%' }}
                                         placeholder="blur"
                                         blurDataURL="/loading.gif"
                                         quality={50}
                                         priority
                                     />
-                                    <span className="align-middle">
-                                        {sr.name}
-                                    </span>
+                                    <div className="">
+                                        <div className="text-left text-lg">
+                                            {sr.name}
+                                        </div>
+                                        <div className="text-left text-gray-600">
+                                            {sr.commonName}
+                                        </div>
+                                    </div>
                                 </button>
                             )
                         })}
@@ -119,7 +118,7 @@ export default function BirdID() {
                         src={selectedBird.imgURI}
                         height={90}
                         width={90}
-                        alt="img-uri"
+                        alt="Image URI unavailible"
                         placeholder="blur"
                         blurDataURL="/loading.gif"
                         style={{ borderRadius: '25%' }}
@@ -133,7 +132,7 @@ export default function BirdID() {
                     onClickHandler={addBirdToBirdpedia}
                     disabled={!selectedBird}
                 >
-                    {isAddingBird && (
+                    {isAddingBird ? (
                         <Image
                             src={'/loading.gif'}
                             height={48}
@@ -142,8 +141,9 @@ export default function BirdID() {
                             quality={50}
                             unoptimized
                         />
+                    ) : (
+                        <span> Add bird to Birdpedia</span>
                     )}
-                    {!isAddingBird && <span> Add bird to Birdpedia</span>}
                 </Button>
             )}
             {addedBirdSuccess && (
