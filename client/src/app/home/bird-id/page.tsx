@@ -30,6 +30,7 @@ export default function BirdID() {
     const addBirdToBirdpedia = () => {
         if (selectedBird) {
             setIsAddingBird(true)
+            setBirdInput('')
         }
     }
 

@@ -18,7 +18,7 @@ export default function Birdpedia() {
     const [entriesShown, setentriesShown] = useState<BirdInfo[]>()
     const [page, setPage] = useState<number>(0)
     const { currentUserData } = useContext(AuthContext)
-    const birdsPerPage = 20
+    const birdsPerPage = 12
     const prevBtnDisabled = page == 0
     const nextBtnDisabled = !entriesShown || entriesShown?.length < birdsPerPage
     useEffect(() => {
@@ -86,7 +86,7 @@ export default function Birdpedia() {
                                 entriesShown.map((entry) => {
                                     const { name, imgURI } = entry
                                     return (
-                                        <div>
+                                        <div key={entry.id}>
                                             <Image
                                                 src={imgURI}
                                                 width={64}
@@ -95,7 +95,6 @@ export default function Birdpedia() {
                                                 blurDataURL="/loading.gif"
                                                 alt={'Image URI unavailible'}
                                                 style={{ borderRadius: '25%' }}
-                                                key={entry.id}
                                             />
                                             <p className="text-xs">
                                                 {name.length < 10
