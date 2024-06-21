@@ -1,14 +1,14 @@
 export interface SearchResult {
-    id: string
+    speciesId: string
     imgURI: string
     name: string
     commonName: string
 }
 
 export interface BirdInfo {
-    id: string
+    speciesId: string
     imgURI: string
     name: string
     commonName: string
-    rangeMapImg?: string
+    rangeMapImg: string
 }

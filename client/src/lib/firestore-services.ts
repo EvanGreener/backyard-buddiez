@@ -122,7 +122,7 @@ export async function addSighting(
     const birdpediasRef = doc(db, 'birdpedias', currentUserData.birdpediaId)
 
     const newEntry: BirdpediaEntry = {
-        speciesId: selectedBird.id,
+        speciesId: selectedBird.speciesId,
         timeSeen: Timestamp.fromDate(new Date()),
     }
     await updateDoc(birdpediasRef, {
@@ -150,5 +150,3 @@ export async function getAllBirdpediaEntries(currentUserData: BBUser | null) {
         return allEntries
     }
 }
-
-

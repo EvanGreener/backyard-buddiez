@@ -81,7 +81,7 @@ export default function BirdID() {
                         {searchResults.map((sr) => {
                             return (
                                 <button
-                                    key={sr.id}
+                                    key={sr.speciesId}
                                     className="p-2 flex space-x-2 hover:bg-black/50"
                                     onClick={() => {
                                         setSelectedBird(sr)

@@ -20,7 +20,7 @@ export default async function searchBirds(searchPattern: string) {
     const birds: SearchResult[] = resultsJson.results.bindings.map(
         (bird: any): SearchResult => {
             return {
-                id: bird.id.value,
+                speciesId: bird.id.value,
                 name: bird.birdLabel.value,
                 commonName: bird.commonName.value,
                 imgURI: bird.birdImg.value.replace('http', 'https'),
@@ -56,12 +56,16 @@ export async function getMultipleBirdsInfo(ids: string[]) {
     const birdInfos: BirdInfo[] = resultsJson.results.bindings.map(
         (bird: any): BirdInfo => {
             return {
-                id: bird.id.value,
+                speciesId: bird.id.value,
                 name: bird.birdLabel.value,
                 commonName: bird.commonName.value,
-                imgURI: bird.birdImg.value.replace('http', 'https'),
+                imgURI: !bird.birdImg.value.includes('https')
+                    ? bird.birdImg.value.replace('http', 'https')
+                    : bird.birdImg.value,
                 rangeMapImg: bird.rangeMapImg
-                    ? bird.rangeMapImg.value
+                    ? !bird.rangeMapImg.value.includes('https')
+                        ? bird.rangeMapImg.value.replace('http', 'https')
+                        : bird.rangeMapImg.value
                     : '',
             }
         }

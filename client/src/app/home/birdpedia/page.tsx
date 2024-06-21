@@ -4,10 +4,11 @@ import Button from '@/components/Button'
 import { AuthContext } from '@/contexts/AuthContext'
 import { getMultipleBirdsInfo } from '@/lib/actions'
 import { getAllBirdpediaEntries } from '@/lib/firestore-services'
+import { BIRDPEDIA_ROUTE } from '@/lib/routes'
 import { BirdInfo } from '@/types/action-types'
 import { BirdpediaEntry } from '@/types/db-types'
-import { set } from 'firebase/database'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useContext, useEffect, useState } from 'react'
 import { FaArrowCircleDown, FaArrowCircleUp } from 'react-icons/fa'
 
@@ -19,6 +20,8 @@ export default function Birdpedia() {
     const [prevBtnDisabled, setPrevBtnDisabled] = useState<boolean>(true)
     const [nextBtnDisabled, setNextBtnDisabled] = useState<boolean>(true)
     const [page, setPage] = useState<number>(0)
+    const router = useRouter()
+
     const { currentUserData } = useContext(AuthContext)
     const birdsPerPage = 12
 
@@ -118,9 +121,47 @@ export default function Birdpedia() {
                         <div className="overflow-y-scroll h-[29rem] border-2 border-green-400 grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4">
                             {entriesShown ? (
                                 entriesShown.map((entry) => {
-                                    const { commonName, name, imgURI } = entry
+                                    const {
+                                        commonName,
+                                        imgURI,
+                                        speciesId,
+                                        name,
+                                        rangeMapImg,
+                                    } = entry
+                                    console.log(rangeMapImg)
+
+                                    if (!allEntries) {
+                                        return
+                                    }
+
+                                    const timesSeen = allEntries?.filter(
+                                        (e) => e.speciesId == speciesId
+                                    ).length
+                                    let lastSeen = allEntries[0].timeSeen
+                                    for (
+                                        let i = allEntries.length - 1;
+                                        i >= 0;
+                                        i--
+                                    ) {
+                                        if (
+                                            allEntries[i].speciesId == speciesId
+                                        ) {
+                                            lastSeen = allEntries[i].timeSeen
+                                            break
+                                        }
+                                    }
+
                                     return (
-                                        <div key={entry.id}>
+                                        <div
+                                            key={speciesId}
+                                            onClick={() =>
+                                                router.push(
+                                                    BIRDPEDIA_ROUTE +
+                                                        `/${speciesId}?timesSeen=${timesSeen}&lastSeen=${lastSeen.toMillis()}&commonName=${commonName}` +
+                                                        `&name=${name}&imgURI=${imgURI}&rangeMapImg=${rangeMapImg}`
+                                                )
+                                            }
+                                        >
                                             <Image
                                                 src={imgURI}
                                                 width={64}
