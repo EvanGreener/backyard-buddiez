@@ -40,7 +40,7 @@ export default function Birdpedia() {
                     // Get info about results from wikidata
                     getMultipleBirdsInfo(ids).then((birdInfos) => {
                         const birdInfosSorted = birdInfos.sort((a, b) => {
-                            return a.name.localeCompare(b.name)
+                            return a.commonName.localeCompare(b.commonName)
                         })
                         console.log(birdInfosSorted.length)
                         console.log(
@@ -79,12 +79,13 @@ export default function Birdpedia() {
                         (page + 1) * birdsPerPage + birdsPerPage
                     ).length < 1
             )
-            setentriesShown(
-                allBirdInfos.slice(
-                    page * birdsPerPage,
-                    page * birdsPerPage + birdsPerPage
+            allBirdInfos &&
+                setentriesShown(
+                    allBirdInfos.slice(
+                        page * birdsPerPage,
+                        page * birdsPerPage + birdsPerPage
+                    )
                 )
-            )
         }
         setIsFetchingData(false)
     }, [page])
