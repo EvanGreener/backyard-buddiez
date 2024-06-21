@@ -12,47 +12,80 @@ import { useContext, useEffect, useState } from 'react'
 import { FaArrowCircleDown, FaArrowCircleUp } from 'react-icons/fa'
 
 export default function Birdpedia() {
-    const [isFetchingBirdData, setIsFetchingData] = useState<boolean>(false)
+    const [isFetchingBirdData, setIsFetchingData] = useState<boolean>(true)
     const [allEntries, setAllEntries] = useState<BirdpediaEntry[]>()
-    const [allBirdInfos, setBirdInfos] = useState<BirdInfo[]>()
+    const [allBirdInfos, setAllBirdInfos] = useState<BirdInfo[]>()
     const [entriesShown, setentriesShown] = useState<BirdInfo[]>()
+    const [prevBtnDisabled, setPrevBtnDisabled] = useState<boolean>(true)
+    const [nextBtnDisabled, setNextBtnDisabled] = useState<boolean>(true)
     const [page, setPage] = useState<number>(0)
     const { currentUserData } = useContext(AuthContext)
     const birdsPerPage = 12
-    const prevBtnDisabled = page == 0
-    const nextBtnDisabled = !entriesShown || entriesShown?.length < birdsPerPage
+
     useEffect(() => {
         setIsFetchingData(true)
         // Get seen birds (distinct) by page from db
-        getAllBirdpediaEntries(currentUserData).then((entries) => {
-            if (entries) {
-                setAllEntries(entries)
-                const ids = [
-                    ...new Set(
-                        entries.map((entry) => {
-                            return entry.speciesId
+        if (!allEntries && !allBirdInfos) {
+            getAllBirdpediaEntries(currentUserData).then((entries) => {
+                if (entries) {
+                    setAllEntries(entries)
+                    const ids = [
+                        ...new Set(
+                            entries.map((entry) => {
+                                return entry.speciesId
+                            })
+                        ),
+                    ]
+
+                    // Get info about results from wikidata
+                    getMultipleBirdsInfo(ids).then((birdInfos) => {
+                        const birdInfosSorted = birdInfos.sort((a, b) => {
+                            return a.name.localeCompare(b.name)
                         })
-                    ),
-                ]
+                        console.log(birdInfosSorted.length)
+                        console.log(
+                            birdInfosSorted.slice(
+                                (page + 1) * birdsPerPage,
+                                (page + 1) * birdsPerPage + birdsPerPage
+                            ).length
+                        )
 
-                // Get info about results from wikidata
-                getMultipleBirdsInfo(ids).then((birdInfos) => {
-                    setBirdInfos(birdInfos)
+                        setAllBirdInfos(birdInfosSorted)
 
-                    setentriesShown(
-                        birdInfos
-                            .slice(
+                        setPrevBtnDisabled(page == 0)
+                        setNextBtnDisabled(
+                            birdInfosSorted.slice(
+                                (page + 1) * birdsPerPage,
+                                (page + 1) * birdsPerPage + birdsPerPage
+                            ).length < 1
+                        )
+
+                        setentriesShown(
+                            birdInfosSorted.slice(
                                 page * birdsPerPage,
                                 page * birdsPerPage + birdsPerPage
                             )
-                            .sort((a, b) => {
-                                return a.name.localeCompare(b.name)
-                            })
-                    )
-                })
-            }
-        })
-
+                        )
+                    })
+                }
+            })
+        } else {
+            setPrevBtnDisabled(page == 0)
+            setNextBtnDisabled(
+                !entriesShown ||
+                    !allBirdInfos ||
+                    allBirdInfos.slice(
+                        (page + 1) * birdsPerPage,
+                        (page + 1) * birdsPerPage + birdsPerPage
+                    ).length < 1
+            )
+            setentriesShown(
+                allBirdInfos.slice(
+                    page * birdsPerPage,
+                    page * birdsPerPage + birdsPerPage
+                )
+            )
+        }
         setIsFetchingData(false)
     }, [page])
     return (
@@ -81,10 +114,10 @@ export default function Birdpedia() {
                         />
                     </Button>
                     <div className="grow">
-                        <div className="overflow-y-scroll h-[28rem] border-2 border-green-400 grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4">
+                        <div className="overflow-y-scroll h-[29rem] border-2 border-green-400 grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4">
                             {entriesShown ? (
                                 entriesShown.map((entry) => {
-                                    const { name, imgURI } = entry
+                                    const { commonName, name, imgURI } = entry
                                     return (
                                         <div key={entry.id}>
                                             <Image
@@ -97,9 +130,10 @@ export default function Birdpedia() {
                                                 style={{ borderRadius: '25%' }}
                                             />
                                             <p className="text-xs">
-                                                {name.length < 10
-                                                    ? name
-                                                    : name.slice(0, 10) + '...'}
+                                                {commonName.length < 10
+                                                    ? commonName
+                                                    : commonName.slice(0, 10) +
+                                                      '...'}
                                             </p>
                                         </div>
                                     )

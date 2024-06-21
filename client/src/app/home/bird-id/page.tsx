@@ -29,8 +29,8 @@ export default function BirdID() {
     }
     const addBirdToBirdpedia = () => {
         if (selectedBird) {
-            setIsAddingBird(true)
             setBirdInput('')
+            setIsAddingBird(true)
         }
     }
 
@@ -77,7 +77,7 @@ export default function BirdID() {
                     />
                 )}
                 {!isFetchingBirdData && searchResults.length > 0 && (
-                    <div className="border-2 border-green-400 flex flex-col space-y-2 h-[28rem] overflow-y-scroll">
+                    <div className="border-2 border-green-400 flex flex-col space-y-2 h-[29rem] overflow-y-scroll">
                         {searchResults.map((sr) => {
                             return (
                                 <button
@@ -148,7 +148,7 @@ export default function BirdID() {
                 </Button>
             )}
             {addedBirdSuccess && (
-                <div className="bg-cyan-300 animate-bounce p-4 rounded ">
+                <div className="bg-green-400 animate-bounce p-4 rounded ">
                     Succesfully added/logged bird sighting!
                     <br /> Check your Birdpedia!
                 </div>
