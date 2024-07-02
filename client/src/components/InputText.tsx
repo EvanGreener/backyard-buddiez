@@ -1,13 +1,13 @@
 import { FormEventHandler, RefObject } from 'react'
 
-interface TextBoxType {
+interface InputTextType {
     type?: string
     placeholder: string
     required?: boolean
-    name: string
+    name?: string
     id?: string
     onInput?: FormEventHandler<HTMLInputElement>
-    inputRef: RefObject<HTMLInputElement>
+    inputRef?: RefObject<HTMLInputElement>
 }
 export default function InputText({
     type,
@@ -17,7 +17,7 @@ export default function InputText({
     id,
     onInput,
     inputRef,
-}: TextBoxType) {
+}: InputTextType) {
     return (
         <input
             name={name}

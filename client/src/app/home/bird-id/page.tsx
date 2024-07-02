@@ -1,8 +1,9 @@
 'use client'
 
 import Button from '@/components/Button'
-import InputLabel from '@/components/InputLabel'
-import InputText from '@/components/InputText'
+import LoadData from '@/components/LoadData'
+import SearchBar from '@/components/SearchBar'
+import SearchResults from '@/components/SearchResults'
 import { AuthContext } from '@/contexts/AuthContext'
 import searchBirdsWikidata from '@/lib/actions'
 import { addSighting } from '@/lib/firestore-services'
@@ -31,8 +32,27 @@ export default function BirdID() {
         console.log(input)
         setBirdInput(input.toLowerCase())
     }
+    const clearInput = () => {
+        if (searchRef.current) {
+            searchRef.current.value = ''
+            setBirdInput('')
+        }
+    }
+    const selectResult = (result: SearchResult) => {
+        setSelectedBird(result)
+    }
 
     useEffect(() => {
+        let ignoreSearchResults = false
+        async function searchBirds() {
+            setIsFetchingData(true)
+            const birds = await searchBirdsWikidata(birdInput)
+            if (!ignoreSearchResults) {
+                setSearchResults(birds)
+            }
+            setIsFetchingData(false)
+        }
+
         async function addBirdToBirdpedia() {
             if (selectedBird) {
                 await addSighting(selectedBird, currentUserData)
@@ -43,117 +63,80 @@ export default function BirdID() {
             }
         }
 
-        async function searchBirds() {
-            setIsFetchingData(true)
-            const birds = await searchBirdsWikidata(birdInput)
-            setSearchResults(birds)
-            setIsFetchingData(false)
-        }
-
-        console.log('useeffect')
+        console.log('useEffect')
         searchBirds()
         if (isAddingBird) {
             addBirdToBirdpedia()
+        }
+
+        return () => {
+            ignoreSearchResults = true
         }
     }, [birdInput, isAddingBird, currentUserData, selectedBird])
 
     return (
         <div className="flex flex-col items-center space-y-6 h-full">
-            <div className="">
-                <InputLabel inputId="bird" text="Search bird: " />
-                <InputText
-                    id="bird"
-                    placeholder={'ex: blue jay'}
-                    name={'bird'}
-                    onInput={handleOnInputChange}
-                    inputRef={searchRef}
-                />
-            </div>
+            <SearchBar
+                handleOnInputChange={handleOnInputChange}
+                searchRef={searchRef}
+                placeholder={"ex: 'blue jay'"}
+            />
+
             <div className="grow ">
-                {isFetchingBirdData && (
-                    <Image
-                        src={'/loading.gif'}
-                        height={90}
-                        width={90}
-                        alt="loading ..."
-                        quality={50}
-                        unoptimized
-                    />
-                )}
-                {!isFetchingBirdData && searchResults.length > 0 && (
+                <LoadData
+                    conditionLoad={isFetchingBirdData}
+                    conditionShowData={searchResults.length > 0}
+                    conditionNoResults={birdInput.length > 0}
+                >
                     <div className="border-2 border-green-400 flex flex-col space-y-2 h-[29rem] overflow-y-scroll">
-                        {searchResults.map((sr) => {
-                            return (
-                                <button
-                                    key={sr.speciesId}
-                                    className="p-2 flex space-x-2 hover:bg-black/50"
-                                    onClick={() => {
-                                        setSelectedBird(sr)
-                                        if (searchRef.current) {
-                                            searchRef.current.value = ''
-                                            setBirdInput('')
-                                        }
-                                    }}
-                                >
-                                    <Image
-                                        src={sr.imgURI}
-                                        height={90}
-                                        width={90}
-                                        alt="Image URI unavailible"
-                                        style={{ borderRadius: '25%' }}
-                                        placeholder="blur"
-                                        blurDataURL="/loading.gif"
-                                        quality={50}
-                                        priority
-                                    />
-                                    <div className="">
-                                        <div className="text-left text-lg">
-                                            {sr.name}
-                                        </div>
-                                        <div className="text-left text-gray-600">
-                                            {sr.commonName}
-                                        </div>
-                                    </div>
-                                </button>
-                            )
-                        })}
+                        <SearchResults
+                            searchResults={searchResults}
+                            clearInput={clearInput}
+                            selectResult={selectResult}
+                        />
                     </div>
-                )}
+                </LoadData>
             </div>
+
+            {/* Selected Image and button - START */}
             {selectedBird && (
-                <div className="flex space-x-2 ">
-                    <Image
-                        src={selectedBird.imgURI}
-                        height={90}
-                        width={90}
-                        alt="Image URI unavailible"
-                        placeholder="blur"
-                        blurDataURL="/loading.gif"
-                        style={{ borderRadius: '25%' }}
-                    />
-                    <span className="align-middle">{selectedBird.name}</span>
+                <div className="flex flex-col space-y-6 ">
+                    <div className="flex space-x-2 ">
+                        <Image
+                            src={selectedBird.imgURI}
+                            height={90}
+                            width={90}
+                            alt="Image URI unavailible"
+                            placeholder="blur"
+                            blurDataURL="/loading.gif"
+                            style={{ borderRadius: '25%' }}
+                        />
+                        <span className="align-middle">
+                            {selectedBird.name}
+                        </span>
+                    </div>
+
+                    <Button
+                        type="button"
+                        onClickHandler={() => setIsAddingBird(true)}
+                        disabled={!selectedBird}
+                    >
+                        {isAddingBird ? (
+                            <Image
+                                src={'/loading.gif'}
+                                height={48}
+                                width={48}
+                                alt="loading ..."
+                                quality={50}
+                                unoptimized
+                            />
+                        ) : (
+                            <span> Add bird to Birdpedia</span>
+                        )}
+                    </Button>
                 </div>
             )}
-            {selectedBird && (
-                <Button
-                    type="button"
-                    onClickHandler={() => setIsAddingBird(true)}
-                    disabled={!selectedBird}
-                >
-                    {isAddingBird ? (
-                        <Image
-                            src={'/loading.gif'}
-                            height={48}
-                            width={48}
-                            alt="loading ..."
-                            quality={50}
-                            unoptimized
-                        />
-                    ) : (
-                        <span> Add bird to Birdpedia</span>
-                    )}
-                </Button>
-            )}
+
             {addedBirdSuccess && (
                 <div className="bg-green-400 animate-bounce p-4 rounded ">
                     Succesfully added/logged bird sighting!
