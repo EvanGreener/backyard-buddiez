@@ -1,4 +1,4 @@
-import { ChangeEventHandler, FormEventHandler } from 'react'
+import { FormEventHandler, RefObject } from 'react'
 
 interface TextBoxType {
     type?: string
@@ -7,6 +7,7 @@ interface TextBoxType {
     name: string
     id?: string
     onInput?: FormEventHandler<HTMLInputElement>
+    inputRef: RefObject<HTMLInputElement>
 }
 export default function InputText({
     type,
@@ -15,6 +16,7 @@ export default function InputText({
     name,
     id,
     onInput,
+    inputRef,
 }: TextBoxType) {
     return (
         <input
@@ -25,6 +27,7 @@ export default function InputText({
             required={required}
             id={id}
             onInput={onInput}
+            ref={inputRef}
         />
     )
 }

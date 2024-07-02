@@ -4,11 +4,17 @@ import Button from '@/components/Button'
 import InputLabel from '@/components/InputLabel'
 import InputText from '@/components/InputText'
 import { AuthContext } from '@/contexts/AuthContext'
-import searchBirds from '@/lib/actions'
+import searchBirdsWikidata from '@/lib/actions'
 import { addSighting } from '@/lib/firestore-services'
 import { SearchResult } from '@/types/action-types'
 import Image from 'next/image'
-import { FormEventHandler, useContext, useEffect, useState } from 'react'
+import {
+    FormEventHandler,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react'
 
 export default function BirdID() {
     const [birdInput, setBirdInput] = useState<string>('')
@@ -17,42 +23,39 @@ export default function BirdID() {
     const [isAddingBird, setIsAddingBird] = useState<boolean>(false)
     const [addedBirdSuccess, setaddedBirdSuccess] = useState<boolean>(false)
     const [selectedBird, setSelectedBird] = useState<SearchResult>()
-
+    const searchRef = useRef<HTMLInputElement>(null)
     const { currentUserData } = useContext(AuthContext)
 
-    const handleOnInput: FormEventHandler<HTMLInputElement> = (event) => {
+    const handleOnInputChange: FormEventHandler<HTMLInputElement> = (event) => {
         const input = event.currentTarget.value
-        if (input.length >= 3) {
-            console.log(input)
-            setBirdInput(input.toLowerCase())
-        }
-    }
-    const addBirdToBirdpedia = () => {
-        if (selectedBird) {
-            setBirdInput('')
-            setIsAddingBird(true)
-        }
+        console.log(input)
+        setBirdInput(input.toLowerCase())
     }
 
     useEffect(() => {
-        console.log('useeffect')
-        if (birdInput.length >= 3) {
-            setIsFetchingData(true)
-            searchBirds(birdInput).then((birds) => {
-                setSearchResults(birds)
-                setIsFetchingData(false)
-            })
-        }
-
-        if (isAddingBird && selectedBird) {
-            addSighting(selectedBird, currentUserData).then(() => {
+        async function addBirdToBirdpedia() {
+            if (selectedBird) {
+                await addSighting(selectedBird, currentUserData)
                 setSelectedBird(undefined)
                 setIsAddingBird(false)
                 setaddedBirdSuccess(true)
                 setTimeout(() => setaddedBirdSuccess(false), 5000)
-            })
+            }
         }
-    }, [birdInput, isAddingBird])
+
+        async function searchBirds() {
+            setIsFetchingData(true)
+            const birds = await searchBirdsWikidata(birdInput)
+            setSearchResults(birds)
+            setIsFetchingData(false)
+        }
+
+        console.log('useeffect')
+        searchBirds()
+        if (isAddingBird) {
+            addBirdToBirdpedia()
+        }
+    }, [birdInput, isAddingBird, currentUserData, selectedBird])
 
     return (
         <div className="flex flex-col items-center space-y-6 h-full">
@@ -62,7 +65,8 @@ export default function BirdID() {
                     id="bird"
                     placeholder={'ex: blue jay'}
                     name={'bird'}
-                    onInput={handleOnInput}
+                    onInput={handleOnInputChange}
+                    inputRef={searchRef}
                 />
             </div>
             <div className="grow ">
@@ -85,7 +89,10 @@ export default function BirdID() {
                                     className="p-2 flex space-x-2 hover:bg-black/50"
                                     onClick={() => {
                                         setSelectedBird(sr)
-                                        setSearchResults([])
+                                        if (searchRef.current) {
+                                            searchRef.current.value = ''
+                                            setBirdInput('')
+                                        }
                                     }}
                                 >
                                     <Image
@@ -130,7 +137,7 @@ export default function BirdID() {
             {selectedBird && (
                 <Button
                     type="button"
-                    onClickHandler={addBirdToBirdpedia}
+                    onClickHandler={() => setIsAddingBird(true)}
                     disabled={!selectedBird}
                 >
                     {isAddingBird ? (

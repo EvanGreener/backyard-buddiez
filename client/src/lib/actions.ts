@@ -1,6 +1,10 @@
 import { BirdInfo, SearchResult } from '@/types/action-types'
 
-export default async function searchBirds(searchPattern: string) {
+export default async function searchBirdsWikidata(searchPattern: string) {
+    if (searchPattern.length == 0) {
+        return []
+    }
+    
     const query = `
     SELECT ?id ?birdLabel (SAMPLE(?name) AS ?commonName) (SAMPLE(?img) AS ?birdImg)
     WHERE {
