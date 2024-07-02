@@ -1,4 +1,3 @@
-import { SearchResultContext } from '@/contexts/SearchResultContext'
 import { SearchResult } from '@/types/action-types'
 import { RefObject, useContext } from 'react'
 import Image from 'next/image'

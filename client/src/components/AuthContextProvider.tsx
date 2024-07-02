@@ -80,7 +80,7 @@ export default function AuthContextProvider({
 
         setFetchingUser(false)
         return () => unsubscribeAuth()
-    }, [auth, pathname, currentUserData])
+    }, [auth, pathname, currentUserData, router])
 
     return (
         <AuthContext.Provider
