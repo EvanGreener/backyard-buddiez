@@ -2,17 +2,17 @@ import { SearchResult } from '@/types/action-types'
 import { RefObject, useContext } from 'react'
 import Image from 'next/image'
 
-interface SearchResultsType {
+interface SearchResultsSelectType {
     searchResults: SearchResult[]
     clearInput: () => void
     selectResult: (result: any) => void
 }
 
-export default function SearchResults({
+export default function SearchResultsSelect({
     searchResults,
     clearInput,
     selectResult,
-}: SearchResultsType) {
+}: SearchResultsSelectType) {
     return (
         <div className="border-2 border-green-400 flex flex-col space-y-2 h-[29rem] overflow-y-scroll">
             {searchResults.map((sr) => {

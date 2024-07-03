@@ -1,16 +1,12 @@
+import { Color } from '@/theme/colors'
 import { MouseEventHandler } from 'react'
-
-export enum ButtonClass {
-    PRIMARY = 'bg-sky-300 p-2 rounded',
-    CAUTION = 'bg-red-300 p-2 rounded',
-}
 
 interface ButtonType {
     children: React.ReactNode
     type: 'submit' | 'reset' | 'button' | undefined
     onClickHandler?: MouseEventHandler<HTMLButtonElement> | undefined
     disabled?: boolean
-    buttonClass?: ButtonClass
+    color?: Color
 }
 
 export default function Button({
@@ -18,12 +14,12 @@ export default function Button({
     type,
     onClickHandler,
     disabled,
-    buttonClass = ButtonClass.PRIMARY,
+    color = Color.PRIMARY,
 }: ButtonType) {
     return (
         <button
             type={type}
-            className={buttonClass}
+            className={color + ' p-2 rounded'}
             onClick={onClickHandler}
             disabled={disabled}
         >
