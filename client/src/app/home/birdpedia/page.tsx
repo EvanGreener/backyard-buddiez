@@ -16,39 +16,27 @@ export default function Birdpedia() {
     const [isFetchingBirdData, setIsFetchingData] = useState<boolean>(true)
     const [allEntries, setAllEntries] = useState<BirdpediaEntry[]>()
     const [allBirdInfos, setAllBirdInfos] = useState<BirdInfo[]>()
-    const [entriesShown, setEntriesShown] = useState<BirdInfo[]>()
-    const [prevBtnDisabled, setPrevBtnDisabled] = useState<boolean>(true)
-    const [nextBtnDisabled, setNextBtnDisabled] = useState<boolean>(true)
     const [page, setPage] = useState<number>(0)
     const router = useRouter()
 
     const { currentUserData } = useContext(AuthContext)
     const birdsPerPage = 12
+    const prevBtnDisabled = page == 0
+    const nextBtnDisabled =
+        !allBirdInfos ||
+        allBirdInfos.slice(
+            (page + 1) * birdsPerPage,
+            (page + 1) * birdsPerPage + birdsPerPage
+        ).length < 1
+    const entriesShown = allBirdInfos
+        ? allBirdInfos.slice(
+              page * birdsPerPage,
+              page * birdsPerPage + birdsPerPage
+          )
+        : undefined
 
     useEffect(() => {
-        async function setBtnsAndEntriesShown(
-            birdInfos: BirdInfo[] | undefined,
-            boolNextBtn: boolean
-        ) {
-            setPrevBtnDisabled(page == 0)
-            setNextBtnDisabled(
-                boolNextBtn ||
-                    !birdInfos ||
-                    birdInfos.slice(
-                        (page + 1) * birdsPerPage,
-                        (page + 1) * birdsPerPage + birdsPerPage
-                    ).length < 1
-            )
-            birdInfos &&
-                setEntriesShown(
-                    birdInfos.slice(
-                        page * birdsPerPage,
-                        page * birdsPerPage + birdsPerPage
-                    )
-                )
-        }
-
-        async function getAndsetEntriesAndButtons() {
+        async function getEntriesData() {
             const entries = await getAllBirdpediaEntries(currentUserData)
             if (entries) {
                 setAllEntries(entries)
@@ -67,20 +55,15 @@ export default function Birdpedia() {
                 })
 
                 setAllBirdInfos(birdInfosSorted)
-                setBtnsAndEntriesShown(birdInfosSorted, false)
             }
         }
 
         setIsFetchingData(true)
-        if (!allEntries && !allBirdInfos) {
-            getAndsetEntriesAndButtons()
-        } else {
-            setBtnsAndEntriesShown(allBirdInfos, !entriesShown)
+        if (!allEntries) {
+            getEntriesData()
         }
         setIsFetchingData(false)
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page])
+    }, [currentUserData, allEntries]) //
     return (
         <div className="flex flex-col items-center px-8">
             {isFetchingBirdData ? (
