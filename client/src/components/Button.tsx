@@ -3,23 +3,25 @@ import { MouseEventHandler } from 'react'
 
 interface ButtonType {
     children: React.ReactNode
-    type: 'submit' | 'reset' | 'button' | undefined
-    onClickHandler?: MouseEventHandler<HTMLButtonElement> | undefined
+    type?: 'submit' | 'reset' | 'button'
+    onClickHandler?: MouseEventHandler<HTMLButtonElement>
     disabled?: boolean
     color?: Color
 }
 
 export default function Button({
     children,
-    type,
     onClickHandler,
     disabled,
+    type = 'button',
     color = Color.PRIMARY,
 }: ButtonType) {
+    const buttonClass = color + ' p-2 rounded'
+    console.log(buttonClass)
     return (
         <button
             type={type}
-            className={color + ' p-2 rounded'}
+            className={buttonClass}
             onClick={onClickHandler}
             disabled={disabled}
         >

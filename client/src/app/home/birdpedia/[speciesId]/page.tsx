@@ -10,7 +10,7 @@ export interface SpeciesInfoType {
     }
 }
 
-export default async function SpeciesInfo({}: SpeciesInfoType) {
+export default function SpeciesInfo({}: SpeciesInfoType) {
     const searchParams = useSearchParams()
     const timesSeen = searchParams.get('timesSeen')
     const lastSeen = Timestamp.fromMillis(Number(searchParams.get('lastSeen')))

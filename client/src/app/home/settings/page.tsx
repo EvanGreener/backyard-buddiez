@@ -19,7 +19,6 @@ export default function Settings() {
                         router.push(ROOT_LOGIN)
                     })
                 }}
-                color={Color.PRIMARY}
             >
                 Sign out
             </Button>

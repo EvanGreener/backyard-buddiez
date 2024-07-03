@@ -16,7 +16,7 @@ export default function Birdpedia() {
     const [isFetchingBirdData, setIsFetchingData] = useState<boolean>(true)
     const [allEntries, setAllEntries] = useState<BirdpediaEntry[]>()
     const [allBirdInfos, setAllBirdInfos] = useState<BirdInfo[]>()
-    const [entriesShown, setentriesShown] = useState<BirdInfo[]>()
+    const [entriesShown, setEntriesShown] = useState<BirdInfo[]>()
     const [prevBtnDisabled, setPrevBtnDisabled] = useState<boolean>(true)
     const [nextBtnDisabled, setNextBtnDisabled] = useState<boolean>(true)
     const [page, setPage] = useState<number>(0)
@@ -26,71 +26,60 @@ export default function Birdpedia() {
     const birdsPerPage = 12
 
     useEffect(() => {
-        setIsFetchingData(true)
-        // Get seen birds (distinct) by page from db
-        if (!allEntries && !allBirdInfos) {
-            getAllBirdpediaEntries(currentUserData).then((entries) => {
-                if (entries) {
-                    setAllEntries(entries)
-                    const ids = [
-                        ...new Set(
-                            entries.map((entry) => {
-                                return entry.speciesId
-                            })
-                        ),
-                    ]
-
-                    // Get info about results from wikidata
-                    getMultipleBirdsInfo(ids).then((birdInfos) => {
-                        const birdInfosSorted = birdInfos.sort((a, b) => {
-                            return a.commonName.localeCompare(b.commonName)
-                        })
-                        console.log(birdInfosSorted.length)
-                        console.log(
-                            birdInfosSorted.slice(
-                                (page + 1) * birdsPerPage,
-                                (page + 1) * birdsPerPage + birdsPerPage
-                            ).length
-                        )
-
-                        setAllBirdInfos(birdInfosSorted)
-
-                        setPrevBtnDisabled(page == 0)
-                        setNextBtnDisabled(
-                            birdInfosSorted.slice(
-                                (page + 1) * birdsPerPage,
-                                (page + 1) * birdsPerPage + birdsPerPage
-                            ).length < 1
-                        )
-
-                        setentriesShown(
-                            birdInfosSorted.slice(
-                                page * birdsPerPage,
-                                page * birdsPerPage + birdsPerPage
-                            )
-                        )
-                    })
-                }
-            })
-        } else {
+        async function setBtnsAndEntriesShown(
+            birdInfos: BirdInfo[] | undefined,
+            boolNextBtn: boolean
+        ) {
             setPrevBtnDisabled(page == 0)
             setNextBtnDisabled(
-                !entriesShown ||
-                    !allBirdInfos ||
-                    allBirdInfos.slice(
+                boolNextBtn ||
+                    !birdInfos ||
+                    birdInfos.slice(
                         (page + 1) * birdsPerPage,
                         (page + 1) * birdsPerPage + birdsPerPage
                     ).length < 1
             )
-            allBirdInfos &&
-                setentriesShown(
-                    allBirdInfos.slice(
+            birdInfos &&
+                setEntriesShown(
+                    birdInfos.slice(
                         page * birdsPerPage,
                         page * birdsPerPage + birdsPerPage
                     )
                 )
         }
+
+        async function getAndsetEntriesAndButtons() {
+            const entries = await getAllBirdpediaEntries(currentUserData)
+            if (entries) {
+                setAllEntries(entries)
+
+                const ids = [
+                    ...new Set(
+                        entries.map((entry) => {
+                            return entry.speciesId
+                        })
+                    ),
+                ]
+
+                const birdInfos = await getMultipleBirdsInfo(ids)
+                const birdInfosSorted = birdInfos.sort((a, b) => {
+                    return a.commonName.localeCompare(b.commonName)
+                })
+
+                setAllBirdInfos(birdInfosSorted)
+                setBtnsAndEntriesShown(birdInfosSorted, false)
+            }
+        }
+
+        setIsFetchingData(true)
+        if (!allEntries && !allBirdInfos) {
+            getAndsetEntriesAndButtons()
+        } else {
+            setBtnsAndEntriesShown(allBirdInfos, !entriesShown)
+        }
         setIsFetchingData(false)
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page])
     return (
         <div className="flex flex-col items-center px-8">
