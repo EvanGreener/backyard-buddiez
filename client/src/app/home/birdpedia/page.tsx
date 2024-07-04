@@ -1,16 +1,19 @@
 'use client'
 
 import Button from '@/components/Button'
+import LoadData from '@/components/LoadData'
 import { AuthContext } from '@/contexts/AuthContext'
-import { getMultipleBirdsInfo } from '@/lib/actions'
+import { getMultipleBirdsInfo as getBirdInfos } from '@/lib/actions'
 import { getAllBirdpediaEntries } from '@/lib/firestore-services'
 import { BIRDPEDIA_ROUTE } from '@/lib/routes'
 import { BirdInfo } from '@/types/action-types'
 import { BirdpediaEntry } from '@/types/db-types'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useContext, useEffect, useState } from 'react'
+import { MouseEventHandler, useContext, useEffect, useState } from 'react'
 import { FaArrowCircleDown, FaArrowCircleUp } from 'react-icons/fa'
+import page from '../page'
+import { Timestamp } from 'firebase/firestore'
 
 export default function Birdpedia() {
     const [isFetchingBirdData, setIsFetchingData] = useState<boolean>(true)
@@ -37,10 +40,12 @@ export default function Birdpedia() {
 
     useEffect(() => {
         async function getEntriesData() {
+            // Get user sightings from firestore
             const entries = await getAllBirdpediaEntries(currentUserData)
             if (entries) {
                 setAllEntries(entries)
 
+                // Create unique array of ids
                 const ids = [
                     ...new Set(
                         entries.map((entry) => {
@@ -49,7 +54,8 @@ export default function Birdpedia() {
                     ),
                 ]
 
-                const birdInfos = await getMultipleBirdsInfo(ids)
+                // Get bird data from wikidata
+                const birdInfos = await getBirdInfos(ids)
                 const birdInfosSorted = birdInfos.sort((a, b) => {
                     return a.commonName.localeCompare(b.commonName)
                 })
@@ -63,114 +69,157 @@ export default function Birdpedia() {
             getEntriesData()
         }
         setIsFetchingData(false)
-    }, [currentUserData, allEntries]) //
+    }, [currentUserData, allEntries])
+
+    function PrevBtn() {
+        return (
+            <Button
+                disabled={prevBtnDisabled}
+                onClickHandler={() => {
+                    !prevBtnDisabled && setPage(page - 1)
+                }}
+            >
+                <FaArrowCircleUp
+                    color={prevBtnDisabled ? 'grey' : 'springgreen'}
+                    opacity={prevBtnDisabled ? '50%' : '100%'}
+                />
+            </Button>
+        )
+    }
+
+    function NextBtn() {
+        return (
+            <Button
+                disabled={nextBtnDisabled}
+                onClickHandler={() => {
+                    !nextBtnDisabled && setPage(page + 1)
+                }}
+            >
+                <FaArrowCircleDown
+                    color={nextBtnDisabled ? 'grey' : 'springgreen'}
+                    opacity={nextBtnDisabled ? '50%' : '100%'}
+                />
+            </Button>
+        )
+    }
+
+    function Entry({
+        speciesId,
+        timesSeen,
+        lastSeen,
+        commonName,
+        name,
+        imgURI,
+        rangeMapImg,
+    }: {
+        speciesId: string
+        timesSeen: number
+        lastSeen: Timestamp
+        commonName: string
+        name: string
+        imgURI: string
+        rangeMapImg: string
+    }) {
+        return (
+            <div
+                onClick={() =>
+                    router.push(
+                        BIRDPEDIA_ROUTE +
+                            `/${speciesId}?timesSeen=${timesSeen}&lastSeen=${lastSeen.toMillis()}&commonName=${commonName}` +
+                            `&name=${name}&imgURI=${imgURI}&rangeMapImg=${rangeMapImg}`
+                    )
+                }
+            >
+                <Image
+                    src={imgURI}
+                    width={64}
+                    height={64}
+                    placeholder="blur"
+                    blurDataURL="/loading.gif"
+                    alt={'Image URI unavailible'}
+                    style={{
+                        borderRadius: '25%',
+                    }}
+                />
+                <p className="text-xs">
+                    {commonName.length < 10
+                        ? commonName
+                        : commonName.slice(0, 10) + '...'}
+                </p>
+            </div>
+        )
+    }
+
     return (
         <div className="flex flex-col items-center px-8">
-            {isFetchingBirdData ? (
-                <Image
-                    src={'/loading.gif'}
-                    height={90}
-                    width={90}
-                    alt="loading ..."
-                    quality={50}
-                    unoptimized
-                />
-            ) : (
+            <LoadData conditionLoad={isFetchingBirdData}>
                 <div className="flex flex-col items-center">
-                    <Button
-                        type={'button'}
-                        disabled={prevBtnDisabled}
-                        onClickHandler={() => {
-                            !prevBtnDisabled && setPage(page - 1)
-                        }}
-                    >
-                        <FaArrowCircleUp
-                            color={prevBtnDisabled ? 'grey' : 'springgreen'}
-                            opacity={prevBtnDisabled ? '50%' : '100%'}
-                        />
-                    </Button>
-                    <div className="grow">
-                        <div className="overflow-y-scroll h-[29rem] border-2 border-green-400 grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4">
-                            {entriesShown ? (
-                                entriesShown.map((entry) => {
-                                    const {
-                                        commonName,
-                                        imgURI,
-                                        speciesId,
-                                        name,
-                                        rangeMapImg,
-                                    } = entry
-                                    console.log(rangeMapImg)
+                    {entriesShown ? (
+                        <div className="flex flex-col items-center">
+                            <PrevBtn />
+                            {/* Entries */}
+                            <div className="grow">
+                                <div className="overflow-y-scroll h-[29rem] border-2 border-green-400 grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4 rounded">
+                                    {entriesShown.map((entry) => {
+                                        const {
+                                            commonName,
+                                            imgURI,
+                                            speciesId,
+                                            name,
+                                            rangeMapImg,
+                                        } = entry
 
-                                    if (!allEntries) {
-                                        return
-                                    }
-
-                                    const timesSeen = allEntries?.filter(
-                                        (e) => e.speciesId == speciesId
-                                    ).length
-                                    let lastSeen = allEntries[0].timeSeen
-                                    for (
-                                        let i = allEntries.length - 1;
-                                        i >= 0;
-                                        i--
-                                    ) {
-                                        if (
-                                            allEntries[i].speciesId == speciesId
-                                        ) {
-                                            lastSeen = allEntries[i].timeSeen
-                                            break
-                                        }
-                                    }
-
-                                    return (
-                                        <div
-                                            key={speciesId}
-                                            onClick={() =>
-                                                router.push(
-                                                    BIRDPEDIA_ROUTE +
-                                                        `/${speciesId}?timesSeen=${timesSeen}&lastSeen=${lastSeen.toMillis()}&commonName=${commonName}` +
-                                                        `&name=${name}&imgURI=${imgURI}&rangeMapImg=${rangeMapImg}`
+                                        if (allEntries) {
+                                            const { timesSeen, lastSeen } =
+                                                calculateTimesSeenAndLastSeen(
+                                                    speciesId,
+                                                    allEntries
                                                 )
-                                            }
-                                        >
-                                            <Image
-                                                src={imgURI}
-                                                width={64}
-                                                height={64}
-                                                placeholder="blur"
-                                                blurDataURL="/loading.gif"
-                                                alt={'Image URI unavailible'}
-                                                style={{ borderRadius: '25%' }}
-                                            />
-                                            <p className="text-xs">
-                                                {commonName.length < 10
-                                                    ? commonName
-                                                    : commonName.slice(0, 10) +
-                                                      '...'}
-                                            </p>
-                                        </div>
-                                    )
-                                })
-                            ) : (
-                                <div></div>
-                            )}
+
+                                            return (
+                                                <div key={speciesId}>
+                                                    <Entry
+                                                        speciesId={speciesId}
+                                                        timesSeen={timesSeen}
+                                                        lastSeen={lastSeen}
+                                                        commonName={commonName}
+                                                        name={name}
+                                                        imgURI={imgURI}
+                                                        rangeMapImg={
+                                                            rangeMapImg
+                                                        }
+                                                    />
+                                                </div>
+                                            )
+                                        }
+                                    })}
+                                </div>
+                            </div>
+                            <NextBtn />
                         </div>
-                    </div>
-                    <Button
-                        type={'button'}
-                        disabled={nextBtnDisabled}
-                        onClickHandler={() => {
-                            !nextBtnDisabled && setPage(page + 1)
-                        }}
-                    >
-                        <FaArrowCircleDown
-                            color={nextBtnDisabled ? 'grey' : 'springgreen'}
-                            opacity={nextBtnDisabled ? '50%' : '100%'}
-                        />
-                    </Button>
+                    ) : (
+                        <div></div>
+                    )}
                 </div>
-            )}
+            </LoadData>
         </div>
     )
+}
+
+function calculateTimesSeenAndLastSeen(
+    speciesId: string,
+    allEntries: BirdpediaEntry[]
+) {
+    const timesSeen = allEntries?.filter((e) => e.speciesId == speciesId).length
+
+    //Get the most recent sighting of 'speciesId' and get the time seen
+    let lastSeen = allEntries[0].timeSeen
+    for (let i = allEntries.length - 1; i >= 0; i--) {
+        if (allEntries[i].speciesId == speciesId) {
+            lastSeen = allEntries[i].timeSeen
+            break
+        }
+    }
+
+    return { timesSeen, lastSeen }
 }
