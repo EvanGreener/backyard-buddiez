@@ -29,12 +29,12 @@ export default function BirdID() {
     const [addedBirdSuccess, setaddedBirdSuccess] = useState<boolean>(false)
     const [selectedBird, setSelectedBird] = useState<SearchResult>()
     const searchRef = useRef<HTMLInputElement>(null)
-    const { currentUserData, currentUserAuth } = useContext(AuthContext)
+    const { currentUserData, currentUserAuth, setCurrentUserData } =
+        useContext(AuthContext)
     const { setShowNewSpeciesNotif } = useContext(HomeContext)
 
     const handleOnInputChange: FormEventHandler<HTMLInputElement> = (event) => {
         const input = event.currentTarget.value
-        console.log(input)
         setBirdInput(input.toLowerCase())
     }
     const clearInput = () => {
@@ -82,6 +82,15 @@ export default function BirdID() {
                     currentUserAuth,
                     newSpecies
                 )
+
+                newSpecies &&
+                    currentUserData &&
+                    setCurrentUserData &&
+                    setCurrentUserData({
+                        ...currentUserData,
+                        speciesIdentified:
+                            currentUserData?.speciesIdentified + 1,
+                    })
                 setShowNewSpeciesNotif && setShowNewSpeciesNotif(newSpecies)
                 setSelectedBird(undefined)
                 setIsAddingBird(false)
@@ -90,7 +99,6 @@ export default function BirdID() {
             }
         }
 
-        console.log('useEffect')
         searchBirds()
         if (isAddingBird) {
             addNewSighting()
@@ -101,10 +109,11 @@ export default function BirdID() {
         }
     }, [
         birdInput,
-        isAddingBird,
-        currentUserData,
         currentUserAuth,
+        currentUserData,
+        isAddingBird,
         selectedBird,
+        setCurrentUserData,
         setShowNewSpeciesNotif,
     ])
 
@@ -122,13 +131,11 @@ export default function BirdID() {
                     conditionShowData={searchResults.length > 0}
                     conditionNoResults={birdInput.length > 0}
                 >
-                    <div className="border-2 border-green-400 flex flex-col space-y-2 h-[29rem] overflow-y-scroll">
-                        <SearchResultsSelect
-                            searchResults={searchResults}
-                            clearInput={clearInput}
-                            selectResult={selectResult}
-                        />
-                    </div>
+                    <SearchResultsSelect
+                        searchResults={searchResults}
+                        clearInput={clearInput}
+                        selectResult={selectResult}
+                    />
                 </LoadData>
             </div>
 
@@ -143,10 +150,7 @@ export default function BirdID() {
             {addedBirdSuccess && (
                 <Toast
                     color={Color.SUCCESS}
-                    messages={[
-                        'Succesfully added/logged bird sighting!',
-                        'Check your Birdpedia!',
-                    ]}
+                    messages={['Succesfully added/logged bird sighting!']}
                 />
             )}
         </div>

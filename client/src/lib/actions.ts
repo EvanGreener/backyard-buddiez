@@ -56,7 +56,6 @@ export async function getMultipleBirdsInfo(ids: string[]) {
     GROUP BY ?id ?birdLabel
     `
     const resultsJson = await getSparqlQueryResults(query)
-    console.log(query)
     const birdInfos: BirdInfo[] = resultsJson.results.bindings.map(
         (bird: any): BirdInfo => {
             return {

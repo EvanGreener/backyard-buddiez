@@ -5,7 +5,7 @@ import { AuthContext } from '@/contexts/AuthContext'
 import {
     addUserIfNotExists,
     getUserData,
-    updateUsers as updateUser,
+    updateUser,
 } from '@/lib/firestore-services'
 import {
     HOME_ROUTE,
@@ -19,6 +19,8 @@ import { User, getAuth, onAuthStateChanged } from 'firebase/auth'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 import LoadingGIF from './Loading'
+import { doc, getFirestore, onSnapshot } from 'firebase/firestore'
+import LoadData from './LoadData'
 
 export default function AuthContextProvider({
     children,
@@ -33,12 +35,9 @@ export default function AuthContextProvider({
     const router = useRouter()
 
     useEffect(() => {
-        console.log('AuthContextProvider useffect')
         setFetchingUser(true)
 
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-            console.log('onAuthStateChanged')
-
             if (user) {
                 console.log('Signed in')
                 // User related stuff
@@ -53,6 +52,7 @@ export default function AuthContextProvider({
                         }
                     })
                 }
+
                 if (currentUserData) {
                     // Middleware logic
                     if (
@@ -77,9 +77,13 @@ export default function AuthContextProvider({
                 }
             }
         })
+        let userDataUnsubscribe = () => {}
 
         setFetchingUser(false)
-        return () => unsubscribeAuth()
+        return () => {
+            userDataUnsubscribe()
+            unsubscribeAuth()
+        }
     }, [auth, pathname, currentUserData, router])
 
     return (
@@ -90,8 +94,7 @@ export default function AuthContextProvider({
                 setCurrentUserData,
             }}
         >
-            {fetchingUser && <LoadingGIF />}
-            {!fetchingUser && children}
+            <LoadData conditionLoad={fetchingUser}>{children}</LoadData>
         </AuthContext.Provider>
     )
 }

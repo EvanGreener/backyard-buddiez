@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation'
 import { useContext, useEffect, useState } from 'react'
 import { FaArrowCircleDown, FaArrowCircleUp } from 'react-icons/fa'
 import { Timestamp } from 'firebase/firestore'
+import { HomeContext } from '@/contexts/HomeContext'
 
 export default function Birdpedia() {
     const [isFetchingBirdData, setIsFetchingData] = useState<boolean>(true)
@@ -20,8 +21,10 @@ export default function Birdpedia() {
     const [allBirdInfos, setAllBirdInfos] = useState<BirdInfo[]>()
     const [page, setPage] = useState<number>(0)
     const router = useRouter()
-
     const { currentUserData } = useContext(AuthContext)
+    const { showNewSpeciesNotif, setShowNewSpeciesNotif } =
+        useContext(HomeContext)
+
     const birdsPerPage = 12
     const prevBtnDisabled = page == 0
     const nextBtnDisabled =
@@ -36,6 +39,10 @@ export default function Birdpedia() {
               page * birdsPerPage + birdsPerPage
           )
         : undefined
+
+    if (showNewSpeciesNotif && setShowNewSpeciesNotif) {
+        setShowNewSpeciesNotif(false)
+    }
 
     useEffect(() => {
         async function getEntriesData() {

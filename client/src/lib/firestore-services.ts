@@ -47,10 +47,7 @@ export async function addUserIfNotExists(currentUser: User) {
     return false
 }
 
-export async function updateUsers(
-    currentUser: User,
-    router: AppRouterInstance
-) {
+export async function updateUser(currentUser: User, router: AppRouterInstance) {
     const usersRef = collection(db, 'users')
     const docRef = doc(usersRef, currentUser.uid)
     const userData = (await getDoc(docRef)).data()
@@ -63,7 +60,13 @@ export async function updateUsers(
             await updateDoc(docRef, {
                 birdpediaId: deleteField(), // birdpediaId Now replaced with sightingsId
                 sightingsId: newSightingsRef.id,
-                points: deleteField(),
+            })
+        }
+
+        if (!userData.speciesIdentified) {
+            await updateDoc(docRef, {
+                points: deleteField(), // Now replaced with speciesIdentified
+                speciesIdentified: 0,
             })
         }
 
@@ -118,14 +121,14 @@ export async function addSighting(
     currentUser: User | null,
     newSpecies: boolean
 ) {
-    if (!currentUserData) {
+    if (!currentUserData || !currentUser) {
         console.log('User not signed in')
         return
     }
 
     if (newSpecies) {
         const usersRef = collection(db, 'users')
-        const docRef = doc(usersRef)
+        const docRef = doc(usersRef, currentUser?.uid)
 
         await updateDoc(docRef, {
             speciesIdentified: increment(1),

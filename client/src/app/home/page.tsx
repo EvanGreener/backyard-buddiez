@@ -18,6 +18,12 @@ export default function Home() {
                         {' ' + currentUserData?.displayName}
                     </span>
                 </div>
+                <div className="">
+                    Species Identified:
+                    <span className="font-bold text-black">
+                        {' ' + currentUserData?.speciesIdentified}
+                    </span>
+                </div>
                 <div>Leaderboard to be added soon</div>
             </LoadData>
         </div>

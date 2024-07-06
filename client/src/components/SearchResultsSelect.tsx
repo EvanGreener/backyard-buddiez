@@ -14,7 +14,7 @@ export default function SearchResultsSelect({
     selectResult,
 }: SearchResultsSelectType) {
     return (
-        <div className="border-2 border-green-400 flex flex-col space-y-2 h-[29rem] overflow-y-scroll">
+        <div className="border-4 border-green-400 rounded flex flex-col space-y-2 h-[29rem] overflow-y-scroll">
             {searchResults.map((sr) => {
                 return (
                     <button
