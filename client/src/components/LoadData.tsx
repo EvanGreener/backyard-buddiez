@@ -6,19 +6,21 @@ interface LoadDataType {
     conditionLoad: boolean
     conditionShowData?: boolean
     conditionNoResults?: boolean
+    noResultsMessage?: string
 }
 export default function LoadData({
     children,
     conditionLoad,
     conditionShowData = true,
     conditionNoResults = false,
+    noResultsMessage = 'No results',
 }: LoadDataType) {
     if (conditionLoad) {
         return <LoadingGIF />
     } else if (conditionShowData) {
         return children
     } else if (conditionNoResults) {
-        return <span>No results</span>
+        return <span>{noResultsMessage}</span>
     } else {
         return
     }

@@ -13,7 +13,7 @@ import { HOME_ROUTE } from './routes'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 const auth = getAuth(firebaseApp)
-export const db = getFirestore(firebaseApp)
+const db = getFirestore(firebaseApp)
 
 export async function signInGoogle() {
     const provider = new GoogleAuthProvider()

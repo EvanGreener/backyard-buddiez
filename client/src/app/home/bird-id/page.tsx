@@ -7,8 +7,9 @@ import SearchBar from '@/components/SearchBar'
 import SearchResultsSelect from '@/components/SearchResultsSelect'
 import Toast from '@/components/Toast'
 import { AuthContext } from '@/contexts/AuthContext'
+import { HomeContext } from '@/contexts/HomeContext'
 import searchBirdsWikidata from '@/lib/actions'
-import { addSighting } from '@/lib/firestore-services'
+import { addSighting, getAllSightings } from '@/lib/firestore-services'
 import { Color } from '@/theme/colors'
 import { SearchResult } from '@/types/action-types'
 import Image from 'next/image'
@@ -28,7 +29,8 @@ export default function BirdID() {
     const [addedBirdSuccess, setaddedBirdSuccess] = useState<boolean>(false)
     const [selectedBird, setSelectedBird] = useState<SearchResult>()
     const searchRef = useRef<HTMLInputElement>(null)
-    const { currentUserData } = useContext(AuthContext)
+    const { currentUserData, currentUserAuth } = useContext(AuthContext)
+    const { setShowNewSpeciesNotif } = useContext(HomeContext)
 
     const handleOnInputChange: FormEventHandler<HTMLInputElement> = (event) => {
         const input = event.currentTarget.value
@@ -56,9 +58,31 @@ export default function BirdID() {
             setIsFetchingData(false)
         }
 
-        async function addBirdToBirdpedia() {
+        async function addNewSighting() {
             if (selectedBird) {
-                await addSighting(selectedBird, currentUserData)
+                let newSpecies = false
+
+                const entries = await getAllSightings(currentUserData)
+                if (entries) {
+                    // Create unique array of ids
+                    const ids = [
+                        ...new Set(
+                            entries.map((entry) => {
+                                return entry.speciesId
+                            })
+                        ),
+                    ]
+
+                    newSpecies = !ids.includes(selectedBird.speciesId)
+                }
+
+                await addSighting(
+                    selectedBird,
+                    currentUserData,
+                    currentUserAuth,
+                    newSpecies
+                )
+                setShowNewSpeciesNotif && setShowNewSpeciesNotif(newSpecies)
                 setSelectedBird(undefined)
                 setIsAddingBird(false)
                 setaddedBirdSuccess(true)
@@ -69,13 +93,20 @@ export default function BirdID() {
         console.log('useEffect')
         searchBirds()
         if (isAddingBird) {
-            addBirdToBirdpedia()
+            addNewSighting()
         }
 
         return () => {
             ignoreSearchResults = true
         }
-    }, [birdInput, isAddingBird, currentUserData, selectedBird])
+    }, [
+        birdInput,
+        isAddingBird,
+        currentUserData,
+        currentUserAuth,
+        selectedBird,
+        setShowNewSpeciesNotif,
+    ])
 
     return (
         <div className="flex flex-col items-center space-y-6 h-full">

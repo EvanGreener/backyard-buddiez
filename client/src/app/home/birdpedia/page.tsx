@@ -4,20 +4,19 @@ import Button from '@/components/Button'
 import LoadData from '@/components/LoadData'
 import { AuthContext } from '@/contexts/AuthContext'
 import { getMultipleBirdsInfo as getBirdInfos } from '@/lib/actions'
-import { getAllBirdpediaEntries } from '@/lib/firestore-services'
+import { getAllSightings } from '@/lib/firestore-services'
 import { BIRDPEDIA_ROUTE } from '@/lib/routes'
 import { BirdInfo } from '@/types/action-types'
-import { BirdpediaEntry } from '@/types/db-types'
+import { Sighting } from '@/types/db-types'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { MouseEventHandler, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { FaArrowCircleDown, FaArrowCircleUp } from 'react-icons/fa'
-import page from '../page'
 import { Timestamp } from 'firebase/firestore'
 
 export default function Birdpedia() {
     const [isFetchingBirdData, setIsFetchingData] = useState<boolean>(true)
-    const [allEntries, setAllEntries] = useState<BirdpediaEntry[]>()
+    const [allEntries, setAllEntries] = useState<Sighting[]>()
     const [allBirdInfos, setAllBirdInfos] = useState<BirdInfo[]>()
     const [page, setPage] = useState<number>(0)
     const router = useRouter()
@@ -41,7 +40,7 @@ export default function Birdpedia() {
     useEffect(() => {
         async function getEntriesData() {
             // Get user sightings from firestore
-            const entries = await getAllBirdpediaEntries(currentUserData)
+            const entries = await getAllSightings(currentUserData)
             if (entries) {
                 setAllEntries(entries)
 
@@ -152,7 +151,12 @@ export default function Birdpedia() {
 
     return (
         <div className="flex flex-col items-center px-8">
-            <LoadData conditionLoad={isFetchingBirdData}>
+            <LoadData
+                conditionLoad={isFetchingBirdData}
+                conditionShowData={entriesShown && entriesShown.length > 0}
+                conditionNoResults={entriesShown && entriesShown.length == 0}
+                noResultsMessage="Tap the bird icon and ID your first bird, then come back to this page!"
+            >
                 <div className="flex flex-col items-center">
                     {entriesShown ? (
                         <div className="flex flex-col items-center">
@@ -208,7 +212,7 @@ export default function Birdpedia() {
 
 function calculateTimesSeenAndLastSeen(
     speciesId: string,
-    allEntries: BirdpediaEntry[]
+    allEntries: Sighting[]
 ) {
     const timesSeen = allEntries?.filter((e) => e.speciesId == speciesId).length
 

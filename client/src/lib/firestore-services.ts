@@ -1,7 +1,7 @@
+import { firebaseApp } from '@/config/config'
 import { SearchResult } from '@/types/action-types'
-import { db } from './auth'
 
-import { BBUser, BirdpediaEntry } from '@/types/db-types'
+import { BBUser, Sighting } from '@/types/db-types'
 import { User } from 'firebase/auth'
 import {
     collection,
@@ -12,14 +12,14 @@ import {
     updateDoc,
     addDoc,
     arrayUnion,
-    DocumentReference,
-    limit,
-    orderBy,
-    query,
-    where,
+    deleteField,
+    getFirestore,
+    increment,
 } from 'firebase/firestore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { Dispatch, SetStateAction } from 'react'
+
+const db = getFirestore(firebaseApp)
 
 export async function addUserIfNotExists(currentUser: User) {
     // Check if user exists in db
@@ -28,17 +28,17 @@ export async function addUserIfNotExists(currentUser: User) {
     const docSnap = await getDoc(docRef)
 
     if (!docSnap.exists()) {
-        // Create new birdpedia for user
-        const newBirdpediaRef = await addDoc(collection(db, 'birdpedias'), {
-            entries: [],
+        // Create new sightings array for user
+        const newSightingsRef = await addDoc(collection(db, 'sightings'), {
+            sightings: [],
         })
         // Create new user in db
         const newUser: BBUser = {
-            displayName: 'ChangeYourDisplayNname123',
-            points: 0,
+            displayName: 'ChangeYourDisplayName123',
             createdAt: Timestamp.fromDate(new Date()),
             profileCreated: false,
-            birdpediaId: newBirdpediaRef.id,
+            sightingsId: newSightingsRef.id,
+            speciesIdentified: 0,
         }
 
         await setDoc(doc(usersRef, currentUser.uid), newUser)
@@ -55,13 +55,15 @@ export async function updateUsers(
     const docRef = doc(usersRef, currentUser.uid)
     const userData = (await getDoc(docRef)).data()
     if (userData) {
-        if (!userData.birdpediaId) {
-            const newBirdpediaRef = await addDoc(collection(db, 'birdpedias'), {
-                entries: [],
+        if (!userData.sightingsId) {
+            const newSightingsRef = await addDoc(collection(db, 'sightings'), {
+                sightings: [],
             })
 
             await updateDoc(docRef, {
-                birdpediaId: newBirdpediaRef.id,
+                birdpediaId: deleteField(), // birdpediaId Now replaced with sightingsId
+                sightingsId: newSightingsRef.id,
+                points: deleteField(),
             })
         }
 
@@ -77,10 +79,10 @@ export async function getUserData(currentUser: User) {
     if (userData) {
         const userDataBB: BBUser = {
             displayName: userData.displayName,
-            points: userData.points,
             createdAt: userData.createdAt,
             profileCreated: userData.profileCreated,
-            birdpediaId: userData.birdpediaId,
+            sightingsId: userData.sightingsId,
+            speciesIdentified: userData.speciesIdentified,
         }
 
         return userDataBB
@@ -112,41 +114,56 @@ export async function createProfile(
 
 export async function addSighting(
     selectedBird: SearchResult,
-    currentUserData: BBUser | null
+    currentUserData: BBUser | null,
+    currentUser: User | null,
+    newSpecies: boolean
 ) {
     if (!currentUserData) {
         console.log('User not signed in')
         return
     }
-    console.log(currentUserData.birdpediaId)
-    const birdpediasRef = doc(db, 'birdpedias', currentUserData.birdpediaId)
 
-    const newEntry: BirdpediaEntry = {
+    if (newSpecies) {
+        const usersRef = collection(db, 'users')
+        const docRef = doc(usersRef)
+
+        await updateDoc(docRef, {
+            speciesIdentified: increment(1),
+        })
+    }
+
+    const sightingsRef = doc(db, 'sightings', currentUserData.sightingsId)
+
+    const newSighting: Sighting = {
         speciesId: selectedBird.speciesId,
         timeSeen: Timestamp.fromDate(new Date()),
     }
-    await updateDoc(birdpediasRef, {
-        entries: arrayUnion(newEntry),
+    await updateDoc(sightingsRef, {
+        sightings: arrayUnion(newSighting),
     })
 }
 
-export async function getAllBirdpediaEntries(currentUserData: BBUser | null) {
+export async function getAllSightings(currentUserData: BBUser | null) {
     if (!currentUserData) {
         console.log('User not signed in')
         return
     }
 
-    const birdpedia = (
-        await getDoc(doc(db, 'birdpedias', currentUserData.birdpediaId))
+    const sightings = (
+        await getDoc(doc(db, 'sightings', currentUserData.sightingsId))
     ).data()
 
-    if (birdpedia) {
-        const allEntries: BirdpediaEntry[] = birdpedia.entries.map(
-            (entry: BirdpediaEntry) => {
-                return entry
+    if (sightings) {
+        const allSightings: Sighting[] = sightings.sightings.map(
+            (sighting: Sighting) => {
+                return sighting
             }
         )
 
-        return allEntries
+        return allSightings
     }
+}
+
+export async function getTop10Global() {
+    const usersRef = collection(db, 'users')
 }

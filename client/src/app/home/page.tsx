@@ -1,23 +1,25 @@
 'use client'
 
+import LoadData from '@/components/LoadData'
 import { AuthContext } from '@/contexts/AuthContext'
-import { HOME_ROUTE } from '@/lib/routes'
-import { useRouter } from 'next/navigation'
 import { useContext, useEffect } from 'react'
 
 export default function Home() {
-    const { currentUserData, setCurrentUserData } = useContext(AuthContext)
+    const { currentUserData } = useContext(AuthContext)
+
+    function Leaderboard() {}
+    useEffect(() => {}, [])
     return (
         <div>
-            <div className="text-xl">
-                Welcome back
-                <span className="text-emerald-400">
-                    {' '}
-                    {currentUserData?.displayName}
-                </span>
-            </div>
-            <div>Points {currentUserData?.points}</div>
-            <div>Challenge checklist</div>
+            <LoadData conditionLoad={currentUserData == null}>
+                <div className="text-xl">
+                    Welcome back
+                    <span className="text-emerald-400">
+                        {' ' + currentUserData?.displayName}
+                    </span>
+                </div>
+                <div>Leaderboard to be added soon</div>
+            </LoadData>
         </div>
     )
 }

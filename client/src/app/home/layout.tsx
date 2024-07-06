@@ -6,13 +6,15 @@ import {
     SETTINGS_ROUTE,
 } from '@/lib/routes'
 import Link from 'next/link'
-import { FaHome } from 'react-icons/fa'
+import { FaHome, FaPlus } from 'react-icons/fa'
 import { PiBirdFill } from 'react-icons/pi'
-import { MdChecklist } from 'react-icons/md'
+import { MdChecklist, MdOutlineFiberNew } from 'react-icons/md'
 import { IconContext } from 'react-icons'
 import { IoIosSettings } from 'react-icons/io'
 import { usePathname, useRouter } from 'next/navigation'
 import { FaBookBookmark } from 'react-icons/fa6'
+import { HomeContext } from '@/contexts/HomeContext'
+import { useState } from 'react'
 
 export default function HomeLayout({
     children,
@@ -20,32 +22,47 @@ export default function HomeLayout({
     children: React.ReactNode
 }>) {
     const pathname = usePathname()
-
+    const [showNewSpeciesNotif, setShowNewSpeciesNotif] = useState(false)
     return (
         <IconContext.Provider value={{ size: '1.5rem' }}>
-            <div className="h-full flex flex-col items-center ">
-                <div className="grow py-4">{children}</div>
-                <div className="bg-green-400 p-4 w-full flex place-content-around">
-                    <Link href={HOME_ROUTE}>
-                        <FaHome color={chooseColor(pathname, HOME_ROUTE)} />
-                    </Link>
-                    <Link href={BIRD_ID_ROUTE}>
-                        <PiBirdFill
-                            color={chooseColor(pathname, BIRD_ID_ROUTE)}
-                        />
-                    </Link>
-                    <Link href={BIRDPEDIA_ROUTE}>
-                        <FaBookBookmark
-                            color={chooseColor(pathname, BIRDPEDIA_ROUTE)}
-                        />
-                    </Link>
-                    <Link href={SETTINGS_ROUTE}>
-                        <IoIosSettings
-                            color={chooseColor(pathname, SETTINGS_ROUTE)}
-                        />
-                    </Link>
+            <HomeContext.Provider
+                value={{ showNewSpeciesNotif, setShowNewSpeciesNotif }}
+            >
+                <div className="h-full flex flex-col items-center ">
+                    <div className="grow py-4">{children}</div>
+                    <div className="bg-green-400 w-full flex place-content-around">
+                        <Link href={HOME_ROUTE} className="p-4">
+                            <FaHome color={chooseColor(pathname, HOME_ROUTE)} />
+                        </Link>
+                        <Link href={BIRD_ID_ROUTE} className="p-4">
+                            <FaPlus
+                                color={chooseColor(pathname, BIRD_ID_ROUTE)}
+                            />
+                        </Link>
+                        <div className="relative p-4">
+                            <Link href={BIRDPEDIA_ROUTE}>
+                                <FaBookBookmark
+                                    color={chooseColor(
+                                        pathname,
+                                        BIRDPEDIA_ROUTE
+                                    )}
+                                />
+                            </Link>
+                            {showNewSpeciesNotif && (
+                                <div className="absolute top-0 right-0 animate-bounce bg-red-300 rounded">
+                                    <MdOutlineFiberNew />
+                                </div>
+                            )}
+                        </div>
+
+                        <Link href={SETTINGS_ROUTE} className="p-4">
+                            <IoIosSettings
+                                color={chooseColor(pathname, SETTINGS_ROUTE)}
+                            />
+                        </Link>
+                    </div>
                 </div>
-            </div>
+            </HomeContext.Provider>
         </IconContext.Provider>
     )
 }
