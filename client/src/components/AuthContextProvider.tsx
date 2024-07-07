@@ -41,28 +41,33 @@ export default function AuthContextProvider({
             if (user) {
                 console.log('Signed in')
                 // User related stuff
-                addUserIfNotExists(user)
-                updateUser(user, router)
+                addUserIfNotExists(user).then((isNewUser) => {
+                    !isNewUser && updateUser(user, router)
+                })
 
                 setCurrentUserAuth(user)
+                let userData = null
                 if (!currentUserData) {
-                    getUserData(user).then((userData) => {
-                        if (userData) {
-                            setCurrentUserData(userData)
+                    getUserData(user).then((userDataTemp) => {
+                        if (userDataTemp) {
+                            userData = userDataTemp
+                            setCurrentUserData(userDataTemp)
                         }
                     })
+                } else {
+                    userData = currentUserData
                 }
 
-                if (currentUserData) {
+                if (userData) {
                     // Middleware logic
                     if (
                         (pathname == LOGIN_EMAIL_ROUTE ||
                             pathname == SIGN_UP_EMAIL_ROUTE ||
                             pathname == ROOT_LOGIN) &&
-                        currentUserData.profileCreated
+                        userData.profileCreated
                     ) {
                         router.push(HOME_ROUTE)
-                    } else if (!currentUserData.profileCreated) {
+                    } else if (!userData.profileCreated) {
                         router.push(CREATE_PROFILE_ROUTE)
                     } else if (pathname == CREATE_PROFILE_ROUTE) {
                         router.push(HOME_ROUTE)
@@ -77,11 +82,9 @@ export default function AuthContextProvider({
                 }
             }
         })
-        let userDataUnsubscribe = () => {}
-
         setFetchingUser(false)
+
         return () => {
-            userDataUnsubscribe()
             unsubscribeAuth()
         }
     }, [auth, pathname, currentUserData, router])

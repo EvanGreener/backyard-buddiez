@@ -35,6 +35,7 @@ export async function addUserIfNotExists(currentUser: User) {
     if (!docSnap.exists()) {
         // Create new sightings array for user
         const newSightingsRef = await addDoc(collection(db, 'sightings'), {
+            uid: currentUser.uid,
             sightings: [],
         })
         // Create new user in db
@@ -59,6 +60,7 @@ export async function updateUser(currentUser: User, router: AppRouterInstance) {
     if (userData) {
         if (!userData.sightingsId) {
             const newSightingsRef = await addDoc(collection(db, 'sightings'), {
+                uid: currentUser.uid,
                 sightings: [],
             })
 
@@ -135,6 +137,8 @@ export async function addSighting(
         return
     }
 
+    console.log('got user')
+
     if (newSpecies) {
         const usersRef = collection(db, 'users')
         const docRef = doc(usersRef, currentUser?.uid)
@@ -142,6 +146,7 @@ export async function addSighting(
         await updateDoc(docRef, {
             speciesIdentified: increment(1),
         })
+        console.log('new speices')
     }
 
     const sightingsRef = doc(db, 'sightings', currentUserData.sightingsId)
@@ -150,6 +155,9 @@ export async function addSighting(
         speciesId: selectedBird.speciesId,
         timeSeen: Timestamp.fromDate(new Date()),
     }
+
+    console.log('adding new sighting')
+
     await updateDoc(sightingsRef, {
         sightings: arrayUnion(newSighting),
     })

@@ -162,7 +162,7 @@ export default function Birdpedia() {
                 conditionLoad={isFetchingBirdData}
                 conditionShowData={entriesShown && entriesShown.length > 0}
                 conditionNoResults={entriesShown && entriesShown.length == 0}
-                noResultsMessage="Tap the bird icon and ID your first bird, then come back to this page!"
+                noResultsMessage="Tap the '+' tab and ID your first bird, then come back to this page!"
             >
                 <div className="flex flex-col items-center">
                     {entriesShown ? (
