@@ -29,7 +29,7 @@ export default function HomeLayout({
                 value={{ showNewSpeciesNotif, setShowNewSpeciesNotif }}
             >
                 <div className="h-full flex flex-col items-center ">
-                    <div className="grow py-4">{children}</div>
+                    <div className="grow p-4 w-full">{children}</div>
                     <div className="bg-green-400 w-full flex place-content-around">
                         <Link href={HOME_ROUTE} className="p-4">
                             <FaHome color={chooseColor(pathname, HOME_ROUTE)} />

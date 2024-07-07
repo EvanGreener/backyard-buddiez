@@ -15,6 +15,11 @@ import {
     deleteField,
     getFirestore,
     increment,
+    orderBy,
+    limit,
+    query,
+    getDocs,
+    DocumentData,
 } from 'firebase/firestore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { Dispatch, SetStateAction } from 'react'
@@ -80,17 +85,21 @@ export async function getUserData(currentUser: User) {
     const userData = (await getDoc(docRef)).data()
 
     if (userData) {
-        const userDataBB: BBUser = {
-            displayName: userData.displayName,
-            createdAt: userData.createdAt,
-            profileCreated: userData.profileCreated,
-            sightingsId: userData.sightingsId,
-            speciesIdentified: userData.speciesIdentified,
-        }
-
-        return userDataBB
+        return convertDocToUserData(userData)
     }
     return null
+}
+
+export function convertDocToUserData(userData: DocumentData) {
+    const userDataBB: BBUser = {
+        displayName: userData.displayName,
+        createdAt: userData.createdAt,
+        profileCreated: userData.profileCreated,
+        sightingsId: userData.sightingsId,
+        speciesIdentified: userData.speciesIdentified,
+    }
+
+    return userDataBB
 }
 
 export async function createProfile(
@@ -167,6 +176,16 @@ export async function getAllSightings(currentUserData: BBUser | null) {
     }
 }
 
-export async function getTop10Global() {
+export async function getTopXGlobal(top: number = 20) {
     const usersRef = collection(db, 'users')
+    const q = query(usersRef, orderBy('speciesIdentified', 'desc'), limit(top))
+
+    let topUsers: BBUser[] = []
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach((user) => {
+        const userData: BBUser = convertDocToUserData(user.data())
+        topUsers.push(userData)
+    })
+
+    return topUsers
 }
