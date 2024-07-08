@@ -3,12 +3,13 @@ import {
     BIRDPEDIA_ROUTE,
     BIRD_ID_ROUTE,
     HOME_ROUTE,
+    LEADERBOARDS_ROUTE,
     SETTINGS_ROUTE,
 } from '@/lib/routes'
 import Link from 'next/link'
 import { FaHome, FaPlus } from 'react-icons/fa'
 import { PiBirdFill } from 'react-icons/pi'
-import { MdChecklist, MdOutlineFiberNew } from 'react-icons/md'
+import { MdChecklist, MdOutlineFiberNew, MdLeaderboard } from 'react-icons/md'
 import { IconContext } from 'react-icons'
 import { IoIosSettings } from 'react-icons/io'
 import { usePathname, useRouter } from 'next/navigation'
@@ -29,10 +30,18 @@ export default function HomeLayout({
                 value={{ showNewSpeciesNotif, setShowNewSpeciesNotif }}
             >
                 <div className="h-full flex flex-col items-center ">
-                    <div className="grow p-4 w-full">{children}</div>
+                    <div className="grow p-4 w-full h-full">{children}</div>
                     <div className="bg-green-400 w-full flex place-content-around">
                         <Link href={HOME_ROUTE} className="p-4">
                             <FaHome color={chooseColor(pathname, HOME_ROUTE)} />
+                        </Link>
+                        <Link href={LEADERBOARDS_ROUTE} className="p-4">
+                            <MdLeaderboard
+                                color={chooseColor(
+                                    pathname,
+                                    LEADERBOARDS_ROUTE
+                                )}
+                            />
                         </Link>
                         <Link href={BIRD_ID_ROUTE} className="p-4">
                             <FaPlus

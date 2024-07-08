@@ -1,7 +1,12 @@
 import { firebaseApp } from '@/config/config'
 import { SearchResult } from '@/types/action-types'
 
-import { BBUser, Sighting } from '@/types/db-types'
+import {
+    UserData,
+    DailyChallenge,
+    DailyChallengeProgress,
+    Sighting,
+} from '@/types/db-types'
 import { User } from 'firebase/auth'
 import {
     collection,
@@ -20,9 +25,13 @@ import {
     query,
     getDocs,
     DocumentData,
+    where,
+    serverTimestamp,
+    documentId,
 } from 'firebase/firestore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { Dispatch, SetStateAction } from 'react'
+import { shuffle } from './utils'
 
 const db = getFirestore(firebaseApp)
 
@@ -38,13 +47,21 @@ export async function addUserIfNotExists(currentUser: User) {
             uid: currentUser.uid,
             sightings: [],
         })
+
+        // Give new daily challenges to user
+        const dailyChallenges = await getNewDailyChallenges()
+
         // Create new user in db
-        const newUser: BBUser = {
+        const newUser = {
             displayName: 'ChangeYourDisplayName123',
-            createdAt: Timestamp.fromDate(new Date()),
+            createdAt: serverTimestamp(),
             profileCreated: false,
             sightingsId: newSightingsRef.id,
             speciesIdentified: 0,
+
+            dCsCompleted: 0,
+            dCsLastUpdated: serverTimestamp(),
+            dailyChallenges: dailyChallenges,
         }
 
         await setDoc(doc(usersRef, currentUser.uid), newUser)
@@ -77,7 +94,16 @@ export async function updateUser(currentUser: User, router: AppRouterInstance) {
             })
         }
 
-        router.refresh()
+        if (userData.dCsCompleted === undefined) {
+            console.log(userData)
+
+            const dailyChallenges = await getNewDailyChallenges()
+            await updateDoc(docRef, {
+                dCsLastUpdated: serverTimestamp(),
+                dailyChallenges: dailyChallenges,
+                dCsCompleted: 0,
+            })
+        }
     }
 }
 
@@ -93,12 +119,15 @@ export async function getUserData(currentUser: User) {
 }
 
 export function convertDocToUserData(userData: DocumentData) {
-    const userDataBB: BBUser = {
+    const userDataBB: UserData = {
         displayName: userData.displayName,
         createdAt: userData.createdAt,
         profileCreated: userData.profileCreated,
         sightingsId: userData.sightingsId,
         speciesIdentified: userData.speciesIdentified,
+        dCsCompleted: userData.DCsCompleted,
+        dCsLastUpdated: userData.dCsLastUpdated,
+        dailyChallenges: userData.dailyChallenges,
     }
 
     return userDataBB
@@ -107,11 +136,10 @@ export function convertDocToUserData(userData: DocumentData) {
 export async function createProfile(
     currentUser: User | null,
     displayName: string,
-    setCurrentUserData: Dispatch<SetStateAction<BBUser | null>>
+    setCurrentUserData: Dispatch<SetStateAction<UserData | null>>
 ) {
     if (!currentUser) {
         console.log('User not signed in')
-
         return
     }
 
@@ -128,7 +156,7 @@ export async function createProfile(
 
 export async function addSighting(
     selectedBird: SearchResult,
-    currentUserData: BBUser | null,
+    currentUserData: UserData | null,
     currentUser: User | null,
     newSpecies: boolean
 ) {
@@ -151,9 +179,9 @@ export async function addSighting(
 
     const sightingsRef = doc(db, 'sightings', currentUserData.sightingsId)
 
-    const newSighting: Sighting = {
+    const newSighting = {
         speciesId: selectedBird.speciesId,
-        timeSeen: Timestamp.fromDate(new Date()),
+        timeSeen: serverTimestamp(),
     }
 
     console.log('adding new sighting')
@@ -163,7 +191,7 @@ export async function addSighting(
     })
 }
 
-export async function getAllSightings(currentUserData: BBUser | null) {
+export async function getAllSightings(currentUserData: UserData | null) {
     if (!currentUserData) {
         console.log('User not signed in')
         return
@@ -188,12 +216,101 @@ export async function getTopXGlobal(top: number = 20) {
     const usersRef = collection(db, 'users')
     const q = query(usersRef, orderBy('speciesIdentified', 'desc'), limit(top))
 
-    let topUsers: BBUser[] = []
+    let topUsers: UserData[] = []
     const querySnapshot = await getDocs(q)
-    querySnapshot.forEach((user) => {
-        const userData: BBUser = convertDocToUserData(user.data())
+    querySnapshot.forEach((userDoc) => {
+        const userData: UserData = convertDocToUserData(userDoc.data())
         topUsers.push(userData)
     })
 
     return topUsers
+}
+
+export async function getNewDailyChallenges() {
+    let allDCIDs: string[] = []
+    const DCsSnapshot = await getDocs(collection(db, 'daily-challenges'))
+    DCsSnapshot.forEach((DCDoc) => {
+        allDCIDs.push(DCDoc.id)
+    })
+    shuffle(allDCIDs)
+    allDCIDs = allDCIDs.slice(0, 3)
+
+    const dailyChallenges: DailyChallengeProgress[] = [
+        {
+            dCID: allDCIDs[0],
+            birdsIDd: 0,
+        },
+        {
+            dCID: allDCIDs[1],
+            birdsIDd: 0,
+        },
+        {
+            dCID: allDCIDs[2],
+            birdsIDd: 0,
+        },
+    ]
+
+    return dailyChallenges
+}
+
+export async function resetDailyChallenges(
+    currentUser: User,
+    currentUserData: UserData
+) {
+    let lastUpdatedDate = currentUserData.dCsLastUpdated.toDate()
+    let currentDate = Timestamp.now().toDate()
+
+    lastUpdatedDate = new Date(
+        lastUpdatedDate.getFullYear(),
+        lastUpdatedDate.getMonth(),
+        lastUpdatedDate.getDate()
+    )
+    currentDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate()
+    )
+
+    if (lastUpdatedDate.getTime() !== currentDate.getTime()) {
+        const newChallenges = await getNewDailyChallenges()
+
+        const usersRef = collection(db, 'users')
+        const docRef = doc(usersRef, currentUser.uid)
+
+        await updateDoc(docRef, {
+            dCsLastUpdated: serverTimestamp(),
+            dailyChallenges: newChallenges,
+        })
+        return true
+    }
+    return false
+}
+
+export interface DailyChallengeDoc {
+    id: string
+    dc: DailyChallenge
+}
+
+export async function getUserDailyChallengeInfo(currentUserData: UserData) {
+    const dailyChallengeProgress = currentUserData.dailyChallenges
+    const DCIDs = dailyChallengeProgress.map((dc) => {
+        return dc.dCID
+    })
+
+    let dailyChallenges: DailyChallengeDoc[] = []
+    const DCsRef = collection(db, 'daily-challenges')
+    const q = query(DCsRef, where(documentId(), 'in', DCIDs))
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach((DCDoc) => {
+        const { numBirds, title } = DCDoc.data()
+        dailyChallenges.push({
+            id: DCDoc.id,
+            dc: {
+                numBirds,
+                title,
+            },
+        })
+    })
+
+    return dailyChallenges
 }

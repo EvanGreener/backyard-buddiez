@@ -1,9 +1,8 @@
 express-example/
 node_modules/
 .env
-backyard-buddiez-firebase-adminsdk-o4axt-f7dec846e5.json
+backyard-buddiez-firebase-adminsdk-*.json
 
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules

@@ -5,6 +5,7 @@ import { AuthContext } from '@/contexts/AuthContext'
 import {
     addUserIfNotExists,
     getUserData,
+    resetDailyChallenges,
     updateUser,
 } from '@/lib/firestore-services'
 import {
@@ -14,7 +15,7 @@ import {
     ROOT_LOGIN,
     SIGN_UP_EMAIL_ROUTE,
 } from '@/lib/routes'
-import { BBUser } from '@/types/db-types'
+import { UserData } from '@/types/db-types'
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
@@ -29,7 +30,9 @@ export default function AuthContextProvider({
 }) {
     const auth = getAuth(firebaseApp)
     const [currentUserAuth, setCurrentUserAuth] = useState<User | null>(null)
-    const [currentUserData, setCurrentUserData] = useState<BBUser | null>(null)
+    const [currentUserData, setCurrentUserData] = useState<UserData | null>(
+        null
+    )
     const [fetchingUser, setFetchingUser] = useState<boolean>(true)
     const pathname = usePathname()
     const router = useRouter()
@@ -44,30 +47,28 @@ export default function AuthContextProvider({
                 addUserIfNotExists(user).then((isNewUser) => {
                     !isNewUser && updateUser(user, router)
                 })
-
                 setCurrentUserAuth(user)
-                let userData = null
-                if (!currentUserData) {
-                    getUserData(user).then((userDataTemp) => {
-                        if (userDataTemp) {
-                            userData = userDataTemp
-                            setCurrentUserData(userDataTemp)
-                        }
-                    })
-                } else {
-                    userData = currentUserData
-                }
 
-                if (userData) {
+                let userDataT: UserData | undefined
+                getUserData(user).then((userData) => {
+                    if (userData) {
+                        userDataT = userData
+                        setCurrentUserData(userData)
+                        //Reset daily challenges
+                        resetDailyChallenges(user, userData)
+                    }
+                })
+
+                if (userDataT) {
                     // Middleware logic
                     if (
                         (pathname == LOGIN_EMAIL_ROUTE ||
                             pathname == SIGN_UP_EMAIL_ROUTE ||
                             pathname == ROOT_LOGIN) &&
-                        userData.profileCreated
+                        userDataT.profileCreated
                     ) {
                         router.push(HOME_ROUTE)
-                    } else if (!userData.profileCreated) {
+                    } else if (!userDataT.profileCreated) {
                         router.push(CREATE_PROFILE_ROUTE)
                     } else if (pathname == CREATE_PROFILE_ROUTE) {
                         router.push(HOME_ROUTE)
@@ -87,7 +88,7 @@ export default function AuthContextProvider({
         return () => {
             unsubscribeAuth()
         }
-    }, [auth, pathname, currentUserData, router])
+    }, [auth, pathname, router])
 
     return (
         <AuthContext.Provider
