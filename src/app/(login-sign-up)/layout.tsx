@@ -1,8 +1,13 @@
+'use client'
+
 import { Metadata } from 'next'
 import '../globals.css'
 import Image from 'next/image'
+import LoadData from '@/components/LoadData'
+import { AuthContext } from '@/contexts/AuthContext'
+import { useContext } from 'react'
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
     title: 'Backyard Buddiez - Login',
 }
 export default function LoginSignInLayout({
@@ -10,21 +15,23 @@ export default function LoginSignInLayout({
 }: Readonly<{
     children: React.ReactNode
 }>) {
+    const { redirected } = useContext(AuthContext)
     return (
-        <div className="space-y-10 pt-12">
-            <div className="text-center text-2xl">Backyard Buddiez</div>
-            <div className="grow">
-                <div className="flex grow items-center justify-center">
-                    <Image
-                        src={'/logo.svg'}
-                        width={200}
-                        height={200}
-                        alt="SPLASH"
-                    />
+        <LoadData conditionLoad={redirected}>
+            <div className="space-y-10 pt-12">
+                <div className="text-center text-2xl">Backyard Buddiez</div>
+                <div className="grow">
+                    <div className="flex grow items-center justify-center">
+                        <Image
+                            src={'/logo.svg'}
+                            width={200}
+                            height={200}
+                            alt="SPLASH"
+                        />
+                    </div>
                 </div>
+                {children}
             </div>
-
-            {children}
-        </div>
+        </LoadData>
     )
 }

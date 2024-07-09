@@ -9,10 +9,12 @@ interface AuthContextType {
     currentUserAuth: User | null
     currentUserData: UserData | null
     setCurrentUserData: Dispatch<SetStateAction<UserData | null>> | null
+    redirected: boolean
 }
 
 export const AuthContext = createContext<AuthContextType>({
     currentUserAuth: null,
     currentUserData: null,
     setCurrentUserData: null,
+    redirected: true,
 })

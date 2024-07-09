@@ -32,6 +32,12 @@ export default function Home() {
         if (currentUserData) {
             loadDCInfo(currentUserData)
             setInterval(() => {
+                let lastUpdatedTime = currentUserData.dCsLastUpdated.toDate()
+                lastUpdatedTime = new Date(
+                    lastUpdatedTime.getUTCFullYear(),
+                    lastUpdatedTime.getUTCMonth(),
+                    lastUpdatedTime.getUTCDate()
+                )
                 const currentTime = new Date()
                 const resetTime =
                     new Date(
@@ -40,6 +46,13 @@ export default function Home() {
                         currentTime.getUTCDate()
                     ).getTime() +
                     1000 * 60 * 60 * 24
+
+                if (
+                    new Date(resetTime - 1000 * 60 * 60 * 24) > lastUpdatedTime
+                ) {
+                    console.log('Daily challenges outdated, reloading window')
+                    window.location.reload()
+                }
 
                 const diffHours =
                     (resetTime - currentTime.getTime()) / (1000 * 60 * 60)

@@ -17,7 +17,6 @@ export default function Button({
     color = Color.PRIMARY,
 }: ButtonType) {
     const buttonClass = color + ' p-2 rounded'
-    console.log(buttonClass)
     return (
         <button
             type={type}

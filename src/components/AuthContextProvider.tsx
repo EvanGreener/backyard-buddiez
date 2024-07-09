@@ -19,8 +19,6 @@ import { UserData } from '@/types/db-types'
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
-import LoadingGIF from './Loading'
-import { doc, getFirestore, onSnapshot } from 'firebase/firestore'
 import LoadData from './LoadData'
 
 export default function AuthContextProvider({
@@ -33,13 +31,13 @@ export default function AuthContextProvider({
     const [currentUserData, setCurrentUserData] = useState<UserData | null>(
         null
     )
-    const [fetchingUser, setFetchingUser] = useState<boolean>(true)
+    const [fetchingUser, setFetchingUser] = useState(true)
+    const [redirected, setRedirected] = useState(true)
     const pathname = usePathname()
     const router = useRouter()
 
     useEffect(() => {
         setFetchingUser(true)
-
         const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log('Signed in')
@@ -49,37 +47,39 @@ export default function AuthContextProvider({
                 })
                 setCurrentUserAuth(user)
 
-                let userDataT: UserData | undefined
                 getUserData(user).then((userData) => {
                     if (userData) {
-                        userDataT = userData
                         setCurrentUserData(userData)
                         //Reset daily challenges
                         resetDailyChallenges(user, userData)
+
+                        // Middleware logic
+                        if (
+                            (pathname == LOGIN_EMAIL_ROUTE ||
+                                pathname == SIGN_UP_EMAIL_ROUTE ||
+                                pathname == ROOT_LOGIN) &&
+                            userData.profileCreated
+                        ) {
+                            router.push(HOME_ROUTE)
+                        } else if (!userData.profileCreated) {
+                            router.push(CREATE_PROFILE_ROUTE)
+                        } else if (pathname == CREATE_PROFILE_ROUTE) {
+                            router.push(HOME_ROUTE)
+                        } else {
+                            setRedirected(false)
+                        }
+                    } else {
+                        console.error('Error getting user')
                     }
                 })
-
-                if (userDataT) {
-                    // Middleware logic
-                    if (
-                        (pathname == LOGIN_EMAIL_ROUTE ||
-                            pathname == SIGN_UP_EMAIL_ROUTE ||
-                            pathname == ROOT_LOGIN) &&
-                        userDataT.profileCreated
-                    ) {
-                        router.push(HOME_ROUTE)
-                    } else if (!userDataT.profileCreated) {
-                        router.push(CREATE_PROFILE_ROUTE)
-                    } else if (pathname == CREATE_PROFILE_ROUTE) {
-                        router.push(HOME_ROUTE)
-                    }
-                }
             } else {
                 setCurrentUserAuth(null)
                 setCurrentUserData(null)
                 // Middleware logic
                 if (pathname.includes(HOME_ROUTE)) {
                     router.push(ROOT_LOGIN)
+                } else {
+                    setRedirected(false)
                 }
             }
         })
@@ -96,6 +96,7 @@ export default function AuthContextProvider({
                 currentUserAuth,
                 currentUserData,
                 setCurrentUserData,
+                redirected,
             }}
         >
             <LoadData conditionLoad={fetchingUser}>{children}</LoadData>
