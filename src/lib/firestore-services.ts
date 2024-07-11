@@ -158,7 +158,10 @@ export async function addSighting(
     selectedBird: SearchResult,
     currentUserData: UserData | null,
     currentUser: User | null,
-    newSpecies: boolean
+    newSpecies: boolean,
+    dc0: boolean,
+    dc1: boolean,
+    dc2: boolean
 ) {
     if (!currentUserData || !currentUser) {
         console.log('User not signed in')
@@ -167,21 +170,32 @@ export async function addSighting(
 
     console.log('got user')
 
-    if (newSpecies) {
+    if (newSpecies || dc0 || dc1 || dc2) {
         const usersRef = collection(db, 'users')
         const docRef = doc(usersRef, currentUser?.uid)
 
-        await updateDoc(docRef, {
-            speciesIdentified: increment(1),
+        const userDataCopy = currentUserData
+        userDataCopy.dailyChallenges[0].birdsIDd += dc0 ? 1 : 0
+        userDataCopy.dailyChallenges[1].birdsIDd += dc1 ? 1 : 0
+        userDataCopy.dailyChallenges[2].birdsIDd += dc2 ? 1 : 0
+
+        let dCsCompleted = 0
+        userDataCopy.dailyChallenges.forEach((dc) => {
+            dCsCompleted += dc.birdsIDd >= dc.dc.numBirds ? 1 : 0
         })
-        console.log('new speices')
+
+        await updateDoc(docRef, {
+            dCsCompleted: increment(dCsCompleted),
+            dailyChallenges: userDataCopy.dailyChallenges,
+            speciesIdentified: newSpecies ? increment(1) : increment(0),
+        })
     }
 
     const sightingsRef = doc(db, 'sightings', currentUserData.sightingsId)
 
     const newSighting = {
         speciesId: selectedBird.speciesId,
-        timeSeen: serverTimestamp(),
+        timeSeen: Timestamp.now(),
     }
 
     console.log('adding new sighting')
@@ -189,6 +203,8 @@ export async function addSighting(
     await updateDoc(sightingsRef, {
         sightings: arrayUnion(newSighting),
     })
+
+    return dc0 || dc1 || dc2
 }
 
 export async function getAllSightings(currentUserData: UserData | null) {
@@ -227,30 +243,22 @@ export async function getTopXGlobal(top: number = 20) {
 }
 
 export async function getNewDailyChallenges() {
-    let allDCIDs: string[] = []
+    let allDCIDs: DailyChallengeProgress[] = []
     const DCsSnapshot = await getDocs(collection(db, 'daily-challenges'))
     DCsSnapshot.forEach((DCDoc) => {
-        allDCIDs.push(DCDoc.id)
+        const { title, numBirds } = DCDoc.data()
+        allDCIDs.push({
+            dCID: DCDoc.id,
+            dc: {
+                title: title,
+                numBirds: numBirds,
+            },
+            birdsIDd: 0,
+        })
     })
     shuffle(allDCIDs)
-    allDCIDs = allDCIDs.slice(0, 3)
 
-    const dailyChallenges: DailyChallengeProgress[] = [
-        {
-            dCID: allDCIDs[0],
-            birdsIDd: 0,
-        },
-        {
-            dCID: allDCIDs[1],
-            birdsIDd: 0,
-        },
-        {
-            dCID: allDCIDs[2],
-            birdsIDd: 0,
-        },
-    ]
-
-    return dailyChallenges
+    return allDCIDs.slice(0, 3)
 }
 
 export async function resetDailyChallenges(
@@ -261,16 +269,15 @@ export async function resetDailyChallenges(
     let currentDate = Timestamp.now().toDate()
 
     lastUpdatedDate = new Date(
-        lastUpdatedDate.getFullYear(),
-        lastUpdatedDate.getMonth(),
-        lastUpdatedDate.getDate()
+        lastUpdatedDate.getUTCFullYear(),
+        lastUpdatedDate.getUTCMonth(),
+        lastUpdatedDate.getUTCDate()
     )
     currentDate = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        currentDate.getDate()
+        currentDate.getUTCFullYear(),
+        currentDate.getUTCMonth(),
+        currentDate.getUTCDate()
     )
-
     if (lastUpdatedDate.getTime() !== currentDate.getTime()) {
         const newChallenges = await getNewDailyChallenges()
 
@@ -284,33 +291,4 @@ export async function resetDailyChallenges(
         return true
     }
     return false
-}
-
-export interface DailyChallengeDoc {
-    id: string
-    dc: DailyChallenge
-}
-
-export async function getUserDailyChallengeInfo(currentUserData: UserData) {
-    const dailyChallengeProgress = currentUserData.dailyChallenges
-    const DCIDs = dailyChallengeProgress.map((dc) => {
-        return dc.dCID
-    })
-
-    let dailyChallenges: DailyChallengeDoc[] = []
-    const DCsRef = collection(db, 'daily-challenges')
-    const q = query(DCsRef, where(documentId(), 'in', DCIDs))
-    const querySnapshot = await getDocs(q)
-    querySnapshot.forEach((DCDoc) => {
-        const { numBirds, title } = DCDoc.data()
-        dailyChallenges.push({
-            id: DCDoc.id,
-            dc: {
-                numBirds,
-                title,
-            },
-        })
-    })
-
-    return dailyChallenges
 }

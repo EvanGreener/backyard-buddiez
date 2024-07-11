@@ -24,18 +24,33 @@ export default function HomeLayout({
 }>) {
     const pathname = usePathname()
     const [showNewSpeciesNotif, setShowNewSpeciesNotif] = useState(false)
+    const [showDCProgressNotif, setShowDCProgressNotif] = useState(false)
     return (
         <IconContext.Provider value={{ size: '1.5rem' }}>
             <HomeContext.Provider
-                value={{ showNewSpeciesNotif, setShowNewSpeciesNotif }}
+                value={{
+                    showNewSpeciesNotif,
+                    setShowNewSpeciesNotif,
+                    showDCProgressNotif,
+                    setShowDCProgressNotif,
+                }}
             >
                 <div className="h-full flex flex-col items-center ">
                     <div className="grow p-4 w-full h-full">{children}</div>
-                    <div className="bg-green-400 w-full flex place-content-around">
-                        <Link href={HOME_ROUTE} className="p-4">
-                            <FaHome color={chooseColor(pathname, HOME_ROUTE)} />
-                        </Link>
-                        <Link href={LEADERBOARDS_ROUTE} className="p-4">
+                    <div className="bg-green-400 w-full flex justify-around">
+                        <div className="relative p-4">
+                            <Link href={HOME_ROUTE}>
+                                <FaHome
+                                    color={chooseColor(pathname, HOME_ROUTE)}
+                                />
+                            </Link>
+                            {showDCProgressNotif && (
+                                <div className="absolute top-0 right-0 animate-bounce bg-red-300 rounded">
+                                    <MdOutlineFiberNew />
+                                </div>
+                            )}
+                        </div>
+                        <Link href={LEADERBOARDS_ROUTE} className="px-3 py-4">
                             <MdLeaderboard
                                 color={chooseColor(
                                     pathname,
@@ -43,7 +58,7 @@ export default function HomeLayout({
                                 )}
                             />
                         </Link>
-                        <Link href={BIRD_ID_ROUTE} className="p-4">
+                        <Link href={BIRD_ID_ROUTE} className="px-3 py-4">
                             <FaPlus
                                 color={chooseColor(pathname, BIRD_ID_ROUTE)}
                             />
@@ -64,7 +79,7 @@ export default function HomeLayout({
                             )}
                         </div>
 
-                        <Link href={SETTINGS_ROUTE} className="p-4">
+                        <Link href={SETTINGS_ROUTE} className="px-3 py-4">
                             <IoIosSettings
                                 color={chooseColor(pathname, SETTINGS_ROUTE)}
                             />

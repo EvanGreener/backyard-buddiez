@@ -19,6 +19,7 @@ export interface Sighting {
 
 export interface DailyChallengeProgress {
     dCID: string
+    dc: DailyChallenge
     birdsIDd: number
 }
 

@@ -33,6 +33,7 @@ export default function AuthContextProvider({
     )
     const [fetchingUser, setFetchingUser] = useState(true)
     const [redirected, setRedirected] = useState(true)
+    const [reFetchUser, setReFetchUser] = useState(false)
     const pathname = usePathname()
     const router = useRouter()
 
@@ -73,6 +74,7 @@ export default function AuthContextProvider({
                     }
                 })
             } else {
+                console.log('Signed out')
                 setCurrentUserAuth(null)
                 setCurrentUserData(null)
                 // Middleware logic
@@ -88,7 +90,7 @@ export default function AuthContextProvider({
         return () => {
             unsubscribeAuth()
         }
-    }, [auth, pathname, router])
+    }, [auth, pathname, router, reFetchUser])
 
     return (
         <AuthContext.Provider
@@ -97,6 +99,8 @@ export default function AuthContextProvider({
                 currentUserData,
                 setCurrentUserData,
                 redirected,
+                reFetchUser,
+                setReFetchUser,
             }}
         >
             <LoadData conditionLoad={fetchingUser}>{children}</LoadData>

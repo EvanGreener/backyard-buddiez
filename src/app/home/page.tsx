@@ -2,11 +2,6 @@
 
 import LoadData from '@/components/LoadData'
 import { AuthContext } from '@/contexts/AuthContext'
-import {
-    DailyChallengeDoc,
-    getUserDailyChallengeInfo,
-} from '@/lib/firestore-services'
-import { UserData } from '@/types/db-types'
 import { useContext, useEffect, useState } from 'react'
 import { FaStopwatch } from 'react-icons/fa'
 import { IconContext } from 'react-icons'
@@ -15,22 +10,16 @@ import { Color } from '@/theme/colors'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 
 export default function Home() {
-    const { currentUserData } = useContext(AuthContext)
+    const { currentUserData, reFetchUser, setReFetchUser } =
+        useContext(AuthContext)
     const [loadingDCs, setLoadingDCs] = useState(true)
-    const [DCsInfo, setDCInfo] = useState<DailyChallengeDoc[]>()
-
     const [hoursTillReset, setHoursTillReset] = useState<number>(99)
     const [minutesTillReset, setMinutesTillReset] = useState<number>(99)
     const [secondsTillReset, setSecondsTillReset] = useState<number>(99)
 
     useEffect(() => {
-        async function loadDCInfo(currentUserData: UserData) {
-            const dcInfo = await getUserDailyChallengeInfo(currentUserData)
-            setDCInfo(dcInfo)
-        }
         setLoadingDCs(true)
         if (currentUserData) {
-            loadDCInfo(currentUserData)
             setInterval(() => {
                 let lastUpdatedTime = currentUserData.dCsLastUpdated.toDate()
                 lastUpdatedTime = new Date(
@@ -38,7 +27,11 @@ export default function Home() {
                     lastUpdatedTime.getUTCMonth(),
                     lastUpdatedTime.getUTCDate()
                 )
-                const currentTime = new Date()
+                let currentTime = new Date()
+                currentTime = new Date(
+                    currentTime.getTime() +
+                        currentTime.getTimezoneOffset() * 60 * 1000
+                )
                 const resetTime =
                     new Date(
                         currentTime.getUTCFullYear(),
@@ -50,8 +43,7 @@ export default function Home() {
                 if (
                     new Date(resetTime - 1000 * 60 * 60 * 24) > lastUpdatedTime
                 ) {
-                    console.log('Daily challenges outdated, reloading window')
-                    window.location.reload()
+                    setReFetchUser && setReFetchUser(!reFetchUser)
                 }
 
                 const diffHours =
@@ -65,7 +57,7 @@ export default function Home() {
             }, 250)
             setLoadingDCs(false)
         }
-    }, [currentUserData])
+    }, [currentUserData, reFetchUser, setReFetchUser])
 
     function DailyChallengeProgress() {
         return (
@@ -96,18 +88,16 @@ export default function Home() {
                     </span>
                     <div className="flex flex-col space-y-2 ">
                         {currentUserData?.dailyChallenges.map((dcProgress) => {
-                            const dcInfo = DCsInfo?.find(
-                                (dc) => dc.id === dcProgress.dCID
-                            )
-                            const complete =
-                                dcProgress.birdsIDd == dcInfo?.dc.numBirds
+                            const { dCID, dc, birdsIDd } = dcProgress
+                            const { title, numBirds } = dc
+                            const complete = birdsIDd == numBirds
                             return (
-                                <div key={dcProgress.dCID}>
-                                    <div>{dcInfo?.dc.title}</div>
-                                    <div className="flex flex-wrap justify-end space-x-2 items-center">
+                                <div key={dCID}>
+                                    <div>{title}</div>
+                                    <div className="flex flex-wrap justify-end space-x-2 justify-between">
                                         <ProgressBar
-                                            value={dcProgress.birdsIDd}
-                                            max={dcInfo?.dc.numBirds}
+                                            value={birdsIDd}
+                                            max={numBirds}
                                             fillColor={
                                                 complete
                                                     ? Color.SUCCESS
@@ -119,9 +109,9 @@ export default function Home() {
                                         ) : (
                                             <span>
                                                 <span className="font-bold text-xl">
-                                                    {dcProgress.birdsIDd}
+                                                    {birdsIDd}
                                                 </span>
-                                                /{dcInfo?.dc.numBirds}
+                                                /{numBirds}
                                             </span>
                                         )}
                                     </div>
