@@ -139,6 +139,23 @@ export default function Home() {
                                 {' ' + currentUserData?.speciesIdentified}
                             </span>
                         </div>
+                        <div className="text-base">
+                            Daily Challenges completed:
+                            <span className="font-bold text-black">
+                                {' ' + currentUserData?.dCsCompleted}
+                            </span>
+                        </div>
+                        <div className="text-base">
+                            Points:
+                            <span className="font-bold text-black">
+                                {' ' +
+                                    (currentUserData
+                                        ? currentUserData?.speciesIdentified *
+                                              500 +
+                                          currentUserData?.dCsCompleted * 100
+                                        : '0')}
+                            </span>
+                        </div>
                     </div>
                 </div>
                 <LoadData conditionLoad={loadingDCs}>

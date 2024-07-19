@@ -54,13 +54,13 @@ export async function addUserIfNotExists(currentUser: User) {
         // Create new user in db
         const newUser = {
             displayName: 'ChangeYourDisplayName123',
-            createdAt: serverTimestamp(),
+            createdAt: Timestamp.now(),
             profileCreated: false,
             sightingsId: newSightingsRef.id,
             speciesIdentified: 0,
 
             dCsCompleted: 0,
-            dCsLastUpdated: serverTimestamp(),
+            dCsLastUpdated: Timestamp.now(),
             dailyChallenges: dailyChallenges,
         }
 
@@ -99,7 +99,7 @@ export async function updateUser(currentUser: User, router: AppRouterInstance) {
 
             const dailyChallenges = await getNewDailyChallenges()
             await updateDoc(docRef, {
-                dCsLastUpdated: serverTimestamp(),
+                dCsLastUpdated: Timestamp.now(),
                 dailyChallenges: dailyChallenges,
                 dCsCompleted: 0,
             })
@@ -125,7 +125,7 @@ export function convertDocToUserData(userData: DocumentData) {
         profileCreated: userData.profileCreated,
         sightingsId: userData.sightingsId,
         speciesIdentified: userData.speciesIdentified,
-        dCsCompleted: userData.DCsCompleted,
+        dCsCompleted: userData.dCsCompleted,
         dCsLastUpdated: userData.dCsLastUpdated,
         dailyChallenges: userData.dailyChallenges,
     }
@@ -285,7 +285,7 @@ export async function resetDailyChallenges(
         const docRef = doc(usersRef, currentUser.uid)
 
         await updateDoc(docRef, {
-            dCsLastUpdated: serverTimestamp(),
+            dCsLastUpdated: Timestamp.now(),
             dailyChallenges: newChallenges,
         })
         return true

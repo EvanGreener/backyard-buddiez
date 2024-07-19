@@ -2,7 +2,7 @@
 
 import { getTopXGlobal } from '@/lib/firestore-services'
 import { UserData } from '@/types/db-types'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import LoadData from '@/components/LoadData'
 
 export default function Leaderboards() {
@@ -19,7 +19,7 @@ export default function Leaderboards() {
                     <div className="p-2 flex w-full font-bold border-b-2 border-green-400 sticky top-0">
                         <span className="w-1/3">Rank</span>
                         <span className="w-1/3">User</span>
-                        <span className="w-1/3">Unique Species Identified</span>
+                        <span className="w-1/3">Points</span>
                     </div>
                     {topUsers &&
                         topUsers.map((userData, i) => {
@@ -45,7 +45,8 @@ export default function Leaderboards() {
                                         {userData.displayName}
                                     </span>
                                     <span className="w-1/4">
-                                        {userData.speciesIdentified}
+                                        {userData.speciesIdentified * 500 +
+                                            userData.dCsCompleted * 100}
                                     </span>
                                 </div>
                             )
