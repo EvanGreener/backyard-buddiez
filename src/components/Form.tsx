@@ -5,7 +5,7 @@ export default function Form({
     action,
 }: {
     children: ReactNode
-    action: (formData: FormData) => void
+    action?: (formData: FormData) => void
 }) {
     return (
         <form

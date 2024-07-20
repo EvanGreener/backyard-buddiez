@@ -1,57 +1,67 @@
-import { firebaseApp } from '@/config/config'
-import {
-    getRedirectResult,
-    GoogleAuthProvider,
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    signInWithPopup,
-} from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { HOME_ROUTE } from './routes'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+'use server'
 
-const auth = getAuth(firebaseApp)
-const db = getFirestore(firebaseApp)
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 
-export async function signInGoogle() {
-    const provider = new GoogleAuthProvider()
-    provider.addScope('https://www.googleapis.com/auth/datastore')
-    provider.addScope('https://www.googleapis.com/auth/cloud-platform')
-    try {
-        await signInWithPopup(auth, provider)
-    } catch (error: any) {
-        console.log(getErrorMessage(error))
+export async function login(formData: FormData) {
+    const supabase = createClient()
+
+    // type-casting here for convenience
+    // in practice, you should validate your inputs
+    const data = {
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
     }
+
+    const { error } = await supabase.auth.signInWithPassword(data)
+
+    if (error) {
+        redirect('/error')
+    }
+
+    revalidatePath('/', 'layout')
+    redirect('/')
 }
 
-export async function signUpEmail(email: string, password: string) {
-    try {
-        await createUserWithEmailAndPassword(auth, email, password)
-    } catch (error) {
-        return getErrorMessage(error)
+export async function signup(formData: FormData) {
+    const supabase = createClient()
+
+    const data = {
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
+        password2: formData.get('password') as string,
     }
+
+    // Input validation
+    const { password, password2 } = data
+    if (password !== password2) {
+        redirect('/error')
+    }
+
+    const { error } = await supabase.auth.signUp(data)
+
+    if (error) {
+        redirect('/error')
+    }
+
+    revalidatePath('/', 'layout')
+    redirect('/')
 }
 
-export async function signInEmail(email: string, password: string) {
-    try {
-        await signInWithEmailAndPassword(auth, email, password)
-    } catch (error: any) {
-        return getErrorMessage(error)
+export async function getUser() {
+    const supabase = createClient()
+
+    const { data, error } = await supabase.auth.getUser()
+    if (error || !data?.user) {
+        redirect('/login')
     }
+
+    return data.user
 }
 
-export async function logout() {
-    try {
-        await signOut(auth)
-    } catch (error) {
-        return getErrorMessage(error)
-    }
-}
+export async function signOut() {
+    const supabase = createClient()
 
-function getErrorMessage(error: any) {
-    // Handle Errors here.
-
-    return `${error}`
+    const { error } = await supabase.auth.signOut()
 }
