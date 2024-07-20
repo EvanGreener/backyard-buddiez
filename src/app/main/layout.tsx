@@ -1,4 +1,4 @@
-import MainProvider from '@/components/MainProvider'
+import MainProvider from './MainProvider'
 
 export default function MainLayout({
     children,

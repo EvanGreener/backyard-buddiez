@@ -10,3 +10,7 @@ export const BIRD_ID_ROUTE = MAIN_ROUTE + '/bird-id'
 export const BIRDPEDIA_ROUTE = MAIN_ROUTE + '/birdpedia'
 export const SETTINGS_ROUTE = MAIN_ROUTE + '/settings'
 export const LEADERBOARDS_ROUTE = MAIN_ROUTE + '/leaderboards'
+
+export const AUTH_CALLBACK_ROUTE = '/auth/callback'
+export const AUTH_EMAIL_CONFIRM_ROUTE = '/auth/confirm'
+export const ERROR_ROUTE = '/error'

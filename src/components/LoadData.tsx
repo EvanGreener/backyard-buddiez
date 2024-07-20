@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import LoadingGIF from './Loading'
+import LoadingGIF from './LoadingGIF'
 
 interface LoadDataType {
     children: React.ReactNode

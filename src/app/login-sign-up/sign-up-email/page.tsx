@@ -1,11 +1,11 @@
 import Button from '@/components/Button'
 import Form from '@/components/Form'
 import InputText from '@/components/InputText'
-import { signup } from '@/lib/auth'
+import { signUpEmail } from '@/lib/auth'
 
 export default function LoginPage() {
     return (
-        <Form action={signup}>
+        <Form action={signUpEmail}>
             <InputText
                 id="email"
                 name="email"

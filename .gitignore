@@ -2,7 +2,7 @@ express-example/
 node_modules/
 .env
 backyard-buddiez-firebase-adminsdk-*.json
-
+config.toml
 
 # dependencies
 /node_modules

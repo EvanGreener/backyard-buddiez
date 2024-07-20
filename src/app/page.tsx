@@ -1,7 +1,6 @@
 import LinkButton from '@/components/LinkButton'
 import Image from 'next/image'
-import { Color } from '@/theme/colors'
-import Features from '@/components/Features'
+import Features from '@/app/Features'
 import { LOGIN_SIGN_UP } from '@/lib/routes'
 
 export default async function LandingPage() {
