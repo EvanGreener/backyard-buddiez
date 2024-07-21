@@ -14,3 +14,7 @@ export const LEADERBOARDS_ROUTE = MAIN_ROUTE + '/leaderboards'
 export const AUTH_CALLBACK_ROUTE = '/auth/callback'
 export const AUTH_EMAIL_CONFIRM_ROUTE = '/auth/confirm'
 export const ERROR_ROUTE = '/error'
+
+const API_ROUTE = '/api'
+const USERS_ROUTE = API_ROUTE + '/users'
+export const CHANGE_DISPLAY_NAME_ROUTE = USERS_ROUTE + '/change-display-name'

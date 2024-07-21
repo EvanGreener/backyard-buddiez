@@ -72,7 +72,7 @@ export async function signUpEmail(formData: FormData) {
     redirect(ROOT)
 }
 
-export async function getUser() {
+export async function getUserAuth() {
     const supabase = createClient()
 
     const { data, error } = await supabase.auth.getUser()

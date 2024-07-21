@@ -36,7 +36,7 @@ export default function MainProvider({
                     setShowDCProgressNotif,
                 }}
             >
-                <div className="p-4 w-full ">{children}</div>
+                <div className="p-4 w-full">{children}</div>
                 <div className="bg-green-400 rounded-t-lg w-full flex justify-around fixed bottom-0 z-10">
                     <div className="relative p-4">
                         <Link href={HOME_ROUTE}>

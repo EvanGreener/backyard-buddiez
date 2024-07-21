@@ -3,7 +3,7 @@ node_modules/
 .env
 backyard-buddiez-firebase-adminsdk-*.json
 config.toml
-
+drizzle/
 # dependencies
 /node_modules
 /.pnp

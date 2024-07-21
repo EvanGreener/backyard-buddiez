@@ -4,6 +4,7 @@ import { LOGIN_SIGN_UP } from '../routes'
 import { db } from './db'
 import { users } from './schema'
 import { eq } from 'drizzle-orm'
+import { getUser } from './queries'
 
 export async function checkUserExists(
     supabase: SupabaseClient<any, 'public', any>
@@ -11,9 +12,7 @@ export async function checkUserExists(
     const { data, error } = await supabase.auth.getUser()
     const { user } = data
     if (!error && user) {
-        const userDB = await db.query.users.findFirst({
-            where: (users, { eq }) => eq(users.id, user.id),
-        })
+        const userDB = await getUser(user.id)
 
         if (!userDB) {
             // Add new user
