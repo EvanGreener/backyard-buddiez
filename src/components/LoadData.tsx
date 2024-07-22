@@ -21,7 +21,5 @@ export default function LoadData({
         return children
     } else if (conditionNoResults) {
         return <span>{noResultsMessage}</span>
-    } else {
-        return
     }
 }

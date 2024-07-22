@@ -1,10 +1,10 @@
-import { BirdInfo, SearchResult } from '@/types/action-types'
+import { BirdDetailed, BirdBasic } from '@/types/action-types'
 
 export default async function searchBirdsWikidata(searchPattern: string) {
     if (searchPattern.length == 0) {
         return []
     }
-    
+
     const query = `
     SELECT ?id ?birdLabel (SAMPLE(?name) AS ?commonName) (SAMPLE(?img) AS ?birdImg)
     WHERE {
@@ -20,18 +20,22 @@ export default async function searchBirdsWikidata(searchPattern: string) {
     GROUP BY ?id ?birdLabel
     LIMIT 10
     `
-    const resultsJson = await getSparqlQueryResults(query)
-    const birds: SearchResult[] = resultsJson.results.bindings.map(
-        (bird: any): SearchResult => {
-            return {
-                speciesId: bird.id.value,
-                name: bird.birdLabel.value,
-                commonName: bird.commonName.value,
-                imgURI: bird.birdImg.value.replace('http', 'https'),
+    try {
+        const resultsJson = await getSparqlQueryResults(query)
+        const birds: BirdBasic[] = resultsJson.results.bindings.map(
+            (bird: any): BirdBasic => {
+                return {
+                    speciesId: bird.id.value,
+                    name: bird.birdLabel.value,
+                    commonName: bird.commonName.value,
+                    imgURI: bird.birdImg.value.replace('http', 'https'),
+                }
             }
-        }
-    )
-    return birds
+        )
+        return birds
+    } catch (error) {
+        return []
+    }
 }
 
 export async function getMultipleBirdsInfo(ids: string[]) {
@@ -56,8 +60,8 @@ export async function getMultipleBirdsInfo(ids: string[]) {
     GROUP BY ?id ?birdLabel
     `
     const resultsJson = await getSparqlQueryResults(query)
-    const birdInfos: BirdInfo[] = resultsJson.results.bindings.map(
-        (bird: any): BirdInfo => {
+    const birdInfos: BirdDetailed[] = resultsJson.results.bindings.map(
+        (bird: any): BirdDetailed => {
             return {
                 speciesId: bird.id.value,
                 name: bird.birdLabel.value,
@@ -81,17 +85,20 @@ async function getSparqlQueryResults(query: string) {
         const res = await fetch(
             `https://query.wikidata.org/bigdata/namespace/wdq/sparql?query=${query}`,
             {
-                method: 'GET',
                 headers: {
-                    Accept: ' application/sparql-results+json',
+                    Accept: 'application/sparql-results+json',
+                    'User-Agent':
+                        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
                 },
             }
         )
+        console.log(res.status, res.statusText)
 
-        const searchResults = await res.json()
+        let searchResults = await res.json()
 
         return searchResults
     } catch (error) {
-        return error
+        // console.error(error)
+        return []
     }
 }

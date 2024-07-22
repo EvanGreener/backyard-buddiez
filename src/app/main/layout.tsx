@@ -6,7 +6,7 @@ export default function MainLayout({
     children: React.ReactNode
 }>) {
     return (
-        <div className="h-full flex flex-col items-center ">
+        <div className="h-full w-full flex flex-col items-center ">
             <MainProvider>{children}</MainProvider>
         </div>
     )
