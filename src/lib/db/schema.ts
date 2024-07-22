@@ -64,7 +64,7 @@ export const equality_op = pgEnum('equality_op', [
 
 export const users = pgTable('users', {
     id: text('id').primaryKey().notNull(),
-    created_at: timestamp('created_at', { withTimezone: true, mode: 'string' })
+    created_at: timestamp('created_at', { withTimezone: true, mode: 'date' })
         .defaultNow()
         .notNull(),
     email: text('email'),
@@ -72,7 +72,7 @@ export const users = pgTable('users', {
     profile_created: boolean('profile_created').default(false).notNull(),
     dcs_last_updated: timestamp('dcs_last_updated', {
         withTimezone: true,
-        mode: 'string',
+        mode: 'date',
     }),
 })
 

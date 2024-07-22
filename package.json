@@ -7,11 +7,6 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "generate": "drizzle-kit generate",
-        "migrate": "drizzle-kit migrate",
-        "up": "drizzle-kit up",
-        "drop": "drizzle-kit drop",
-        "push": "drizzle-kit push",
         "pull": "drizzle-kit introspect --out=./src/lib/db/"
     },
     "dependencies": {

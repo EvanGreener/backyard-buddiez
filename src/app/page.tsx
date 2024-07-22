@@ -1,7 +1,7 @@
 import LinkButton from '@/components/LinkButton'
 import Image from 'next/image'
 import Features from '@/app/Features'
-import { LOGIN_SIGN_UP } from '@/lib/routes'
+import { LOGIN_SIGN_UP_ROUTE } from '@/lib/routes'
 
 export default async function LandingPage() {
     return (
@@ -16,7 +16,7 @@ export default async function LandingPage() {
                 </span>
                 <span className="grow"></span>
                 <span className="flex-end">
-                    <LinkButton href={LOGIN_SIGN_UP}>
+                    <LinkButton href={LOGIN_SIGN_UP_ROUTE}>
                         <span>Login</span>
                     </LinkButton>
                 </span>

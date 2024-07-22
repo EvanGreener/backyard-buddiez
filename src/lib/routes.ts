@@ -1,7 +1,7 @@
 export const ROOT = '/'
-export const LOGIN_SIGN_UP = '/login-sign-up'
-export const LOGIN_EMAIL_ROUTE = LOGIN_SIGN_UP + '/login-email'
-export const SIGN_UP_EMAIL_ROUTE = LOGIN_SIGN_UP + '/sign-up-email'
+export const LOGIN_SIGN_UP_ROUTE = '/login-sign-up'
+export const LOGIN_EMAIL_ROUTE = LOGIN_SIGN_UP_ROUTE + '/login-email'
+export const SIGN_UP_EMAIL_ROUTE = LOGIN_SIGN_UP_ROUTE + '/sign-up-email'
 export const CREATE_PROFILE_ROUTE = '/create-profile'
 
 export const MAIN_ROUTE = '/main'
@@ -17,4 +17,5 @@ export const ERROR_ROUTE = '/error'
 
 const API_ROUTE = '/api'
 const USERS_ROUTE = API_ROUTE + '/users'
-export const CHANGE_DISPLAY_NAME_ROUTE = USERS_ROUTE + '/change-display-name'
+export const CREATE_PROFILE_API_ROUTE = USERS_ROUTE + '/create-profile'
+export const GET_CURRENT_USER_ROUTE = USERS_ROUTE + '/get-current-user'

@@ -5,11 +5,13 @@ import Form from '@/components/Form'
 import InputLabel from '@/components/InputLabel'
 import InputText from '@/components/InputText'
 import {
-    CHANGE_DISPLAY_NAME_ROUTE,
+    CREATE_PROFILE_API_ROUTE,
+    GET_CURRENT_USER_ROUTE,
     HOME_ROUTE,
 } from '@/lib/routes'
+import { User } from '@/types/db-types'
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 
 export default function CreateProfileScreen() {
@@ -18,13 +20,23 @@ export default function CreateProfileScreen() {
     const inputRef = useRef<HTMLInputElement>(null)
     const router = useRouter()
 
+    useEffect(() => {
+        async function checkProfileCreated() {
+            const res = await fetch(GET_CURRENT_USER_ROUTE)
+            const user: User = await res.json()
+            if (user.profile_created) {
+                router.push(HOME_ROUTE)
+            }
+        }
+        checkProfileCreated()
+    }, [router])
+
     const submit = async (formData: FormData) => {
         const displayName = formData.get('displayName')?.toString()
 
         if (displayName) {
-            // await changeDisplayName(displayName, user)
             const response = await fetch(
-                CHANGE_DISPLAY_NAME_ROUTE + `?display_name=${displayName}`
+                CREATE_PROFILE_API_ROUTE + `?display_name=${displayName}`
             )
             if (response.status === 200) {
                 router.push(HOME_ROUTE)

@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { HOME_ROUTE, LOGIN_SIGN_UP } from '../routes'
+import { HOME_ROUTE, LOGIN_SIGN_UP_ROUTE } from '../routes'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -40,16 +40,16 @@ export async function updateSession(request: NextRequest) {
 
     if (
         !user &&
-        !request.nextUrl.pathname.startsWith(LOGIN_SIGN_UP) &&
+        !request.nextUrl.pathname.startsWith(LOGIN_SIGN_UP_ROUTE) &&
         !request.nextUrl.pathname.startsWith('/auth')
     ) {
         // no user, potentially respond by redirecting the user to the login page
         const url = request.nextUrl.clone()
-        url.pathname = LOGIN_SIGN_UP
+        url.pathname = LOGIN_SIGN_UP_ROUTE
         return NextResponse.redirect(url)
     } else if (
         user &&
-        (request.nextUrl.pathname.startsWith(LOGIN_SIGN_UP) ||
+        (request.nextUrl.pathname.startsWith(LOGIN_SIGN_UP_ROUTE) ||
             request.nextUrl.pathname.startsWith('/auth'))
     ) {
         const url = request.nextUrl.clone()

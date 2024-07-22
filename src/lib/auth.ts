@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { ERROR_ROUTE, LOGIN_SIGN_UP, ROOT } from './routes'
+import { ERROR_ROUTE, LOGIN_SIGN_UP_ROUTE, ROOT } from './routes'
 
 export async function login(formData: FormData) {
     const supabase = createClient()
@@ -77,7 +77,7 @@ export async function getUserAuth() {
 
     const { data, error } = await supabase.auth.getUser()
     if (error || !data?.user) {
-        redirect(LOGIN_SIGN_UP)
+        redirect(LOGIN_SIGN_UP_ROUTE)
     }
 
     return data.user
