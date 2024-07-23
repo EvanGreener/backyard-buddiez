@@ -1,9 +1,10 @@
 'use client'
 
 import ProgressBar from '@/components/ProgressBar'
+import { MainContext } from '@/contexts/HomeContext'
 import { Color } from '@/theme/colors'
 import { DailyChallenge, User, UserDailyChallenge } from '@/types/db-types'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { IconContext } from 'react-icons'
 import { FaStopwatch } from 'react-icons/fa6'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
@@ -22,8 +23,11 @@ export default function DailyChallengeProgress({
     const [hoursTillReset, setHoursTillReset] = useState<number>(99)
     const [minutesTillReset, setMinutesTillReset] = useState<number>(99)
     const [secondsTillReset, setSecondsTillReset] = useState<number>(99)
-
+    const { setShowDCProgressNotif } = useContext(MainContext)
+    
     useEffect(() => {
+        setShowDCProgressNotif && setShowDCProgressNotif(false)
+
         setInterval(() => {
             const { dcs_last_updated } = user
             const currentTime = new Date()
@@ -60,7 +64,7 @@ export default function DailyChallengeProgress({
                 window.location.reload()
             }
         }, 1000)
-    }, [user])
+    }, [setShowDCProgressNotif, user])
     return (
         <IconContext.Provider
             value={{ size: '1.25rem', style: { display: 'inline' } }}

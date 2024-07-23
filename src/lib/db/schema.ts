@@ -88,7 +88,7 @@ export const sightings = pgTable('sightings', {
             maxValue: 9223372036854775807,
             cache: 1,
         }),
-    seen_at: timestamp('seen_at', { withTimezone: true, mode: 'string' })
+    seen_at: timestamp('seen_at', { withTimezone: true, mode: 'date' })
         .defaultNow()
         .notNull(),
     species_id: text('species_id').notNull(),

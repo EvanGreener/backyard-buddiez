@@ -2,9 +2,9 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { LOGIN_SIGN_UP_ROUTE } from '../routes'
 import { db } from './db'
-import { user_daily_challenges, users } from './schema'
-import { eq } from 'drizzle-orm'
-import { getUser } from './queries'
+import { sightings, user_daily_challenges, users } from './schema'
+import { AnyColumn, eq, inArray, sql } from 'drizzle-orm'
+import { getDailyChallenges, getUser, getUserDailyChallenges } from './queries'
 import { DailyChallenge, User } from '@/types/db-types'
 import { shuffle } from '../utils'
 
@@ -68,7 +68,7 @@ export async function refreshDailyChallenges(user: User) {
     ) {
         // add new challenges
         console.log('=-=-=-=-=-=-=-=-=-')
-        console.log('DEBUG: adding new challenges')
+        console.log('Adding new challenges')
         console.log('=-=-=-=-=-=-=-=-=-')
         addNewChallenges(user)
     }
@@ -104,4 +104,45 @@ async function addNewChallenges(user: User) {
             },
         ])
         .returning()
+}
+
+function increment(column: AnyColumn, value = 1) {
+    return sql`${column} + ${value}`
+}
+
+export async function addNewSightingAndUpdateDCProgress(
+    user: User,
+    dcIDs: number[],
+    speciesId: string
+) {
+    const newSighting = await db
+        .insert(sightings)
+        .values({
+            species_id: speciesId,
+            user_id: user.id,
+            seen_at: new Date(),
+        })
+        .returning()
+
+    const udcs = (await getUserDailyChallenges(user))!
+    const dcs = await getDailyChallenges(udcs)
+
+    const dcsInProgress = udcs
+        .filter((udc) => {
+            const dc = dcs.find((dc) => dc.id == udc.daily_challenge_id)!
+            return udc.birds_found < dc.birds_to_find
+        })
+        .map((udc) => udc.daily_challenge_id)
+
+    const idsUpdated = dcsInProgress.filter((id) => dcIDs.includes(id))
+
+    const newUDCProgress = await db
+        .update(user_daily_challenges)
+        .set({
+            birds_found: increment(user_daily_challenges.birds_found),
+        })
+        .where(inArray(user_daily_challenges.daily_challenge_id, idsUpdated))
+        .returning()
+
+    return { newSighting, newUDCProgress }
 }

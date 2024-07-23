@@ -1,5 +1,9 @@
 import { getUserAuth } from '@/lib/auth'
-import { getUser } from '@/lib/db/queries'
+import {
+    getDailyChallenges,
+    getUser,
+    getUserDailyChallenges,
+} from '@/lib/db/queries'
 import BirdID from './BirdID'
 
 export default async function BirdIDScreen() {
@@ -7,6 +11,14 @@ export default async function BirdIDScreen() {
     const user = await getUser(userAuth.id)
 
     if (user) {
-        return <BirdID user={user} />
+        const userDailyChallenges = (await getUserDailyChallenges(user))!
+        const dailyChallenges = await getDailyChallenges(userDailyChallenges)
+        return (
+            <BirdID
+                user={user}
+                userDailyChallenges={userDailyChallenges}
+                dailyChallenges={dailyChallenges}
+            />
+        )
     }
 }

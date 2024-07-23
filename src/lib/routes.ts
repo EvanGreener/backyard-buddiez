@@ -21,3 +21,7 @@ export const CREATE_PROFILE_API_ROUTE = USERS_ROUTE + '/create-profile'
 export const GET_CURRENT_USER_ROUTE = USERS_ROUTE + '/get-current-user'
 const BIRDS_ROUTE = API_ROUTE + '/birds'
 export const SEARCH_BIRDS_ROUTE = BIRDS_ROUTE + '/search-birds'
+const SIGHTINGS_ROUTE = API_ROUTE + '/sightings'
+export const ADD_SIGHTINGS_ROUTE = SIGHTINGS_ROUTE + '/add-sighting'
+export const GET_ALL_USER_SIGHTINGS_ROUTE =
+    SIGHTINGS_ROUTE + '/get-all-user-sightings'
