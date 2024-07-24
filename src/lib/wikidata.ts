@@ -38,7 +38,7 @@ export default async function searchBirdsWikidata(searchPattern: string) {
     }
 }
 
-export async function getMultipleBirdsInfo(ids: string[]) {
+export async function getMultipleBirdDetails(ids: string[]) {
     let idsStr = ''
     ids.forEach((id) => {
         idsStr += `'${id}',`

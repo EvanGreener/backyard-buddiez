@@ -23,11 +23,14 @@ export default function DailyChallengeProgress({
     const [hoursTillReset, setHoursTillReset] = useState<number>(99)
     const [minutesTillReset, setMinutesTillReset] = useState<number>(99)
     const [secondsTillReset, setSecondsTillReset] = useState<number>(99)
-    const { setShowDCProgressNotif } = useContext(MainContext)
-    
-    useEffect(() => {
-        setShowDCProgressNotif && setShowDCProgressNotif(false)
+    const { showDCProgressNotif, setShowDCProgressNotif } =
+        useContext(MainContext)
 
+    if (showDCProgressNotif && setShowDCProgressNotif) {
+        setShowDCProgressNotif(false)
+    }
+
+    useEffect(() => {
         setInterval(() => {
             const { dcs_last_updated } = user
             const currentTime = new Date()
@@ -64,7 +67,7 @@ export default function DailyChallengeProgress({
                 window.location.reload()
             }
         }, 1000)
-    }, [setShowDCProgressNotif, user])
+    }, [user])
     return (
         <IconContext.Provider
             value={{ size: '1.25rem', style: { display: 'inline' } }}
