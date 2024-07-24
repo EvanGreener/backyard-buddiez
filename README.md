@@ -1,6 +1,6 @@
 # Backyard Buddiez
 
-A bird tracking app/game for everyone!
+A bird tracking app/game for everyone! Made with Next.js and Supabase.
 
 ## ID birds
 Use an app like Merlin to identify a bird you've spotted, then enter the name of the bird you've IDd and the app will automatically add your sighting. The app will let you know if your Birdpedia gained a new entry!
