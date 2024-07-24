@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction, createContext } from 'react'
 
-interface HomeContextType {
+interface IMainContext {
     showNewSpeciesNotif: boolean
     setShowNewSpeciesNotif?: Dispatch<SetStateAction<boolean>>
     showDCProgressNotif: boolean
     setShowDCProgressNotif?: Dispatch<SetStateAction<boolean>>
 }
 
-export const HomeContext = createContext<HomeContextType>({
+export const MainContext = createContext<IMainContext>({
     showNewSpeciesNotif: false,
     showDCProgressNotif: false,
 })

@@ -1,29 +1,10 @@
-import { Timestamp } from 'firebase/firestore'
-
-export interface UserData {
-    displayName: string
-    createdAt: Timestamp
-    profileCreated: boolean
-    sightingsId: string
-    speciesIdentified: number
-
-    dCsCompleted: number
-    dCsLastUpdated: Timestamp
-    dailyChallenges: DailyChallengeProgress[]
-}
-
-export interface Sighting {
-    speciesId: string
-    timeSeen: Timestamp
-}
-
-export interface DailyChallengeProgress {
-    dCID: string
-    dc: DailyChallenge
-    birdsIDd: number
-}
-
-export interface DailyChallenge {
-    numBirds: number
-    title: string
-}
+import {
+    daily_challenges,
+    sightings,
+    user_daily_challenges,
+    users,
+} from '@/lib/db/schema'
+export type User = typeof users.$inferSelect
+export type DailyChallenge = typeof daily_challenges.$inferSelect
+export type UserDailyChallenge = typeof user_daily_challenges.$inferSelect
+export type Sighting = typeof sightings.$inferSelect

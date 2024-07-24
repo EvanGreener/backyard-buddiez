@@ -1,4 +1,4 @@
-import LoadingGIF from '@/components/Loading'
+import LoadingGIF from '@/components/LoadingGIF'
 export default function Loading() {
     return <LoadingGIF />
 }

@@ -7,6 +7,7 @@ interface ButtonType {
     onClickHandler?: MouseEventHandler<HTMLButtonElement>
     disabled?: boolean
     color?: Color
+    
 }
 
 export default function Button({

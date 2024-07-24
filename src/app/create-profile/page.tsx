@@ -4,27 +4,44 @@ import Button from '@/components/Button'
 import Form from '@/components/Form'
 import InputLabel from '@/components/InputLabel'
 import InputText from '@/components/InputText'
-import { AuthContext } from '@/contexts/AuthContext'
-import { createProfile } from '@/lib/firestore-services'
-import { useContext, useState } from 'react'
+import {
+    CREATE_PROFILE_API_ROUTE,
+    GET_CURRENT_USER_ROUTE,
+    HOME_ROUTE,
+} from '@/lib/routes'
+import { User } from '@/types/db-types'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 
-export default function CreateProfilePage() {
-    const { currentUserAuth, setCurrentUserData } = useContext(AuthContext)
+export default function CreateProfileScreen() {
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const { pending } = useFormStatus()
+    const inputRef = useRef<HTMLInputElement>(null)
+    const router = useRouter()
 
-    const submit = (formData: FormData) => {
+    useEffect(() => {
+        async function checkProfileCreated() {
+            const res = await fetch(GET_CURRENT_USER_ROUTE)
+            const user: User = await res.json()
+            if (user.profile_created) {
+                router.push(HOME_ROUTE)
+            }
+        }
+        checkProfileCreated()
+    }, [router])
+
+    const submit = async (formData: FormData) => {
         const displayName = formData.get('displayName')?.toString()
 
-        if (displayName && setCurrentUserData) {
-            createProfile(
-                currentUserAuth,
-                displayName,
-                setCurrentUserData
-            ).then(() => {
-                console.log('created profile')
-            })
+        if (displayName) {
+            const response = await fetch(
+                CREATE_PROFILE_API_ROUTE + `?display_name=${displayName}`
+            )
+            if (response.status === 200) {
+                router.push(HOME_ROUTE)
+            }
+            setErrorMessage('Something went wrong')
         } else {
             setErrorMessage('Display name required')
         }
@@ -40,17 +57,21 @@ export default function CreateProfilePage() {
                     />
                     <InputText
                         id="displayName"
-                        placeholder={"ex: 'CombativeGuppy42'"}
+                        placeholder={"ex: 'SadMummy59'"}
                         name={'displayName'}
+                        inputRef={inputRef}
                         required
                     />
                 </div>
-                {/* <div className="flex flex-col items-center space-y-2">
-                <p className="">Profile pic {'(WIP)'} </p>
-                <input type="file" disabled />
-            </div> */}
 
-                <Button type="submit" disabled={pending}>
+                <Button
+                    type="submit"
+                    disabled={
+                        pending ||
+                        (inputRef.current !== null &&
+                            inputRef.current.value.length < 6)
+                    }
+                >
                     Submit
                 </Button>
                 {errorMessage && <p> {errorMessage} </p>}

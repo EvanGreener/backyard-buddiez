@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import LoadingGIF from './Loading'
+import LoadingGIF from './LoadingGIF'
 
 interface LoadDataType {
     children: React.ReactNode
@@ -21,7 +21,5 @@ export default function LoadData({
         return children
     } else if (conditionNoResults) {
         return <span>{noResultsMessage}</span>
-    } else {
-        return
     }
 }
