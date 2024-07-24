@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { LOGIN_SIGN_UP_ROUTE } from '../routes'
 import { db } from './db'
 import { sightings, user_daily_challenges, users } from './schema'
-import { AnyColumn, eq, inArray, sql } from 'drizzle-orm'
+import { and, AnyColumn, eq, inArray, sql } from 'drizzle-orm'
 import { getDailyChallenges, getUser, getUserDailyChallenges } from './queries'
 import { DailyChallenge, User } from '@/types/db-types'
 import { shuffle } from '../utils'
@@ -125,6 +125,7 @@ export async function addNewSightingAndUpdateDCProgress(
         .returning()
 
     const udcs = (await getUserDailyChallenges(user))!
+    const udcIDs = udcs.map((udc) => udc.id)
     const dcs = await getDailyChallenges(udcs)
 
     const dcsInProgress = udcs
@@ -141,7 +142,12 @@ export async function addNewSightingAndUpdateDCProgress(
         .set({
             birds_found: increment(user_daily_challenges.birds_found),
         })
-        .where(inArray(user_daily_challenges.daily_challenge_id, idsUpdated))
+        .where(
+            and(
+                inArray(user_daily_challenges.daily_challenge_id, idsUpdated),
+                inArray(user_daily_challenges.id, udcIDs)
+            )
+        )
         .returning()
 
     return { newSighting, newUDCProgress }

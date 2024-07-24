@@ -2,6 +2,7 @@
 
 import Button from '@/components/Button'
 import LoadData from '@/components/LoadData'
+import Modal from '@/components/Modal'
 import { MainContext } from '@/contexts/HomeContext'
 import { BIRDPEDIA_ROUTE } from '@/lib/routes'
 import { Color } from '@/theme/colors'
@@ -9,7 +10,13 @@ import { BirdDetailed, BirdSightingInfo } from '@/types/action-types'
 import { Sighting, User } from '@/types/db-types'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Dispatch, SetStateAction, useContext, useState } from 'react'
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react'
 import { FaArrowCircleUp, FaArrowCircleDown } from 'react-icons/fa'
 
 interface IBirdpedia {
@@ -45,9 +52,11 @@ export default function Birdpedia({
           )
         : undefined
 
-    if (showNewSpeciesNotif && setShowNewSpeciesNotif) {
-        setShowNewSpeciesNotif(false)
-    }
+    useEffect(() => {
+        if (showNewSpeciesNotif && setShowNewSpeciesNotif) {
+            setShowNewSpeciesNotif(false)
+        }
+    }, [setShowNewSpeciesNotif, showNewSpeciesNotif])
 
     function PrevBtn() {
         return (
@@ -238,17 +247,11 @@ function BirdSightingInfoModal({
     const lastSeenFormatted = lastSeen.toLocaleDateString('en-US', dateOptions)
 
     return (
-        <div
-            className="absolute top-0 left-0 h-full w-full bg-black/50 z-20  flex justify-center items-center"
-            onClick={() => setSelectedBirdDetails(undefined)}
+        <Modal
+            showCondition={selectedBirdDetails !== undefined}
+            clickOutsideHandler={() => setSelectedBirdDetails(undefined)}
         >
-            <div
-                className={
-                    Color.BACKGROUND +
-                    ' ' +
-                    'rounded-md max-h-[29rem] w-1/2 overflow-y-scroll flex flex-col items-center p-4 space-y-4'
-                }
-            >
+            <div className="p-4">
                 <div className="">
                     <p className="text-xl">{name}</p>
                     <p className="">{commonName}</p>
@@ -279,6 +282,6 @@ function BirdSightingInfoModal({
                     />
                 )}
             </div>
-        </div>
+        </Modal>
     )
 }

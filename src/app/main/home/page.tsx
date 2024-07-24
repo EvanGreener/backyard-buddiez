@@ -10,6 +10,8 @@ import { CREATE_PROFILE_API_ROUTE, ERROR_ROUTE } from '@/lib/routes'
 import { User } from '@/types/db-types'
 import { redirect } from 'next/navigation'
 import DailyChallengeProgress from './DailyChallengeProgress'
+import Button from '@/components/Button'
+import HelpModal from './HelpModal'
 
 export default async function HomeScreen() {
     const userAuth = await getUserAuth()
@@ -25,20 +27,23 @@ export default async function HomeScreen() {
             (await getDailyChallenges(userDailyChallenges)) ?? []
 
         return (
-            <div className="flex flex-col items-center space-y-6">
-                <>
+            <div className="flex flex-col items-center space-y-6 w-full">
+                <div className="flex flex-col items-center space-y-6">
                     <div className="text-2xl">
                         Welcome{' '}
                         <span className="italic text-emerald-400">
                             {user.display_name}
                         </span>
                     </div>
-                </>
-                <DailyChallengeProgress
-                    user={user}
-                    userDailyChallenges={userDailyChallenges}
-                    dailyChallenges={dailyChallenges}
-                />
+                    <DailyChallengeProgress
+                        user={user}
+                        userDailyChallenges={userDailyChallenges}
+                        dailyChallenges={dailyChallenges}
+                    />
+                </div>
+                <div className="flex flex-col items-center">
+                    <HelpModal />
+                </div>
             </div>
         )
     }

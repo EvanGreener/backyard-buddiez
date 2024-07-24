@@ -26,11 +26,11 @@ export default function DailyChallengeProgress({
     const { showDCProgressNotif, setShowDCProgressNotif } =
         useContext(MainContext)
 
-    if (showDCProgressNotif && setShowDCProgressNotif) {
-        setShowDCProgressNotif(false)
-    }
-
     useEffect(() => {
+        if (showDCProgressNotif && setShowDCProgressNotif) {
+            setShowDCProgressNotif(false)
+        }
+
         setInterval(() => {
             const { dcs_last_updated } = user
             const currentTime = new Date()
@@ -67,7 +67,7 @@ export default function DailyChallengeProgress({
                 window.location.reload()
             }
         }, 1000)
-    }, [user])
+    }, [setShowDCProgressNotif, showDCProgressNotif, user])
     return (
         <IconContext.Provider
             value={{ size: '1.25rem', style: { display: 'inline' } }}
@@ -97,9 +97,11 @@ export default function DailyChallengeProgress({
 
                 <div className="flex flex-col space-y-2 ">
                     {userDailyChallenges.map((udc, i) => {
-                        const { id, birds_found } = udc
+                        const { id, birds_found, daily_challenge_id } = udc
                         const { birds_to_find, challenge_text } =
-                            dailyChallenges[i]
+                            dailyChallenges.find(
+                                (dc) => dc.id === daily_challenge_id
+                            )!
 
                         const complete = birds_to_find == birds_found
 
