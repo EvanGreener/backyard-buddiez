@@ -38,7 +38,7 @@ export default function MainProvider({
                     setShowDCProgressNotif,
                 }}
             >
-                <div className="h-full w-full">{children}</div>
+                <div className="p-4 h-full w-full">{children}</div>
                 <div className="p-2 bg-green-400 rounded-t-lg w-full flex justify-around fixed bottom-0 z-10">
                     <div className="relative ">
                         <LinkButton href={HOME_ROUTE} color={Color.SUCCESS}>
