@@ -37,7 +37,7 @@ export default async function LeaderboardsScreen() {
                             dailyChallengesCompleted * 100}
                     </div>
                 </div>
-                <div className=" border-4 border-green-400 rounded h-[29rem] overflow-y-scroll flex flex-col w-full">
+                <div className=" border-4 border-green-400 rounded-md h-[29rem] overflow-y-scroll flex flex-col w-full">
                     <div className="p-2 flex w-full font-bold border-b-2 border-green-400 sticky top-0">
                         <span className="w-1/3">Rank</span>
                         <span className="w-1/3">User</span>

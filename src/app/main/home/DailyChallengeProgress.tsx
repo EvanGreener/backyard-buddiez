@@ -62,7 +62,9 @@ export default function DailyChallengeProgress({
 
             if (
                 currentDate.getTime() > dcs_last_updated!.getTime() ||
-                (Math.floor(diffHours) == 0 && Math.floor(diffMinutes) == 0)
+                (Math.floor(diffHours) == 0 &&
+                    Math.floor(diffMinutes) == 0 &&
+                    Math.floor(diffSeconds) == 0)
             ) {
                 window.location.reload()
             }

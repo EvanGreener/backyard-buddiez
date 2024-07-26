@@ -1,5 +1,6 @@
+'use client'
 import { Color } from '@/theme/colors'
-import { MouseEventHandler } from 'react'
+import { MouseEventHandler, useState } from 'react'
 
 interface ButtonType {
     children: React.ReactNode
@@ -7,7 +8,6 @@ interface ButtonType {
     onClickHandler?: MouseEventHandler<HTMLButtonElement>
     disabled?: boolean
     color?: Color
-    
 }
 
 export default function Button({
@@ -17,13 +17,24 @@ export default function Button({
     type = 'button',
     color = Color.PRIMARY,
 }: ButtonType) {
-    const buttonClass = color + ' p-2 rounded'
+    const [buttonClicked, setButtonClicked] = useState(false)
+
+    let buttonClass = color + ' ' + 'p-2 rounded'
+    buttonClass = buttonClicked
+        ? 'animate-pop' + ' ' + buttonClass
+        : buttonClass
     return (
         <button
             type={type}
             className={buttonClass}
-            onClick={onClickHandler}
+            onClick={(e) => {
+                setButtonClicked(true)
+                onClickHandler && onClickHandler(e)
+            }}
             disabled={disabled}
+            onAnimationEnd={() => {
+                setButtonClicked(false)
+            }}
         >
             {children}
         </button>

@@ -17,6 +17,8 @@ import { FaPlus, FaBookBookmark } from 'react-icons/fa6'
 import { IoIosSettings } from 'react-icons/io'
 import { MdOutlineFiberNew } from 'react-icons/md'
 import { FaTrophy } from 'react-icons/fa6'
+import LinkButton from '@/components/LinkButton'
+import { Color } from '@/theme/colors'
 
 export default function MainProvider({
     children,
@@ -36,32 +38,35 @@ export default function MainProvider({
                     setShowDCProgressNotif,
                 }}
             >
-                <div className="p-4 h-full w-full">{children}</div>
-                <div className="bg-green-400 rounded-t-lg w-full flex justify-around fixed bottom-0 z-10">
-                    <div className="relative p-4">
-                        <Link href={HOME_ROUTE}>
+                <div className="h-full w-full">{children}</div>
+                <div className="p-2 bg-green-400 rounded-t-lg w-full flex justify-around fixed bottom-0 z-10">
+                    <div className="relative ">
+                        <LinkButton href={HOME_ROUTE} color={Color.SUCCESS}>
                             <FaHome color={chooseColor(pathname, HOME_ROUTE)} />
-                        </Link>
+                        </LinkButton>
                         {showDCProgressNotif && (
                             <div className="absolute top-0 right-0 animate-bounce bg-red-300 rounded">
                                 <MdOutlineFiberNew />
                             </div>
                         )}
                     </div>
-                    <Link href={LEADERBOARDS_ROUTE} className="px-3 py-4">
+                    <LinkButton href={LEADERBOARDS_ROUTE} color={Color.SUCCESS}>
                         <FaTrophy
                             color={chooseColor(pathname, LEADERBOARDS_ROUTE)}
                         />
-                    </Link>
-                    <Link href={BIRD_ID_ROUTE} className="px-3 py-4">
+                    </LinkButton>
+                    <LinkButton href={BIRD_ID_ROUTE} color={Color.SUCCESS}>
                         <FaPlus color={chooseColor(pathname, BIRD_ID_ROUTE)} />
-                    </Link>
-                    <div className="relative p-4">
-                        <Link href={BIRDPEDIA_ROUTE}>
+                    </LinkButton>
+                    <div className="relative ">
+                        <LinkButton
+                            href={BIRDPEDIA_ROUTE}
+                            color={Color.SUCCESS}
+                        >
                             <FaBookBookmark
                                 color={chooseColor(pathname, BIRDPEDIA_ROUTE)}
                             />
-                        </Link>
+                        </LinkButton>
                         {showNewSpeciesNotif && (
                             <div className="absolute top-0 right-0 animate-bounce bg-red-300 rounded">
                                 <MdOutlineFiberNew />
@@ -69,11 +74,11 @@ export default function MainProvider({
                         )}
                     </div>
 
-                    <Link href={SETTINGS_ROUTE} className="px-3 py-4">
+                    <LinkButton href={SETTINGS_ROUTE} color={Color.SUCCESS}>
                         <IoIosSettings
                             color={chooseColor(pathname, SETTINGS_ROUTE)}
                         />
-                    </Link>
+                    </LinkButton>
                 </div>
             </MainContext.Provider>
         </IconContext.Provider>

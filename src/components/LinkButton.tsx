@@ -1,18 +1,25 @@
+'use client'
+
 import Link from 'next/link'
 import { Color } from '@/theme/colors'
+import Button from './Button'
+import { useRouter } from 'next/navigation'
 
 interface ILinkButton {
     href: string
+    color?: Color
     children: JSX.Element
 }
 
-export default async function LinkButton({ href, children }: ILinkButton) {
+export default function LinkButton({
+    href,
+    color = Color.PRIMARY,
+    children,
+}: ILinkButton) {
+    const router = useRouter()
     return (
-        <Link
-            href={href}
-            className={Color.PRIMARY + ' ' + 'p-2 rounded flex items-center'}
-        >
+        <Button onClickHandler={() => router.push(href)} color={color}>
             {children}
-        </Link>
+        </Button>
     )
 }
