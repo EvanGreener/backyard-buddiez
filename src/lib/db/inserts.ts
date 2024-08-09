@@ -113,7 +113,9 @@ function increment(column: AnyColumn, value = 1) {
 export async function addNewSightingAndUpdateDCProgress(
     user: User,
     dcIDs: number[],
-    speciesId: string
+    speciesId: string,
+    lat: number | undefined,
+    long: number | undefined
 ) {
     const newSighting = await db
         .insert(sightings)
@@ -121,6 +123,8 @@ export async function addNewSightingAndUpdateDCProgress(
             species_id: speciesId,
             user_id: user.id,
             seen_at: new Date(),
+            lat: lat,
+            long: long,
         })
         .returning()
 

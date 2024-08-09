@@ -28,7 +28,7 @@ const config: Config = {
                 },
             },
             animation: {
-                pop: 'pop 0.5s linear',
+                pop: 'pop 0.25s linear',
             },
         },
     },

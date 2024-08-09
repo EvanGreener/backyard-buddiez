@@ -6,6 +6,7 @@ import {
     boolean,
     foreignKey,
     bigint,
+    doublePrecision,
     smallint,
     varchar,
 } from 'drizzle-orm/pg-core'
@@ -17,7 +18,7 @@ export const code_challenge_method = pgEnum('code_challenge_method', [
     'plain',
 ])
 export const factor_status = pgEnum('factor_status', ['unverified', 'verified'])
-export const factor_type = pgEnum('factor_type', ['totp', 'webauthn'])
+export const factor_type = pgEnum('factor_type', ['totp', 'webauthn', 'phone'])
 export const one_time_token_type = pgEnum('one_time_token_type', [
     'confirmation_token',
     'reauthentication_token',
@@ -80,6 +81,7 @@ export const sightings = pgTable('sightings', {
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint('id', { mode: 'number' })
         .primaryKey()
+        .notNull()
         .generatedByDefaultAsIdentity({
             name: 'sightings_id_seq',
             startWith: 1,
@@ -95,12 +97,15 @@ export const sightings = pgTable('sightings', {
     user_id: text('user_id')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
+    lat: doublePrecision('lat'),
+    long: doublePrecision('long'),
 })
 
 export const daily_challenges = pgTable('daily_challenges', {
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint('id', { mode: 'number' })
         .primaryKey()
+        .notNull()
         .generatedByDefaultAsIdentity({
             name: 'daily_challenges_id_seq',
             startWith: 1,
@@ -111,12 +116,14 @@ export const daily_challenges = pgTable('daily_challenges', {
         }),
     challenge_text: text('challenge_text').notNull(),
     birds_to_find: smallint('birds_to_find').notNull(),
+    info: text('info'),
 })
 
 export const user_daily_challenges = pgTable('user_daily_challenges', {
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint('id', { mode: 'number' })
         .primaryKey()
+        .notNull()
         .generatedByDefaultAsIdentity({
             name: 'user_daily_challenges_id_seq',
             startWith: 1,

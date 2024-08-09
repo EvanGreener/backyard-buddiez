@@ -22,4 +22,5 @@ export default function LoadData({
     } else if (conditionNoResults) {
         return <span>{noResultsMessage}</span>
     }
+    return children
 }

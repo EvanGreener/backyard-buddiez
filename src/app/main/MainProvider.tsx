@@ -38,10 +38,18 @@ export default function MainProvider({
                     setShowDCProgressNotif,
                 }}
             >
-                <div className="p-4 h-full w-full">{children}</div>
-                <div className="p-2 bg-green-400 rounded-t-lg w-full flex justify-around fixed bottom-0 z-10">
+                <div className={Color.BACKGROUND + ' ' + 'p-4 h-full w-full'}>
+                    {children}
+                </div>
+                <div
+                    className={
+                        Color.TABS +
+                        ' ' +
+                        'p-1 rounded-t-lg w-full flex justify-around items-end h-12 fixed bottom-0 z-10'
+                    }
+                >
                     <div className="relative ">
-                        <LinkButton href={HOME_ROUTE} color={Color.SUCCESS}>
+                        <LinkButton href={HOME_ROUTE} color={Color.TABS}>
                             <FaHome color={chooseColor(pathname, HOME_ROUTE)} />
                         </LinkButton>
                         {showDCProgressNotif && (
@@ -50,19 +58,24 @@ export default function MainProvider({
                             </div>
                         )}
                     </div>
-                    <LinkButton href={LEADERBOARDS_ROUTE} color={Color.SUCCESS}>
+                    <LinkButton href={LEADERBOARDS_ROUTE} color={Color.TABS}>
                         <FaTrophy
                             color={chooseColor(pathname, LEADERBOARDS_ROUTE)}
                         />
                     </LinkButton>
-                    <LinkButton href={BIRD_ID_ROUTE} color={Color.SUCCESS}>
-                        <FaPlus color={chooseColor(pathname, BIRD_ID_ROUTE)} />
+                    <LinkButton href={BIRD_ID_ROUTE} color={Color.TABS}>
+                        <FaPlus
+                            color={chooseColor(
+                                pathname,
+                                BIRD_ID_ROUTE,
+                                Color.BIRD_ID_ICON_ON,
+                                Color.BIRD_ID_ICON_OFF
+                            )}
+                            size={'2.5rem'}
+                        />
                     </LinkButton>
                     <div className="relative ">
-                        <LinkButton
-                            href={BIRDPEDIA_ROUTE}
-                            color={Color.SUCCESS}
-                        >
+                        <LinkButton href={BIRDPEDIA_ROUTE} color={Color.TABS}>
                             <FaBookBookmark
                                 color={chooseColor(pathname, BIRDPEDIA_ROUTE)}
                             />
@@ -74,7 +87,7 @@ export default function MainProvider({
                         )}
                     </div>
 
-                    <LinkButton href={SETTINGS_ROUTE} color={Color.SUCCESS}>
+                    <LinkButton href={SETTINGS_ROUTE} color={Color.TABS}>
                         <IoIosSettings
                             color={chooseColor(pathname, SETTINGS_ROUTE)}
                         />
@@ -85,6 +98,11 @@ export default function MainProvider({
     )
 }
 
-function chooseColor(pathname: string, route: string) {
-    return pathname.startsWith(route) ? 'springgreen' : 'darkgreen'
+function chooseColor(
+    pathname: string,
+    route: string,
+    on: string = Color.ICON_ON,
+    off: string = Color.ICON_OFF
+) {
+    return pathname.startsWith(route) ? on : off
 }

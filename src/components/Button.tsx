@@ -8,6 +8,7 @@ interface ButtonType {
     onClickHandler?: MouseEventHandler<HTMLButtonElement>
     disabled?: boolean
     color?: Color
+    roundedFull?: boolean
 }
 
 export default function Button({
@@ -15,11 +16,13 @@ export default function Button({
     onClickHandler,
     disabled,
     type = 'button',
-    color = Color.PRIMARY,
+    color = Color.BUTTON,
+    roundedFull = false,
 }: ButtonType) {
     const [buttonClicked, setButtonClicked] = useState(false)
 
-    let buttonClass = color + ' ' + 'p-2 rounded'
+    const rounded = roundedFull ? 'rounded-full' : 'rounded'
+    let buttonClass = color + ' ' + 'p-2' + ' ' + rounded
     buttonClass = buttonClicked
         ? 'animate-pop' + ' ' + buttonClass
         : buttonClass

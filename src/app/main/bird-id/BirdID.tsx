@@ -33,11 +33,19 @@ import { Color } from '@/theme/colors'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 import { getAllUserSightings } from '@/lib/db/queries'
 import Toast from '@/components/Toast'
+import { MdOutlineLocationOff } from 'react-icons/md'
+import { MdOutlineLocationOn } from 'react-icons/md'
+import { FaMagnifyingGlass } from 'react-icons/fa6'
+import { IconContext } from 'react-icons'
 
 interface IBirdID {
     user: User
     dailyChallenges: DailyChallenge[]
     userDailyChallenges: UserDailyChallenge[]
+}
+interface Location {
+    lat: number
+    long: number
 }
 export default function BirdID({
     user,
@@ -51,11 +59,13 @@ export default function BirdID({
     const [isAddingBird, setIsAddingBird] = useState<boolean>(false)
     const [addedBirdSuccess, setAddedBirdSuccess] = useState<boolean>(false)
     const [selectedBird, setSelectedBird] = useState<BirdBasic>()
+    const [locationOn, setLocationOn] = useState(false)
     // Contexts
     const { setShowDCProgressNotif, setShowNewSpeciesNotif } =
         useContext(MainContext)
     // Refs
     const searchRef = useRef<HTMLInputElement>(null)
+    const location = useRef<Location>()
     // Event handlers
     const handleOnInput: FormEventHandler<HTMLInputElement> = (event) => {
         const input = event.currentTarget.value
@@ -103,6 +113,8 @@ export default function BirdID({
                 body: JSON.stringify({
                     dcIDs,
                     speciesId: selectedBird.speciesId,
+                    lat: location.current?.lat,
+                    long: location.current?.long,
                 }),
             })
 
@@ -118,6 +130,7 @@ export default function BirdID({
         const dc0 = formData.get('dc0')?.toString() == 'on'
         const dc1 = formData.get('dc1')?.toString() == 'on'
         const dc2 = formData.get('dc2')?.toString() == 'on'
+
         setIsAddingBird(true)
         addNewSighting(dc0, dc1, dc2)
     }
@@ -140,14 +153,29 @@ export default function BirdID({
 
         searchBirds()
 
+        const watchID = navigator.geolocation.watchPosition((position) => {
+            setLocationOn(true)
+            const { latitude, longitude } = position.coords
+            location.current = { lat: latitude, long: longitude }
+        })
+
         return () => {
             ignoreSearchResults = true
+            navigator.geolocation.clearWatch(watchID)
         }
     }, [birdInput])
 
     return (
         <div className="flex flex-col items-center space-y-6 h-full">
-            <SearchBar onInput={handleOnInput} searchRef={searchRef} />
+            <div className="flex items-center space-x-2">
+                <IconContext.Provider
+                    value={{ size: '2rem', color: '#172554' }}
+                >
+                    <SearchBar onInput={handleOnInput} searchRef={searchRef} />
+                    {location.current === undefined && <MdOutlineLocationOff />}
+                </IconContext.Provider>
+            </div>
+
             <LoadData
                 conditionLoad={isFetchingBirdData}
                 conditionShowData={
@@ -199,11 +227,11 @@ interface ISearchBar {
 export function SearchBar({
     onInput,
     searchRef,
-    placeholder = "ex: 'blue jay'",
+    placeholder = 'What did you spot?',
 }: ISearchBar) {
     return (
-        <div>
-            <InputLabel inputId="bird" text="Search bird: " />
+        <div className="flex items-center px-2 bg-white rounded">
+            <FaMagnifyingGlass size={'1rem'} />
             <InputText
                 placeholder={placeholder}
                 onInput={onInput}
@@ -226,7 +254,13 @@ export function SearchResults({
     setSearchResults,
 }: ISearchResults) {
     return (
-        <div className="border-4 border-green-400 rounded-md flex flex-col space-y-2 h-[29rem] w-full sm:w-auto overflow-y-scroll">
+        <div
+            className={
+                Color.BORDER_PRIMARY +
+                ' ' +
+                'border-4 rounded-md flex flex-col space-y-2 h-[29rem] w-full sm:w-auto overflow-y-scroll'
+            }
+        >
             {searchResults.map((sr) => {
                 return (
                     <div
@@ -252,14 +286,16 @@ export function SearchResults({
                         </div>
                         <div className="grow flex justify-end">
                             <Button
-                                color={Color.SUCCESS}
+                                color={Color.BACKGROUND}
                                 onClickHandler={() => {
                                     selectResult(sr)
                                     clearInput()
                                     setSearchResults(undefined)
                                 }}
                             >
-                                <IoIosCheckmarkCircle color="darkgreen" />
+                                <IoIosCheckmarkCircle
+                                    color={Color.BIRD_ID_ICON_OFF}
+                                />
                             </Button>
                         </div>
                     </div>
@@ -274,6 +310,7 @@ interface AddSelectionType {
     user: User
     userDailyChallenges: UserDailyChallenge[]
     dailyChallenges: DailyChallenge[]
+    location?: Location
 }
 
 function AddSelection({
@@ -282,6 +319,7 @@ function AddSelection({
     user,
     userDailyChallenges,
     dailyChallenges,
+    location,
 }: AddSelectionType) {
     if (user) {
         const checkBoxClasses = 'accent-green-500 w-6 h-6'

@@ -12,6 +12,7 @@ import { redirect } from 'next/navigation'
 import DailyChallengeProgress from './DailyChallengeProgress'
 import Button from '@/components/Button'
 import HelpModal from './HelpModal'
+import { Color } from '@/theme/colors'
 
 export default async function HomeScreen() {
     const userAuth = await getUserAuth()
@@ -31,7 +32,7 @@ export default async function HomeScreen() {
                 <div className="flex flex-col items-center space-y-6">
                     <div className="text-2xl">
                         Welcome{' '}
-                        <span className="italic text-emerald-400">
+                        <span className={Color.TEXT_PRIMARY + ' ' + 'italic'}>
                             {user.display_name}
                         </span>
                     </div>

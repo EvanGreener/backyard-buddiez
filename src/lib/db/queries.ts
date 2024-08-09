@@ -5,7 +5,7 @@ import {
     UserDailyChallenge,
 } from '@/types/db-types'
 import { db } from './db'
-import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, asc, BinaryOperator, desc, eq, inArray, sql } from 'drizzle-orm'
 import {
     daily_challenges,
     sightings,

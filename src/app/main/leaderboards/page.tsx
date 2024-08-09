@@ -5,6 +5,7 @@ import {
     getTopXGlobal,
     getUser,
 } from '@/lib/db/queries'
+import { Color } from '@/theme/colors'
 
 export default async function LeaderboardsScreen() {
     const userAuth = await getUserAuth()
@@ -37,8 +38,20 @@ export default async function LeaderboardsScreen() {
                             dailyChallengesCompleted * 100}
                     </div>
                 </div>
-                <div className=" border-4 border-green-400 rounded-md h-[29rem] overflow-y-scroll flex flex-col w-full">
-                    <div className="p-2 flex w-full font-bold border-b-2 border-green-400 sticky top-0">
+                <div
+                    className={
+                        Color.BORDER_PRIMARY +
+                        ' ' +
+                        'border-4 border-green-400 rounded-md h-[29rem] overflow-y-scroll flex flex-col w-full'
+                    }
+                >
+                    <div
+                        className={
+                            Color.BORDER_PRIMARY +
+                            ' ' +
+                            'p-2 flex w-full font-bold border-b-2 sticky top-0'
+                        }
+                    >
                         <span className="w-1/3">Rank</span>
                         <span className="w-1/3">User</span>
                         <span className="w-1/3">Points</span>
@@ -57,7 +70,10 @@ export default async function LeaderboardsScreen() {
                             <div
                                 key={entry.user_id}
                                 className={
-                                    'p-2 flex w-full border-b-2 border-green-400 ' +
+                                    Color.BORDER_PRIMARY +
+                                    ' ' +
+                                    'p-2 flex w-full border-b-2' +
+                                    ' ' +
                                     bgColor
                                 }
                             >

@@ -1,9 +1,15 @@
 export default function InputLabel({
     inputId,
     text,
+    className,
 }: {
     inputId: string
     text: string
+    className?: string
 }) {
-    return <label htmlFor={inputId}>{text}</label>
+    return (
+        <label htmlFor={inputId} className={className}>
+            {text}
+        </label>
+    )
 }

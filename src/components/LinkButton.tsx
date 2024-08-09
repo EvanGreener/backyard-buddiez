@@ -13,12 +13,16 @@ interface ILinkButton {
 
 export default function LinkButton({
     href,
-    color = Color.PRIMARY,
+    color = Color.BUTTON,
     children,
 }: ILinkButton) {
     const router = useRouter()
     return (
-        <Button onClickHandler={() => router.push(href)} color={color}>
+        <Button
+            onClickHandler={() => router.push(href)}
+            color={color}
+            roundedFull
+        >
             {children}
         </Button>
     )

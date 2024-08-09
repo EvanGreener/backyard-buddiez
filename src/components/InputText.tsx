@@ -21,7 +21,7 @@ export default function InputText({
     return (
         <input
             name={name}
-            className="p-2 rounded"
+            className="p-2 bg-white rounded outline-0"
             type={type}
             placeholder={placeholder}
             required={required}

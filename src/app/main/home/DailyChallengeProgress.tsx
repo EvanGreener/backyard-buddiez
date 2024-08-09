@@ -74,7 +74,13 @@ export default function DailyChallengeProgress({
         <IconContext.Provider
             value={{ size: '1.25rem', style: { display: 'inline' } }}
         >
-            <div className="flex flex-col items-center p-6 space-y-2 rounded-lg border-green-400 border-4">
+            <div
+                className={
+                    Color.BORDER_PRIMARY +
+                    ' ' +
+                    'flex flex-col items-center p-6 space-y-2 rounded-lg border-4'
+                }
+            >
                 <div className="text-xl">Daily Challenge Progress</div>
                 <span
                     className={
@@ -84,17 +90,23 @@ export default function DailyChallengeProgress({
                     }
                 >
                     <FaStopwatch />
-                    {hoursTillReset < 10
-                        ? `0${hoursTillReset}`
-                        : hoursTillReset}
-                    :
-                    {minutesTillReset < 10
-                        ? `0${minutesTillReset}`
-                        : minutesTillReset}
-                    :
-                    {secondsTillReset < 10
-                        ? `0${secondsTillReset}`
-                        : secondsTillReset}
+                    {hoursTillReset == 99 ? (
+                        '--:--:--'
+                    ) : (
+                        <>
+                            {hoursTillReset < 10
+                                ? `0${hoursTillReset}`
+                                : hoursTillReset}
+                            :
+                            {minutesTillReset < 10
+                                ? `0${minutesTillReset}`
+                                : minutesTillReset}
+                            :
+                            {secondsTillReset < 10
+                                ? `0${secondsTillReset}`
+                                : secondsTillReset}
+                        </>
+                    )}
                 </span>
 
                 <div className="flex flex-col space-y-2 ">
@@ -117,7 +129,7 @@ export default function DailyChallengeProgress({
                                         fillColor={
                                             complete
                                                 ? Color.SUCCESS
-                                                : Color.PRIMARY
+                                                : Color.BUTTON
                                         }
                                     />
                                     {complete ? (
