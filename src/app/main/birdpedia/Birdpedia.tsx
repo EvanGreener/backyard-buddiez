@@ -61,13 +61,14 @@ export default function Birdpedia({
     function PrevBtn() {
         return (
             <Button
+                color={Color.BACKGROUND}
                 disabled={prevBtnDisabled}
                 onClickHandler={() => {
                     !prevBtnDisabled && setPage(page - 1)
                 }}
             >
                 <FaArrowCircleUp
-                    color={prevBtnDisabled ? 'grey' : 'springgreen'}
+                    color={prevBtnDisabled ? 'grey' : Color.SPECIAL_ICON_LIGHT}
                     opacity={prevBtnDisabled ? '50%' : '100%'}
                 />
             </Button>
@@ -77,13 +78,14 @@ export default function Birdpedia({
     function NextBtn() {
         return (
             <Button
+                color={Color.BACKGROUND}
                 disabled={nextBtnDisabled}
                 onClickHandler={() => {
                     !nextBtnDisabled && setPage(page + 1)
                 }}
             >
                 <FaArrowCircleDown
-                    color={nextBtnDisabled ? 'grey' : 'springgreen'}
+                    color={nextBtnDisabled ? 'grey' : Color.SPECIAL_ICON_LIGHT}
                     opacity={nextBtnDisabled ? '50%' : '100%'}
                 />
             </Button>
@@ -153,10 +155,10 @@ export default function Birdpedia({
                 <div className="flex flex-col items-center">
                     {entriesShown && (
                         <div className="flex flex-col items-center">
-                            <PrevBtn />
+                            {!prevBtnDisabled && <PrevBtn />}
                             {/* Entries */}
                             <div className="grow">
-                                <div className="overflow-y-scroll h-[29rem] border-4 border-green-400 grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4 rounded-md">
+                                <div className="overflow-y-scroll h-[29rem] grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4 rounded-md">
                                     {entriesShown.map((entry) => {
                                         const {
                                             commonName,
@@ -188,7 +190,7 @@ export default function Birdpedia({
                                     })}
                                 </div>
                             </div>
-                            <NextBtn />
+                            {!nextBtnDisabled && <NextBtn />}
                         </div>
                     )}
                 </div>

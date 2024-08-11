@@ -68,8 +68,8 @@ export default function MainProvider({
                             color={chooseColor(
                                 pathname,
                                 BIRD_ID_ROUTE,
-                                Color.BIRD_ID_ICON_ON,
-                                Color.BIRD_ID_ICON_OFF
+                                Color.SPECIAL_ICON_DARK,
+                                Color.ICON_LIGHT
                             )}
                             size={'2.5rem'}
                         />
@@ -101,8 +101,8 @@ export default function MainProvider({
 function chooseColor(
     pathname: string,
     route: string,
-    on: string = Color.ICON_ON,
-    off: string = Color.ICON_OFF
+    on: string = Color.ICON_DARK,
+    off: string = Color.ICON_LIGHT
 ) {
     return pathname.startsWith(route) ? on : off
 }

@@ -256,16 +256,16 @@ export function SearchResults({
     return (
         <div
             className={
-                Color.BORDER_PRIMARY +
-                ' ' +
-                'border-4 rounded-md flex flex-col space-y-2 h-[29rem] w-full sm:w-auto overflow-y-scroll'
+                'flex flex-col space-y-2 h-[32rem] w-full sm:w-auto overflow-y-scroll divide-y divide-orange-300'
             }
         >
             {searchResults.map((sr) => {
                 return (
                     <div
                         key={sr.speciesId}
-                        className="p-2 flex space-x-2 hover:bg-black/50 items-center"
+                        className={
+                            'p-2 flex space-x-2 hover:bg-black/50 items-center'
+                        }
                     >
                         <Image
                             src={sr.imgURI}
@@ -286,7 +286,6 @@ export function SearchResults({
                         </div>
                         <div className="grow flex justify-end">
                             <Button
-                                color={Color.BACKGROUND}
                                 onClickHandler={() => {
                                     selectResult(sr)
                                     clearInput()
@@ -294,7 +293,7 @@ export function SearchResults({
                                 }}
                             >
                                 <IoIosCheckmarkCircle
-                                    color={Color.BIRD_ID_ICON_OFF}
+                                    color={Color.SPECIAL_ICON_LIGHT}
                                 />
                             </Button>
                         </div>
@@ -322,10 +321,10 @@ function AddSelection({
     location,
 }: AddSelectionType) {
     if (user) {
-        const checkBoxClasses = 'accent-green-500 w-6 h-6'
+        const checkBoxClasses = 'accent-orange-400 w-6 h-6'
         return (
             <div className="flex flex-col space-y-6 ">
-                <div className="flex space-x-2 ">
+                <div className="flex space-x-2 items-center">
                     <Image
                         src={selectedBird.imgURI}
                         height={90}
@@ -338,7 +337,7 @@ function AddSelection({
                     <span className="align-middle">{selectedBird.name}</span>
                 </div>
 
-                <div className="border-4 border-green-400 rounded-md m-4 p-2 space-y-6">
+                <div className={'rounded-md m-4 p-2 space-y-6'}>
                     {userDailyChallenges.map((udc, i) => {
                         const { daily_challenge_id, birds_found } = udc
                         const { challenge_text, birds_to_find } =

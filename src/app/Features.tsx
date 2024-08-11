@@ -8,6 +8,7 @@ import { FaClock } from 'react-icons/fa'
 import { FaTrophy } from 'react-icons/fa6'
 
 import Link from 'next/link'
+import { Color } from '@/theme/colors'
 
 interface Section {
     id: string
@@ -78,13 +79,15 @@ const sections: Section[] = [
 
 export default function Features() {
     return (
-        <IconContext.Provider value={{ size: '3.5rem', color: 'darkgreen' }}>
+        <IconContext.Provider
+            value={{ size: '3.5rem', color: Color.ICON_LIGHT }}
+        >
             <div className="w-full">
                 {sections.map((section, i) => {
                     const { id, headline, icon, text } = section
 
                     const evenSection = i % 2 === 0
-                    const bgColor = evenSection ? 'bg-green-400' : ''
+                    const bgColor = evenSection ? 'bg-sky-400' : ''
                     return (
                         <section
                             key={id}
