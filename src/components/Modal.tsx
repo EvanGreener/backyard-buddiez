@@ -23,7 +23,7 @@ export default function Modal({
                     className={
                         Color.BACKGROUND +
                         ' ' +
-                        'rounded-md max-h-[29rem] w-10/12 sm:w-1/2 overflow-y-scroll flex flex-col items-center space-y-4'
+                        'rounded-md max-h-[29rem] w-10/12 sm:w-1/2 overflow-y-scroll '
                     }
                     onClick={(e) => {
                         e.stopPropagation()

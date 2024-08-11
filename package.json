@@ -12,9 +12,11 @@
     "dependencies": {
         "@supabase/ssr": "^0.4.0",
         "@supabase/supabase-js": "^2.44.4",
+        "@vis.gl/react-google-maps": "^1.1.0",
         "dotenv": "^16.4.5",
         "drizzle-orm": "^0.32.0",
         "firebase": "^10.12.4",
+        "js-marker-clusterer": "github:googlemaps/markerclusterer",
         "net": "^1.0.2",
         "next": "^14.2.5",
         "postgres": "^3.4.4",

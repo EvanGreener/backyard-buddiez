@@ -12,4 +12,8 @@ export interface BirdDetailed extends BirdBasic {
 export interface BirdSightingInfo extends BirdDetailed {
     timesSeen: number
     lastSeen: Date
+    lastSeenLocation: {
+        lat: number | null
+        long: number | null
+    }
 }

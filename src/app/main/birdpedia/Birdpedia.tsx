@@ -4,12 +4,10 @@ import Button from '@/components/Button'
 import LoadData from '@/components/LoadData'
 import Modal from '@/components/Modal'
 import { MainContext } from '@/contexts/HomeContext'
-import { BIRDPEDIA_ROUTE } from '@/lib/routes'
 import { Color } from '@/theme/colors'
 import { BirdDetailed, BirdSightingInfo } from '@/types/action-types'
 import { Sighting, User } from '@/types/db-types'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import {
     Dispatch,
     SetStateAction,
@@ -18,6 +16,12 @@ import {
     useState,
 } from 'react'
 import { FaArrowCircleUp, FaArrowCircleDown } from 'react-icons/fa'
+import {
+    AdvancedMarker,
+    APIProvider,
+    Map,
+    Pin,
+} from '@vis.gl/react-google-maps'
 
 interface IBirdpedia {
     sightings: Sighting[]
@@ -35,7 +39,6 @@ export default function Birdpedia({
         useState<BirdSightingInfo>()
     const { showNewSpeciesNotif, setShowNewSpeciesNotif } =
         useContext(MainContext)
-    const router = useRouter()
 
     const birdsPerPage = 12
     const prevBtnDisabled = page == 0
@@ -100,6 +103,7 @@ export default function Birdpedia({
         name,
         imgURI,
         rangeMapImg,
+        lastSeenLocation,
     }: {
         speciesId: string
         timesSeen: number
@@ -108,6 +112,10 @@ export default function Birdpedia({
         name: string
         imgURI: string
         rangeMapImg: string
+        lastSeenLocation: {
+            lat: number | null
+            long: number | null
+        }
     }) {
         return (
             <div
@@ -120,6 +128,7 @@ export default function Birdpedia({
                         rangeMapImg,
                         speciesId,
                         timesSeen,
+                        lastSeenLocation,
                     })
                 }
                 className="cursor-pointer"
@@ -168,11 +177,14 @@ export default function Birdpedia({
                                             rangeMapImg,
                                         } = entry
 
-                                        const { timesSeen, lastSeen } =
-                                            calculateTimesSeenAndLastSeen(
-                                                speciesId,
-                                                sightings
-                                            )
+                                        const {
+                                            timesSeen,
+                                            lastSeen,
+                                            lastSeenLocation,
+                                        } = getSightingInfo(
+                                            speciesId,
+                                            sightings
+                                        )
 
                                         return (
                                             <div key={speciesId}>
@@ -184,6 +196,9 @@ export default function Birdpedia({
                                                     name={name}
                                                     imgURI={imgURI}
                                                     rangeMapImg={rangeMapImg}
+                                                    lastSeenLocation={
+                                                        lastSeenLocation
+                                                    }
                                                 />
                                             </div>
                                         )
@@ -205,10 +220,7 @@ export default function Birdpedia({
     )
 }
 
-function calculateTimesSeenAndLastSeen(
-    speciesId: string,
-    sightings: Sighting[]
-) {
+function getSightingInfo(speciesId: string, sightings: Sighting[]) {
     let lastSeen = new Date(0)
     const timesSeen = sightings.filter((s) => s.species_id == speciesId).length
 
@@ -216,14 +228,19 @@ function calculateTimesSeenAndLastSeen(
         (s1, s2) => s1.seen_at.getTime() - s2.seen_at.getTime()
     )
 
+    let lat: number | null = -1
+    let long: number | null = -1
     for (let i = sortedSightings.length - 1; i >= 0; i--) {
         if (sortedSightings[i].species_id === speciesId) {
             lastSeen = sortedSightings[i].seen_at
+            lat = sortedSightings[i].lat
+            long = sortedSightings[i].long
             break
         }
     }
+    const lastSeenLocation = { lat, long }
 
-    return { timesSeen, lastSeen }
+    return { timesSeen, lastSeen, lastSeenLocation }
 }
 interface IBirdSightingInfoModal {
     selectedBirdDetails: BirdSightingInfo
@@ -236,8 +253,17 @@ function BirdSightingInfoModal({
     selectedBirdDetails,
     setSelectedBirdDetails,
 }: IBirdSightingInfoModal) {
-    const { commonName, imgURI, lastSeen, name, rangeMapImg, timesSeen } =
-        selectedBirdDetails
+    const {
+        commonName,
+        imgURI,
+        lastSeen,
+        name,
+        rangeMapImg,
+        timesSeen,
+        lastSeenLocation,
+    } = selectedBirdDetails
+
+    const { lat, long } = lastSeenLocation
 
     const dateOptions: Intl.DateTimeFormatOptions = {
         year: 'numeric',
@@ -253,15 +279,7 @@ function BirdSightingInfoModal({
             showCondition={selectedBirdDetails !== undefined}
             clickOutsideHandler={() => setSelectedBirdDetails(undefined)}
         >
-            <div className="p-4">
-                <div className="">
-                    <p className="text-xl">{name}</p>
-                    <p className="">{commonName}</p>
-                </div>
-                <div>
-                    <p className="">Sightings: {timesSeen}</p>
-                    <p className="">Last seen: {lastSeenFormatted}</p>
-                </div>
+            <div className="p-4 flex flex-col items-center space-y-4">
                 <Image
                     src={imgURI ? imgURI : ''}
                     width={240}
@@ -271,18 +289,36 @@ function BirdSightingInfoModal({
                     alt={'Image URI unavailible'}
                     style={{ borderRadius: '25%' }}
                 />
+                <div className="">
+                    <p className="text-xl">{name}</p>
+                    <p className="">{commonName}</p>
+                    <p className="">Sightings: {timesSeen}</p>
+                    <p className="">Last seen: {lastSeenFormatted}</p>
+                </div>
 
-                {rangeMapImg && rangeMapImg.length > 0 && (
-                    <Image
-                        src={rangeMapImg}
-                        width={240}
-                        height={64}
-                        placeholder="blur"
-                        blurDataURL="/loading.gif"
-                        alt={'Image URI unavailible'}
-                        style={{ borderRadius: '25%' }}
-                    />
-                )}
+                <APIProvider
+                    apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
+                >
+                    {lat !== null && long !== null ? (
+                        <Map
+                            style={{
+                                height: 240,
+                                borderRadius: '2rem',
+                            }}
+                            defaultCenter={{ lat: lat, lng: long }}
+                            defaultZoom={8}
+                            mapId={'e7161059cd0d73b'}
+                            gestureHandling={'greedy'}
+                            disableDefaultUI={true}
+                        >
+                            <AdvancedMarker position={{ lat: lat, lng: long }}>
+                                <Pin />
+                            </AdvancedMarker>
+                        </Map>
+                    ) : (
+                        <div> Location data not available </div>
+                    )}
+                </APIProvider>
             </div>
         </Modal>
     )
