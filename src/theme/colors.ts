@@ -10,4 +10,6 @@ export enum Color {
     SPECIAL_ICON_LIGHT = '#fad193',
     TEXT_PRIMARY = 'text-sky-950',
     BORDER_PRIMARY = 'border-orange-300',
+    SECTION = 'bg-sky-300',
+    PROGRESS_BAR_COMPLETE = 'bg-orange-300',
 }

@@ -76,9 +76,9 @@ export default function DailyChallengeProgress({
         >
             <div
                 className={
-                    Color.BORDER_PRIMARY +
+                    Color.SECTION +
                     ' ' +
-                    'flex flex-col items-center p-6 space-y-2 rounded-lg border-4'
+                    'flex flex-col items-center p-6 space-y-2 rounded-lg'
                 }
             >
                 <div className="text-xl">Daily Challenge Progress</div>
@@ -128,7 +128,7 @@ export default function DailyChallengeProgress({
                                         max={birds_to_find}
                                         fillColor={
                                             complete
-                                                ? Color.SUCCESS
+                                                ? Color.PROGRESS_BAR_COMPLETE
                                                 : Color.BUTTON
                                         }
                                     />
