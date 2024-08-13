@@ -165,7 +165,7 @@ export default function Birdpedia({
                     {entriesShown && (
                         <div className="flex flex-col items-center">
                             <p className="font-bold text-xl">Birdpedia</p>
-                            {prevBtnDisabled && <PrevBtn />}
+                            {!prevBtnDisabled && <PrevBtn />}
                             {/* Entries */}
                             <div className="grow ">
                                 <div
@@ -212,7 +212,7 @@ export default function Birdpedia({
                                     })}
                                 </div>
                             </div>
-                            {nextBtnDisabled && <NextBtn />}
+                            {!nextBtnDisabled && <NextBtn />}
                         </div>
                     )}
                 </div>
