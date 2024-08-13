@@ -65,12 +65,15 @@ export async function signUpEmail(formData: FormData) {
     // Input validation
     const { password, password2 } = data
     if (password !== password2) {
+        console.error('Password mismatch')
         redirect(ERROR_ROUTE)
     }
 
     const { error } = await supabase.auth.signUp(data)
 
     if (error) {
+        console.error('Error signing up with email/pass')
+        console.error(error)
         redirect(ERROR_ROUTE)
     }
 
