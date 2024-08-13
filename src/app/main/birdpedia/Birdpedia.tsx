@@ -135,8 +135,8 @@ export default function Birdpedia({
             >
                 <Image
                     src={imgURI}
-                    width={64}
-                    height={64}
+                    width={45}
+                    height={40}
                     placeholder="blur"
                     blurDataURL="/loading.gif"
                     alt={'Image URI unavailible'}
@@ -154,20 +154,27 @@ export default function Birdpedia({
     }
 
     return (
-        <div className="flex flex-col items-center px-8">
+        <div className="flex flex-col items-center">
             <LoadData
                 conditionLoad={false}
                 conditionShowData={entriesShown && entriesShown.length > 0}
                 conditionNoResults={entriesShown && entriesShown.length == 0}
                 noResultsMessage="Tap the '+' tab and ID your first bird, then come back to this page!"
             >
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center ">
                     {entriesShown && (
                         <div className="flex flex-col items-center">
-                            {!prevBtnDisabled && <PrevBtn />}
+                            <p className="font-bold text-xl">Birdpedia</p>
+                            {prevBtnDisabled && <PrevBtn />}
                             {/* Entries */}
-                            <div className="grow">
-                                <div className="overflow-y-scroll h-[29rem] grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4 rounded-md">
+                            <div className="grow ">
+                                <div
+                                    className={
+                                        Color.SECTION +
+                                        ' ' +
+                                        'overflow-y-scroll h-[26rem] grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4 rounded-lg'
+                                    }
+                                >
                                     {entriesShown.map((entry) => {
                                         const {
                                             commonName,
@@ -205,7 +212,7 @@ export default function Birdpedia({
                                     })}
                                 </div>
                             </div>
-                            {!nextBtnDisabled && <NextBtn />}
+                            {nextBtnDisabled && <NextBtn />}
                         </div>
                     )}
                 </div>

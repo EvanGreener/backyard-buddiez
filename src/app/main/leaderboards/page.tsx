@@ -39,8 +39,8 @@ export default async function LeaderboardsScreen() {
         top3Global[1] = temp
 
         return (
-            <div className="p-4 flex flex-col items-center w-full">
-                <div className="text-lg font-bold mb-4">Leaderboard</div>
+            <div className="px-4 flex flex-col items-center w-full">
+                <div className="text-xl font-bold mb-4">Leaderboard</div>
                 <div className="flex items-end justify-evenly w-full">
                     {top3Global.map((u, i) => {
                         let bgColor = 'bg-orange-400'

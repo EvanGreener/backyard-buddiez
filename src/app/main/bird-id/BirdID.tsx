@@ -323,7 +323,13 @@ function AddSelection({
     if (user) {
         const checkBoxClasses = 'accent-orange-400 w-6 h-6'
         return (
-            <div className="flex flex-col space-y-6 ">
+            <div
+                className={
+                    Color.SECTION +
+                    ' ' +
+                    ' rounded-lg p-4 flex flex-col space-y-6 items-center w-full'
+                }
+            >
                 <div className="flex space-x-2 items-center">
                     <Image
                         src={selectedBird.imgURI}
@@ -334,10 +340,12 @@ function AddSelection({
                         blurDataURL="/loading.gif"
                         style={{ borderRadius: '25%' }}
                     />
-                    <span className="align-middle">{selectedBird.name}</span>
+                    <span className="align-middle italic">
+                        {selectedBird.name}
+                    </span>
                 </div>
 
-                <div className={'rounded-md m-4 p-2 space-y-6'}>
+                <div className={'rounded-lg my-4 space-y-6 w-11/12 sm:w-auto'}>
                     {userDailyChallenges.map((udc, i) => {
                         const { daily_challenge_id, birds_found } = udc
                         const { challenge_text, birds_to_find } =
