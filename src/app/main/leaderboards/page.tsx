@@ -13,8 +13,27 @@ export default async function LeaderboardsScreen() {
     const user = await getUser(userAuth.id)
 
     if (user) {
-        const topXGlobal = await getTopXGlobal()
+        let topXGlobal = await getTopXGlobal()
+        // topXGlobal.push({
+        //     user_id: 'awdawdsd',
+        //     display_name: 'TestUser123',
+        //     challenge_count: 1,
+        //     species_count: 2,
+        // })
+        // topXGlobal.push({
+        //     user_id: 'awdawdsd',
+        //     display_name: 'TestUser456',
+        //     challenge_count: 2,
+        //     species_count: 1,
+        // })
+        // topXGlobal.push({
+        //     user_id: 'awdawdsd',
+        //     display_name: 'TestUser123',
+        //     challenge_count: 0,
+        //     species_count: 1,
+        // })
         let top3Global = topXGlobal.slice(0, 3)
+        console.log(top3Global.map((u) => u.total_points))
         let temp = top3Global[0]
         top3Global[0] = top3Global[1]
         top3Global[1] = temp
@@ -71,7 +90,7 @@ export default async function LeaderboardsScreen() {
                     className={
                         Color.SECTION +
                         ' ' +
-                        'rounded-lg h-[24rem] overflow-y-scroll flex flex-col w-full space-y-4'
+                        'rounded-lg h-[24rem] overflow-y-scroll flex flex-col w-full space-y-4 p-4'
                     }
                 >
                     {topXGlobal.slice(3).map((entry, i) => {
@@ -81,10 +100,10 @@ export default async function LeaderboardsScreen() {
                                 className={
                                     Color.SUB_SECTION +
                                     ' ' +
-                                    'p-2 flex w-full rounded-lg justify-between'
+                                    'p-2 flex w-full rounded-lg items-center'
                                 }
                             >
-                                <span className="">{i + 4}</span>
+                                <div className="text-lg">{i + 4}</div>
 
                                 <div
                                     className={
@@ -93,13 +112,18 @@ export default async function LeaderboardsScreen() {
                                         'p-2 flex w-full rounded-lg justify-between'
                                     }
                                 >
-                                    <span className="">
-                                        {entry.display_name}
-                                    </span>
-                                    <span className="w-1/4">
-                                        {entry.species_count * 500 +
-                                            entry.challenge_count * 100}
-                                    </span>
+                                    <div className="">{entry.display_name}</div>
+                                    <div className="flex items-center space-x-2">
+                                        <Image
+                                            width={14}
+                                            height={14}
+                                            src={'/logo.svg'}
+                                            alt="Points icon"
+                                        />
+                                        <div className="">
+                                            {entry.total_points}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )

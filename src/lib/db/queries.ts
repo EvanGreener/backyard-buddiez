@@ -131,7 +131,7 @@ export async function getTopXGlobal(x: number = 50) {
             display_name: usersSpeciesIDd.display_name,
             species_count: usersSpeciesIDd.species_count,
             challenge_count: usersCompletedChallenges.challenge_count,
-            total_points: sql<number>`${usersSpeciesIDd.species_count} + ${usersCompletedChallenges.challenge_count}`,
+            total_points: sql<number>`coalesce(500 * ${usersSpeciesIDd.species_count} + 100 * ${usersCompletedChallenges.challenge_count},0)`,
         })
         .from(usersCompletedChallenges)
         .rightJoin(
@@ -139,8 +139,8 @@ export async function getTopXGlobal(x: number = 50) {
             eq(usersCompletedChallenges.user_id, usersSpeciesIDd.user_id)
         )
         .orderBy(
-            asc(
-                sql<number>`${usersSpeciesIDd.species_count} + ${usersCompletedChallenges.challenge_count}`
+            desc(
+                sql<number>`coalesce(500 * ${usersSpeciesIDd.species_count} + 100 * ${usersCompletedChallenges.challenge_count}, 0)`
             )
         )
         .limit(x)
