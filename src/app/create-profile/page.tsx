@@ -52,7 +52,7 @@ export default function CreateProfileScreen() {
         <div className="p-4">
             <Form action={submit}>
                 <p className={Color.TEXT_PRIMARY + ' ' + 'text-lg font-bold'}>
-                    Let's Create Your Profile
+                    {"Let's Create Your Profile"}
                 </p>
                 <div className="space-x-2">
                     <InputLabel
