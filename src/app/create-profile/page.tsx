@@ -9,6 +9,7 @@ import {
     GET_CURRENT_USER_ROUTE,
     HOME_ROUTE,
 } from '@/lib/routes'
+import { Color } from '@/theme/colors'
 import { User } from '@/types/db-types'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -50,6 +51,9 @@ export default function CreateProfileScreen() {
     return (
         <div className="p-4">
             <Form action={submit}>
+                <p className={Color.TEXT_PRIMARY + ' ' + 'text-lg font-bold'}>
+                    Let's Create Your Profile
+                </p>
                 <div className="space-x-2">
                     <InputLabel
                         inputId={'displayName'}

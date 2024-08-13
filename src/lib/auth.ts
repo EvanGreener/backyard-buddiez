@@ -3,7 +3,13 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { ERROR_ROUTE, LOGIN_SIGN_UP_ROUTE, ROOT } from './routes'
+import {
+    CREATE_PROFILE_ROUTE,
+    ERROR_ROUTE,
+    HOME_ROUTE,
+    LOGIN_SIGN_UP_ROUTE,
+    ROOT,
+} from './routes'
 
 export async function login(formData: FormData) {
     const supabase = createClient()
@@ -22,7 +28,7 @@ export async function login(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    redirect(ROOT)
+    redirect(HOME_ROUTE)
 }
 
 export async function signInGoogle() {
@@ -69,7 +75,7 @@ export async function signUpEmail(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    redirect(ROOT)
+    redirect(CREATE_PROFILE_ROUTE)
 }
 
 export async function getUserAuth() {

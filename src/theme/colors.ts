@@ -11,5 +11,6 @@ export enum Color {
     TEXT_PRIMARY = 'text-sky-950',
     BORDER_PRIMARY = 'border-orange-300',
     SECTION = 'bg-sky-300',
+    SUB_SECTION = 'bg-sky-600',
     PROGRESS_BAR_COMPLETE = 'bg-orange-300',
 }

@@ -23,8 +23,8 @@ export default async function LeaderboardsScreen() {
             <div className="p-4 flex flex-col items-center w-full">
                 <div className="text-lg font-bold mb-4">Leaderboard</div>
                 <div className="flex items-end justify-evenly w-full">
-                    {topXGlobal.slice(0, 3).map((u, i) => {
-                        let bgColor = 'bg-orange-700'
+                    {top3Global.map((u, i) => {
+                        let bgColor = 'bg-orange-400'
                         let height = 'h-12'
                         if (i == 0) {
                             bgColor = 'bg-zinc-400'
@@ -71,7 +71,7 @@ export default async function LeaderboardsScreen() {
                     className={
                         Color.SECTION +
                         ' ' +
-                        ' rounded-lg h-[24rem] overflow-y-scroll flex flex-col w-full'
+                        'rounded-lg h-[24rem] overflow-y-scroll flex flex-col w-full space-y-4'
                     }
                 >
                     {topXGlobal.slice(3).map((entry, i) => {
@@ -79,19 +79,28 @@ export default async function LeaderboardsScreen() {
                             <div
                                 key={entry.user_id}
                                 className={
-                                    Color.BORDER_PRIMARY +
+                                    Color.SUB_SECTION +
                                     ' ' +
-                                    'p-2 flex w-full border-b-2'
+                                    'p-2 flex w-full rounded-lg justify-between'
                                 }
                             >
-                                <span className="w-1/4">{i + 1}</span>
-                                <span className="w-2/4">
-                                    {entry.display_name}
-                                </span>
-                                <span className="w-1/4">
-                                    {entry.species_count * 500 +
-                                        entry.challenge_count * 100}
-                                </span>
+                                <span className="">{i + 4}</span>
+
+                                <div
+                                    className={
+                                        Color.SUB_SECTION +
+                                        ' ' +
+                                        'p-2 flex w-full rounded-lg justify-between'
+                                    }
+                                >
+                                    <span className="">
+                                        {entry.display_name}
+                                    </span>
+                                    <span className="w-1/4">
+                                        {entry.species_count * 500 +
+                                            entry.challenge_count * 100}
+                                    </span>
+                                </div>
                             </div>
                         )
                     })}

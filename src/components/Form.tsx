@@ -10,7 +10,7 @@ export default function Form({
     return (
         <form
             action={action}
-            className="flex flex-col items-center space-y-6 pb-6  w-full"
+            className="flex flex-col items-center space-y-6 pb-6 w-full"
         >
             {children}
         </form>
