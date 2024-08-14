@@ -41,9 +41,7 @@ export async function updateSession(request: NextRequest) {
 
     console.log(request.nextUrl.pathname)
 
-    if (!user) {
-        await checkUserExists(supabase)
-    }
+    await checkUserExists(supabase)
 
     if (
         !user &&
