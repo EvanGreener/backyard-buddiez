@@ -8,5 +8,6 @@ export async function GET() {
     if (user) {
         return Response.json({ user }, { status: 200 })
     }
+    console.error('Error getting current user ')
     return Response.json('Something went wrong ...', { status: 400 })
 }

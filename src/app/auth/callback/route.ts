@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { ERROR_ROUTE, HOME_ROUTE } from '@/lib/routes'
 import { checkUserExists } from '@/lib/db/inserts'
+import { redirect } from 'next/navigation'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
@@ -16,9 +17,12 @@ export async function GET(request: Request) {
         if (!error) {
             await checkUserExists(supabase)
             return NextResponse.redirect(`${origin}${next}`)
+        } else {
+            console.error(error)
+            redirect(ERROR_ROUTE)
         }
+    } else {
+        console.error('Error: code not supplied')
+        return NextResponse.redirect(`${origin}${ERROR_ROUTE}`)
     }
-
-    // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}${ERROR_ROUTE}`)
 }

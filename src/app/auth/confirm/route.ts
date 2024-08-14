@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { HOME_ROUTE } from '@/lib/routes'
+import { ERROR_ROUTE, HOME_ROUTE } from '@/lib/routes'
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
@@ -21,9 +21,13 @@ export async function GET(request: NextRequest) {
         if (!error) {
             // redirect user to specified redirect URL or root of app
             redirect(next)
+        } else {
+            console.error(error)
+            redirect(ERROR_ROUTE)
         }
-    }
+    } else {
+        console.error('Error: Token hash and type need to be supplied')
 
-    // redirect the user to an error page with some instructions
-    redirect('/error')
+        redirect(ERROR_ROUTE)
+    }
 }
