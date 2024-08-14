@@ -1,7 +1,7 @@
 'use client'
 
 import ProgressBar from '@/components/ProgressBar'
-import { MainContext } from '@/contexts/HomeContext'
+import { MainContext } from '@/contexts/MainContext'
 import { Color } from '@/theme/colors'
 import { DailyChallenge, User, UserDailyChallenge } from '@/types/db-types'
 import { useContext, useEffect, useState } from 'react'
@@ -23,10 +23,11 @@ export default function DailyChallengeProgress({
     const [hoursTillReset, setHoursTillReset] = useState<number>(99)
     const [minutesTillReset, setMinutesTillReset] = useState<number>(99)
     const [secondsTillReset, setSecondsTillReset] = useState<number>(99)
-    const { showDCProgressNotif, setShowDCProgressNotif } =
+    const { showDCProgressNotif, setShowDCProgressNotif, setLoadingNewPage } =
         useContext(MainContext)
 
     useEffect(() => {
+        setLoadingNewPage && setLoadingNewPage(false)
         if (showDCProgressNotif && setShowDCProgressNotif) {
             setShowDCProgressNotif(false)
         }
@@ -69,6 +70,7 @@ export default function DailyChallengeProgress({
                 window.location.reload()
             }
         }, 1000)
+
     }, [setShowDCProgressNotif, showDCProgressNotif, user])
     return (
         <IconContext.Provider

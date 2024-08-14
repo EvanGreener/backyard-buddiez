@@ -9,17 +9,22 @@ interface ILinkButton {
     href: string
     color?: Color
     children: JSX.Element
+    onClick?: () => void
 }
 
 export default function LinkButton({
     href,
     color = Color.BUTTON,
     children,
+    onClick,
 }: ILinkButton) {
     const router = useRouter()
     return (
         <Button
-            onClickHandler={() => router.push(href)}
+            onClickHandler={() => {
+                onClick && onClick()
+                router.push(href)
+            }}
             color={color}
             roundedFull
         >

@@ -1,3 +1,4 @@
+import ClientSide from '@/components/ClientSide'
 import { getUserAuth } from '@/lib/auth'
 import {
     getNumCompletedChallenges,
@@ -40,6 +41,7 @@ export default async function LeaderboardsScreen() {
 
         return (
             <div className="px-4 flex flex-col items-center w-full">
+                <ClientSide />
                 <div className="text-xl font-bold mb-4">Leaderboard</div>
                 <div className="flex items-end justify-evenly w-full">
                     {top3Global.map((u, i) => {

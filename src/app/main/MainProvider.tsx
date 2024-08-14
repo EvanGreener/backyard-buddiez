@@ -1,6 +1,6 @@
 'use client'
 
-import { MainContext } from '@/contexts/HomeContext'
+import { MainContext } from '@/contexts/MainContext'
 import {
     HOME_ROUTE,
     LEADERBOARDS_ROUTE,
@@ -28,6 +28,12 @@ export default function MainProvider({
     const pathname = usePathname()
     const [showNewSpeciesNotif, setShowNewSpeciesNotif] = useState(false)
     const [showDCProgressNotif, setShowDCProgressNotif] = useState(false)
+    const [loadingNewPage, setLoadingNewPage] = useState(false)
+
+    const showLoadingBar = () => {
+        setLoadingNewPage(true)
+    }
+
     return (
         <IconContext.Provider value={{ size: '1.5rem' }}>
             <MainContext.Provider
@@ -36,8 +42,15 @@ export default function MainProvider({
                     setShowNewSpeciesNotif,
                     showDCProgressNotif,
                     setShowDCProgressNotif,
+                    loadingNewPage,
+                    setLoadingNewPage,
                 }}
             >
+                {loadingNewPage && (
+                    <div className="absolute top-0 w-full h-2 z-20 bg-black/50">
+                        <div className="w-1/2 h-2 bg-sky-400 animate-loadbar"></div>
+                    </div>
+                )}
                 <div className={Color.BACKGROUND + ' ' + 'p-4 h-full w-full'}>
                     {children}
                 </div>
@@ -49,7 +62,15 @@ export default function MainProvider({
                     }
                 >
                     <div className="relative ">
-                        <LinkButton href={HOME_ROUTE} color={Color.TABS}>
+                        <LinkButton
+                            onClick={() => {
+                                if (pathname !== HOME_ROUTE) {
+                                    showLoadingBar()
+                                }
+                            }}
+                            href={HOME_ROUTE}
+                            color={Color.TABS}
+                        >
                             <FaHome color={chooseColor(pathname, HOME_ROUTE)} />
                         </LinkButton>
                         {showDCProgressNotif && (
@@ -58,12 +79,28 @@ export default function MainProvider({
                             </div>
                         )}
                     </div>
-                    <LinkButton href={LEADERBOARDS_ROUTE} color={Color.TABS}>
+                    <LinkButton
+                        onClick={() => {
+                            if (pathname !== LEADERBOARDS_ROUTE) {
+                                showLoadingBar()
+                            }
+                        }}
+                        href={LEADERBOARDS_ROUTE}
+                        color={Color.TABS}
+                    >
                         <FaTrophy
                             color={chooseColor(pathname, LEADERBOARDS_ROUTE)}
                         />
                     </LinkButton>
-                    <LinkButton href={BIRD_ID_ROUTE} color={Color.TABS}>
+                    <LinkButton
+                        onClick={() => {
+                            if (pathname !== BIRD_ID_ROUTE) {
+                                showLoadingBar()
+                            }
+                        }}
+                        href={BIRD_ID_ROUTE}
+                        color={Color.TABS}
+                    >
                         <FaPlus
                             color={chooseColor(
                                 pathname,
@@ -75,7 +112,15 @@ export default function MainProvider({
                         />
                     </LinkButton>
                     <div className="relative ">
-                        <LinkButton href={BIRDPEDIA_ROUTE} color={Color.TABS}>
+                        <LinkButton
+                            onClick={() => {
+                                if (pathname !== BIRDPEDIA_ROUTE) {
+                                    showLoadingBar()
+                                }
+                            }}
+                            href={BIRDPEDIA_ROUTE}
+                            color={Color.TABS}
+                        >
                             <FaBookBookmark
                                 color={chooseColor(pathname, BIRDPEDIA_ROUTE)}
                             />
@@ -87,7 +132,15 @@ export default function MainProvider({
                         )}
                     </div>
 
-                    <LinkButton href={SETTINGS_ROUTE} color={Color.TABS}>
+                    <LinkButton
+                        onClick={() => {
+                            if (pathname !== SETTINGS_ROUTE) {
+                                showLoadingBar()
+                            }
+                        }}
+                        href={SETTINGS_ROUTE}
+                        color={Color.TABS}
+                    >
                         <IoIosSettings
                             color={chooseColor(pathname, SETTINGS_ROUTE)}
                         />

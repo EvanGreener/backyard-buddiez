@@ -5,9 +5,12 @@ interface IMainContext {
     setShowNewSpeciesNotif?: Dispatch<SetStateAction<boolean>>
     showDCProgressNotif: boolean
     setShowDCProgressNotif?: Dispatch<SetStateAction<boolean>>
+    loadingNewPage: boolean
+    setLoadingNewPage?: Dispatch<SetStateAction<boolean>>
 }
 
 export const MainContext = createContext<IMainContext>({
     showNewSpeciesNotif: false,
     showDCProgressNotif: false,
+    loadingNewPage: false,
 })

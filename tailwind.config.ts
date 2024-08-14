@@ -26,9 +26,18 @@ const config: Config = {
                         transform: 'scale(1.25)',
                     },
                 },
+                loadbar: {
+                    '0%, 100%': {
+                        transform: 'translate(-50%)',
+                    },
+                    '50%': {
+                        transform: 'translate(150%)',
+                    },
+                },
             },
             animation: {
                 pop: 'pop 0.25s linear',
+                loadbar: 'loadbar 2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
             },
         },
     },

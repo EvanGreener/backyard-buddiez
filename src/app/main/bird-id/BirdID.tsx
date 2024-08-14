@@ -3,7 +3,7 @@
 import InputLabel from '@/components/InputLabel'
 import InputText from '@/components/InputText'
 import LoadData from '@/components/LoadData'
-import { MainContext } from '@/contexts/HomeContext'
+import { MainContext } from '@/contexts/MainContext'
 import { BirdBasic } from '@/types/action-types'
 import {
     DailyChallenge,
@@ -61,8 +61,11 @@ export default function BirdID({
     const [selectedBird, setSelectedBird] = useState<BirdBasic>()
     const [locationOn, setLocationOn] = useState(false)
     // Contexts
-    const { setShowDCProgressNotif, setShowNewSpeciesNotif } =
-        useContext(MainContext)
+    const {
+        setShowDCProgressNotif,
+        setShowNewSpeciesNotif,
+        setLoadingNewPage,
+    } = useContext(MainContext)
     // Refs
     const searchRef = useRef<HTMLInputElement>(null)
     const location = useRef<Location>()
@@ -136,6 +139,8 @@ export default function BirdID({
     }
 
     useEffect(() => {
+        setLoadingNewPage && setLoadingNewPage(false)
+
         let ignoreSearchResults = false
         async function searchBirds() {
             if (birdInput.length > 0) {
@@ -158,6 +163,7 @@ export default function BirdID({
             const { latitude, longitude } = position.coords
             location.current = { lat: latitude, long: longitude }
         })
+
 
         return () => {
             ignoreSearchResults = true
@@ -256,7 +262,7 @@ export function SearchResults({
     return (
         <div
             className={
-                'flex flex-col space-y-2 h-[32rem] w-full sm:w-auto overflow-y-scroll divide-y divide-orange-300'
+                'flex flex-col space-y-2 h-[32rem] w-full sm:w-auto overflow-y-scroll divide-y divide-sky-700'
             }
         >
             {searchResults.map((sr) => {

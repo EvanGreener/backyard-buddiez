@@ -3,7 +3,7 @@
 import Button from '@/components/Button'
 import LoadData from '@/components/LoadData'
 import Modal from '@/components/Modal'
-import { MainContext } from '@/contexts/HomeContext'
+import { MainContext } from '@/contexts/MainContext'
 import { Color } from '@/theme/colors'
 import { BirdDetailed, BirdSightingInfo } from '@/types/action-types'
 import { Sighting, User } from '@/types/db-types'
@@ -37,7 +37,7 @@ export default function Birdpedia({
     const [page, setPage] = useState<number>(0)
     const [selectedBirdDetails, setSelectedBirdDetails] =
         useState<BirdSightingInfo>()
-    const { showNewSpeciesNotif, setShowNewSpeciesNotif } =
+    const { showNewSpeciesNotif, setShowNewSpeciesNotif, setLoadingNewPage } =
         useContext(MainContext)
 
     const birdsPerPage = 12
@@ -56,6 +56,8 @@ export default function Birdpedia({
         : undefined
 
     useEffect(() => {
+        setLoadingNewPage && setLoadingNewPage(false)
+
         if (showNewSpeciesNotif && setShowNewSpeciesNotif) {
             setShowNewSpeciesNotif(false)
         }
@@ -172,7 +174,7 @@ export default function Birdpedia({
                                     className={
                                         Color.SECTION +
                                         ' ' +
-                                        'overflow-y-scroll h-[26rem] grid grid-cols-3 grid-rows-4 gap-10 p-4 my-4 rounded-lg'
+                                        'overflow-y-scroll h-[26rem] grid grid-cols-4 grid-rows-4 gap-4 p-4 my-4 rounded-lg'
                                     }
                                 >
                                     {entriesShown.map((entry) => {
