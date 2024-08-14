@@ -14,9 +14,13 @@ export async function checkUserExists(
     const { data, error } = await supabase.auth.getUser()
     const { user } = data
     if (!error && user) {
+        console.log('User auth exists')
+
         const userDB = await getUser(user.id)
 
         if (!userDB) {
+            console.log('Creating user')
+
             // Add new user
             const newUser = await db
                 .insert(users)
