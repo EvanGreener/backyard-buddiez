@@ -1,7 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import {
-    CHECK_USER_EXISTS_ROUTE,
     CREATE_PROFILE_ROUTE,
     HOME_ROUTE,
     LOGIN_SIGN_UP_ROUTE,

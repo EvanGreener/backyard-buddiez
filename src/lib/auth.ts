@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import {
-    CHECK_USER_EXISTS_ROUTE,
     CREATE_PROFILE_ROUTE,
     ERROR_ROUTE,
     HOME_ROUTE,
