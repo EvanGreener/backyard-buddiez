@@ -15,12 +15,13 @@ import Image from 'next/image'
 
 export default async function HomeScreen() {
     const userAuth = await getUserAuth()
-    const user = await getUser(userAuth.id)
+    let user = await getUser(userAuth.id)
 
     if (user && !user.profile_created) {
         redirect(CREATE_PROFILE_ROUTE)
     } else if (user) {
-        await refreshDailyChallenges(user)
+        const updatedUser = await refreshDailyChallenges(user)
+        user = updatedUser !== undefined ? updatedUser : user
 
         const userDailyChallenges = (await getUserDailyChallenges(user)) ?? []
         const dailyChallenges =

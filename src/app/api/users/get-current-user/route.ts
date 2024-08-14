@@ -9,5 +9,5 @@ export async function GET() {
         return Response.json({ user }, { status: 200 })
     }
     console.error('Error getting current user ')
-    return Response.json('Something went wrong ...', { status: 400 })
+    return Response.json('Error getting current user', { status: 400 })
 }

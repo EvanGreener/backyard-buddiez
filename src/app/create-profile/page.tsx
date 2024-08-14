@@ -25,6 +25,7 @@ export default function CreateProfileScreen() {
         async function checkProfileCreated() {
             const res = await fetch(GET_CURRENT_USER_ROUTE)
             const user: User = await res.json()
+            console.log(user.profile_created)
             if (user.profile_created) {
                 router.push(HOME_ROUTE)
             }
@@ -41,8 +42,9 @@ export default function CreateProfileScreen() {
             )
             if (response.status === 200) {
                 router.push(HOME_ROUTE)
+            } else if (response.status === 400) {
+                setErrorMessage('Something went wrong')
             }
-            setErrorMessage('Something went wrong')
         } else {
             setErrorMessage('Display name required')
         }

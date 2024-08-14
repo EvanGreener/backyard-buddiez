@@ -7,37 +7,24 @@ import { and, AnyColumn, eq, inArray, sql } from 'drizzle-orm'
 import { getDailyChallenges, getUser, getUserDailyChallenges } from './queries'
 import { DailyChallenge, User } from '@/types/db-types'
 import { shuffle } from '../utils'
+import { createClient } from '../supabase/server'
+import { User as UserAuth } from '@supabase/supabase-js'
+export async function checkUserExists(user: UserAuth) {
+    const userDB = await getUser(user.id)
 
-export async function checkUserExists(
-    supabase: SupabaseClient<any, 'public', any>
-) {
-    const { data, error } = await supabase.auth.getUser()
-    const { user } = data
-    if (!error && user) {
-        console.log('User auth exists')
-
-        const userDB = await getUser(user.id)
-
-        if (!userDB) {
-            console.log('Creating user')
-
-            // Add new user
-            const newUser = await db
-                .insert(users)
-                .values({
-                    id: user.id,
-                    email: user.email,
-                })
-                .returning()
-            return newUser[0]
-        }
-
-        return userDB
-    } else if (!error) {
-        redirect(LOGIN_SIGN_UP_ROUTE)
-    } else {
-        console.error(error)
+    if (!userDB) {
+        // Add new user
+        const newUser = await db
+            .insert(users)
+            .values({
+                id: user.id,
+                email: user.email,
+            })
+            .returning()
+        return newUser[0]
     }
+
+    return userDB
 }
 
 export async function refreshDailyChallenges(user: User) {
@@ -77,6 +64,7 @@ export async function refreshDailyChallenges(user: User) {
         console.log('Adding new challenges')
         console.log('=-=-=-=-=-=-=-=-=-')
         addNewChallenges(user)
+        return await getUser(user.id)
     }
 }
 

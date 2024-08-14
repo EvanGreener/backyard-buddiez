@@ -1,6 +1,12 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { HOME_ROUTE, LOGIN_SIGN_UP_ROUTE, ROOT } from '../routes'
+import {
+    CHECK_USER_EXISTS_ROUTE,
+    CREATE_PROFILE_ROUTE,
+    HOME_ROUTE,
+    LOGIN_SIGN_UP_ROUTE,
+    ROOT,
+} from '../routes'
 import { checkUserExists } from '../db/inserts'
 
 export async function updateSession(request: NextRequest) {
@@ -39,14 +45,13 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    console.log(request.nextUrl.pathname)
-
-    await checkUserExists(supabase)
-
     if (
         !user &&
-        !request.nextUrl.pathname.startsWith(LOGIN_SIGN_UP_ROUTE) &&
-        !request.nextUrl.pathname.startsWith('/auth')
+        !(
+            request.nextUrl.pathname.startsWith(LOGIN_SIGN_UP_ROUTE) ||
+            request.nextUrl.pathname.startsWith('/auth') ||
+            request.nextUrl.pathname == ROOT
+        )
     ) {
         const url = request.nextUrl.clone()
         url.pathname = LOGIN_SIGN_UP_ROUTE

@@ -4,12 +4,14 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import {
+    CHECK_USER_EXISTS_ROUTE,
     CREATE_PROFILE_ROUTE,
     ERROR_ROUTE,
     HOME_ROUTE,
     LOGIN_SIGN_UP_ROUTE,
     ROOT,
 } from './routes'
+import { checkUserExists } from './db/inserts'
 
 export async function login(formData: FormData) {
     const supabase = createClient()
@@ -21,16 +23,20 @@ export async function login(formData: FormData) {
         password: formData.get('password') as string,
     }
 
-    const { error } = await supabase.auth.signInWithPassword(data)
-
+    const { data: data2, error } = await supabase.auth.signInWithPassword(data)
+    const { user } = data2
     if (error) {
         console.error('Error logging in with email/pass')
         console.error(error)
         redirect(ERROR_ROUTE)
+    } else if (!user) {
+        console.error('User null')
+        redirect(ERROR_ROUTE)
+    } else {
+        await checkUserExists(user)
+        revalidatePath('/', 'layout')
+        redirect(HOME_ROUTE)
     }
-
-    revalidatePath('/', 'layout')
-    redirect(HOME_ROUTE)
 }
 
 export async function signInGoogle() {
