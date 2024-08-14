@@ -24,6 +24,8 @@ export async function login(formData: FormData) {
     const { error } = await supabase.auth.signInWithPassword(data)
 
     if (error) {
+        console.error('Error logging in with email/pass')
+        console.error(error)
         redirect(ERROR_ROUTE)
     }
 
@@ -47,6 +49,8 @@ export async function signInGoogle() {
     })
 
     if (error) {
+        console.error('Error signing up with google')
+        console.error(error)
         redirect(ERROR_ROUTE)
     } else if (data.url) {
         redirect(data.url) // use the redirect API for your server framework
@@ -86,6 +90,7 @@ export async function getUserAuth() {
 
     const { data, error } = await supabase.auth.getUser()
     if (error || !data?.user) {
+        error && console.error(error)
         redirect(LOGIN_SIGN_UP_ROUTE)
     }
 
@@ -98,6 +103,8 @@ export async function signOut() {
     const { error } = await supabase.auth.signOut()
 
     if (error) {
+        console.error('Error signing out')
+        console.error(error)
         redirect(ERROR_ROUTE)
     }
     redirect(ROOT)
