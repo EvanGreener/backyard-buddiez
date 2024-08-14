@@ -71,5 +71,6 @@ export default async function HomeScreen() {
             </div>
         )
     }
+    console.error('Error: user does not exist in DB')
     redirect(ERROR_ROUTE)
 }

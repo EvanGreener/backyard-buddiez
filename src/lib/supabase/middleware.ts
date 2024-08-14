@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { HOME_ROUTE, LOGIN_SIGN_UP_ROUTE, ROOT } from '../routes'
+import { checkUserExists } from '../db/inserts'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -39,6 +40,10 @@ export async function updateSession(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     console.log(request.nextUrl.pathname)
+
+    if (!user) {
+        await checkUserExists(supabase)
+    }
 
     if (
         !user &&

@@ -29,8 +29,10 @@ export async function checkUserExists(
         }
 
         return userDB
-    } else {
+    } else if (!error) {
         redirect(LOGIN_SIGN_UP_ROUTE)
+    } else {
+        console.error(error)
     }
 }
 
