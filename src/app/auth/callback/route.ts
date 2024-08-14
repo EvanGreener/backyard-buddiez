@@ -15,7 +15,6 @@ export async function GET(request: Request) {
         const supabase = createClient()
         const { error } = await supabase.auth.exchangeCodeForSession(code)
         if (!error) {
-            await checkUserExists(supabase)
             return NextResponse.redirect(`${origin}${next}`)
         } else {
             console.error(error)

@@ -6,7 +6,6 @@ import {
     LOGIN_SIGN_UP_ROUTE,
     ROOT,
 } from '../routes'
-import { checkUserExists } from '../db/inserts'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
