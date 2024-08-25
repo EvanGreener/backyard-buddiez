@@ -70,8 +70,7 @@ export default function DailyChallengeProgress({
                 window.location.reload()
             }
         }, 1000)
-
-    }, [setShowDCProgressNotif, showDCProgressNotif, user])
+    }, [setLoadingNewPage, setShowDCProgressNotif, showDCProgressNotif, user])
     return (
         <IconContext.Provider
             value={{ size: '1.25rem', style: { display: 'inline' } }}
@@ -111,7 +110,7 @@ export default function DailyChallengeProgress({
                     )}
                 </span>
 
-                <div className="flex flex-col space-y-2 ">
+                <div className="flex flex-col space-y-4 ">
                     {userDailyChallenges.map((udc, i) => {
                         const { id, birds_found, daily_challenge_id } = udc
                         const { birds_to_find, challenge_text } =
@@ -120,9 +119,24 @@ export default function DailyChallengeProgress({
                             )!
 
                         const complete = birds_to_find == birds_found
+                        let animation = 'animate-pop_in3'
+                        if (i == 0) {
+                            animation = 'animate-pop_in1'
+                        } else if (i == 1) {
+                            animation = 'animate-pop_in2'
+                        }
 
                         return (
-                            <div key={id}>
+                            <div
+                                key={id}
+                                className={
+                                    Color.SUB_SECTION +
+                                    ' ' +
+                                    animation +
+                                    ' ' +
+                                    'rounded-lg px-4 py-2'
+                                }
+                            >
                                 <div>{challenge_text}</div>
                                 <div className="flex flex-wrap justify-end space-x-2 justify-between items-center">
                                     <ProgressBar
@@ -131,7 +145,7 @@ export default function DailyChallengeProgress({
                                         fillColor={
                                             complete
                                                 ? Color.PROGRESS_BAR_COMPLETE
-                                                : Color.BUTTON
+                                                : Color.SECTION
                                         }
                                     />
                                     {complete ? (

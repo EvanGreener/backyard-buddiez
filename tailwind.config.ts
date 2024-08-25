@@ -34,10 +34,27 @@ const config: Config = {
                         transform: 'translate(150%)',
                     },
                 },
+                pop_in: {
+                    '0%': {
+                        transform: 'scale(0.5)',
+                    },
+                    '10%': {
+                        transform: 'scale(0.5)',
+                    },
+                    '75%': {
+                        transform: 'scale(1.1)',
+                    },
+                    '100%': {
+                        transform: 'scale(1)',
+                    },
+                },
             },
             animation: {
                 pop: 'pop 0.25s linear',
                 loadbar: 'loadbar 2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                pop_in1: 'pop_in 1.4s linear',
+                pop_in2: 'pop_in 1.2s linear ',
+                pop_in3: 'pop_in 1s linear ',
             },
         },
     },

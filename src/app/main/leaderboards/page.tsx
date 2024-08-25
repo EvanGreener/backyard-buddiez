@@ -8,6 +8,7 @@ import {
 } from '@/lib/db/queries'
 import { Color } from '@/theme/colors'
 import Image from 'next/image'
+import { GiFeather } from 'react-icons/gi'
 
 export default async function LeaderboardsScreen() {
     const userAuth = await getUserAuth()
@@ -15,26 +16,8 @@ export default async function LeaderboardsScreen() {
 
     if (user) {
         let topXGlobal = await getTopXGlobal()
-        // topXGlobal.push({
-        //     user_id: 'awdawdsd',
-        //     display_name: 'TestUser123',
-        //     challenge_count: 1,
-        //     species_count: 2,
-        // })
-        // topXGlobal.push({
-        //     user_id: 'awdawdsd',
-        //     display_name: 'TestUser456',
-        //     challenge_count: 2,
-        //     species_count: 1,
-        // })
-        // topXGlobal.push({
-        //     user_id: 'awdawdsd',
-        //     display_name: 'TestUser123',
-        //     challenge_count: 0,
-        //     species_count: 1,
-        // })
+        console.log(topXGlobal.map((u) => u.total_points))
         let top3Global = topXGlobal.slice(0, 3)
-        console.log(top3Global.map((u) => u.total_points))
         let temp = top3Global[0]
         top3Global[0] = top3Global[1]
         top3Global[1] = temp
@@ -64,16 +47,11 @@ export default async function LeaderboardsScreen() {
                                     {u.display_name}
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <Image
-                                        width={14}
-                                        height={14}
-                                        src={'/logo.svg'}
-                                        alt="Points icon"
+                                    <GiFeather
+                                        size={14}
+                                        color={Color.SPECIAL_ICON_LIGHT}
                                     />
-                                    <div>
-                                        {u.species_count * 500 +
-                                            u.challenge_count * 100}
-                                    </div>
+                                    <div>{u.total_points}</div>
                                 </div>
                                 <div
                                     className={
@@ -116,11 +94,9 @@ export default async function LeaderboardsScreen() {
                                 >
                                     <div className="">{entry.display_name}</div>
                                     <div className="flex items-center space-x-2">
-                                        <Image
-                                            width={14}
-                                            height={14}
-                                            src={'/logo.svg'}
-                                            alt="Points icon"
+                                        <GiFeather
+                                            size={14}
+                                            color={Color.SPECIAL_ICON_LIGHT}
                                         />
                                         <div className="">
                                             {entry.total_points}

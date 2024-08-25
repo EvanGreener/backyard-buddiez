@@ -12,6 +12,7 @@ import { redirect } from 'next/navigation'
 import DailyChallengeProgress from './DailyChallengeProgress'
 import { Color } from '@/theme/colors'
 import Image from 'next/image'
+import { GiFeather } from 'react-icons/gi'
 
 export default async function HomeScreen() {
     const userAuth = await getUserAuth()
@@ -51,11 +52,9 @@ export default async function HomeScreen() {
                             </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Image
-                                width={24}
-                                height={24}
-                                src={'/logo.svg'}
-                                alt="Points icon"
+                            <GiFeather
+                                size={24}
+                                color={Color.SPECIAL_ICON_LIGHT}
                             />
                             <div>
                                 {speciesIdentified * 500 +

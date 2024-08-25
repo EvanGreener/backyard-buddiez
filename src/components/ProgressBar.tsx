@@ -12,7 +12,7 @@ export default function ProgressBar({
     fillColor,
 }: ProgressBarType) {
     return (
-        <span className={`bg-black/50 rounded-full w-60 h-4`}>
+        <span className={`bg-black/50 rounded-full w-52 h-4`}>
             <span
                 style={{
                     width: `${(value / max) * 100}%`,

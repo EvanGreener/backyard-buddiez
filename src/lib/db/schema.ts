@@ -75,6 +75,12 @@ export const users = pgTable('users', {
         withTimezone: true,
         mode: 'date',
     }),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    daily_challenges_completed: bigint('daily_challenges_completed', {
+        mode: 'number',
+    })
+        .default(0)
+        .notNull(),
 })
 
 export const sightings = pgTable('sightings', {
